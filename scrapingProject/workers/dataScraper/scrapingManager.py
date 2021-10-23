@@ -1,22 +1,13 @@
-from workers.dataScraper.workers.scraper import Scraper 
 from workers.dataScraper.scraperTools.tools import *
-from configparser import ConfigParser
+from ..dataServer.mongoServer import MongoServer
 import requests as req
-
-config = ConfigParser()
-config.read('./workers/dataScraper/tools/url.ini')
-for section in config.sections():
-    for item in list(config[section].items()):
-        key = item[0] 
-        value = item[1] 
-        globals()[f'{key}'] = value
+import importlib
 
 class ScrapingManager:
     def __init__(self):
-        self.session = ''
-        self.channelCodeList = []
+        self.channelUrlList = []
     
-    def set_requests_session(
+    def get_requests_session(
             self, 
             proxies = {
                 "http": "http://127.0.0.1:8889", 
@@ -26,13 +17,21 @@ class ScrapingManager:
         session = req.Session()
         session.verify = r'./workers/dataScraper/scraperTools/FiddlerRoot.pem'
         session.proxies = proxies
-        self.session = session
+        return session
     
-    def all_channels_url_init(self):
-        channelCodeList = filtering_channel_path_in_globals(globals())
-        self.channelCodeList = channelCodeList
-    
+    def get_channel_url(self):
+        mongoServer = MongoServer()
+        channelData = mongoServer.serve_channel_data()
+        for i in channelData:
+            channelUrl = i['channelUrl']
+            self.channelUrlList.extend(channelUrl)
 
-    
-    
-
+    def get_scraped_response(self):
+        self.get_channel_url()
+        for UrlData in self.channelUrlList:
+            session = self.get_requests_session()
+            channelCode, channelUrl = return_key_value(UrlData)
+            tmp = importlib.import_module(f'workers.dataScraper.scraper.{channelCode}')
+            tmp.scraping_response(session, channelCode, channelUrl)
+            # result = scraper.scraping_response(session, channelCode, channelUrl)
+            break

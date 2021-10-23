@@ -15,14 +15,13 @@ class ProjectManager:
         req_response = ScrapingManager()
 
     def job_init(self):
-        # self.check_scraping_schedule()
-
         scrapingManager = ScrapingManager()
-        scrapingManager.all_channels_init()
+        scrapingManager.get_scraped_response()
     
     def new_target_init(self, Target):
         mongoServer = MongoServer()
         result = mongoServer.insert_new_target_channel(Target)
         return result
+    
         
 

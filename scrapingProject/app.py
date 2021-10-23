@@ -6,9 +6,8 @@ from typing import Optional, List
 app = FastAPI()
 
 @app.get('/')
-def hello():
-    return "hello"
-
+def main():
+    return 'hi'
 
 @app.get('/scraping-start')
 async def scraping():
