@@ -30,5 +30,7 @@ class Scraper:
         headers = self.get_headers()
         data = self.get_post_body_post_list_page()
         status, response = post_method_response(session, channelUrl, headers, data)
+        if status == 200 :
+            post_list_parsing(response.text)
         print(status, response.text)
 
