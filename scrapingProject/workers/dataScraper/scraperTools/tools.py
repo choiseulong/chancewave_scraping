@@ -27,7 +27,7 @@ def search_channel_path_in_globals(Globals, channelCode):
     return channelUrl
 
 
-def get_data_frame(channelCode, channelUrl):
+def get_post_data_frame(channelCode, channelUrl):
     now = datetime.now(timezone('Asia/Seoul'))
     return {
         'channelCode' : channelCode,
@@ -43,4 +43,15 @@ def get_data_frame(channelCode, channelUrl):
         'uploader' : '',
         'isUpdate' : False,
         'updateTime' : '',
+    }
+
+
+def get_channel_data_frame(channelCode, channelUrl):
+    now = datetime.now(timezone('Asia/Seoul'))
+    return {
+        'channelCode' : channelCode,
+        'channelUrl' : channelUrl,
+        'createdTime' : now,
+        'updateTime' : '',
+        'contentsUrl' : []
     }

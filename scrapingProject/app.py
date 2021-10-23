@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from workers.projectManager import ProjectManager
 from pydantic import BaseModel
+from typing import Optional, List
 
 app = FastAPI()
 
@@ -16,10 +17,11 @@ async def scraping():
     return "scraping init"
 
 class Target(BaseModel):
-    channelUrl : str
+    channelName : Optional[str]
+    channelUrl : List[str]
 
 @app.post('/add-new-target-channel')
 def add_new_target_channel(target : Target):
     manager = ProjectManager()
-    result = manager.new_target_init(target.channelUrl)
+    result = manager.new_target_init(target)
     return result

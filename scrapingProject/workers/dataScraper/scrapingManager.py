@@ -31,6 +31,7 @@ class ScrapingManager:
     def all_channels_url_init(self):
         channelCodeList = filtering_channel_path_in_globals(globals())
         self.channelCodeList = channelCodeList
+    
 
     
     

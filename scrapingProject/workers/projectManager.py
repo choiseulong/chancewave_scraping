@@ -20,9 +20,9 @@ class ProjectManager:
         scrapingManager = ScrapingManager()
         scrapingManager.all_channels_init()
     
-    def new_target_init(self, channelUrl):
-        scheduler = Scheduler()
-        result = scheduler.insert_new_target_channel(channelUrl)
+    def new_target_init(self, Target):
+        mongoServer = MongoServer()
+        result = mongoServer.insert_new_target_channel(Target)
         return result
         
 
