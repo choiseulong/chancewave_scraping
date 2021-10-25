@@ -9,10 +9,10 @@ from ..parser.a0 import *
             {"fetchStart" : Number}
 '''
 class Scraper:
-    def __init__(self, session, channelCode, channelUrl):
-        self.session = session
-        self.channelCode = channelCode
-        self.channelUrl = channelUrl
+    def __init__(self):
+        self.headers = ''
+        self.postListResult = []
+        self.contentsResultList = []
     
     def get_headers(self):
         headers = {
@@ -26,11 +26,54 @@ class Scraper:
         }
         return data
 
-    def scraping_response(self, session, channelCode, channelUrl):
-        headers = self.get_headers()
-        data = self.get_post_body_post_list_page()
-        status, response = post_method_response(session, channelUrl, headers, data)
-        if status == 200 :
-            post_list_parsing(response.text)
-        print(status, response.text)
+    def scraping_process(self, session, channelCode, channelUrl):
+        session.headers = self.get_headers()
+        totalPageCount = 0
+        pageCount = 1
+
+        while True :
+            self.postListResult = self.search_post_list(pageCount, session, channelUrl)
+            if not totalPageCount :
+                totalPageCount = search_total_post_count(self.postListResult[0])
+            self.contentsResultList = self.search_post_contents(session, self.postListResult)
+            if pageCount > totalPageCount :
+                break
+            else :
+                collectedDataList = self.collect_data(channelCode, channelUrl)
+                print(collectedDataList)
+                pageCount += 1
+            break
+    
+    def search_post_list(self, pageCount, session, channelUrl):
+        data = self.get_post_body_post_list_page(pageCount)
+        status, response = post_method_response(session, channelUrl, {}, data)
+        if status == 'ok' :
+            result = extract_post_list_from_response_text(response.text)
+            return result
+        else :
+            raise Exception('scraping channel a1 post list error')
+
+    def search_post_contents(self, session, postListResult):
+        contentsResultList = []
+        for postData in postListResult :
+            url = postData['contentsUrl']
+            status, response = get_method_response(session, url)
+            if status == 'ok':
+                contentsResult = extract_post_contents_from_response_text(response.text)
+                contentsResultList.append(contentsResult)
+        return contentsResultList
+    
+    def collect_data(self, channelCode, channelUrl):
+        dataList = []
+        for postList, contents in zip(self.postListResult, self.contentsResultList):
+            dataFrame = get_post_data_frame(channelCode, channelUrl)
+            dataFrameWithPostList = enter_data_into_dataFrame(dataFrame, postList)
+            dataFrameWithContents = enter_data_into_dataFrame(dataFrameWithPostList, contents)
+            dataList.append(dataFrameWithContents)
+        return dataList
+
+
+            
+
+ 
 

@@ -3,6 +3,7 @@ from ..dataServer.mongoServer import MongoServer
 import requests as req
 import importlib
 
+
 class ScrapingManager:
     def __init__(self):
         self.channelUrlList = []
@@ -31,7 +32,6 @@ class ScrapingManager:
         for UrlData in self.channelUrlList:
             session = self.get_requests_session()
             channelCode, channelUrl = return_key_value(UrlData)
-            tmp = importlib.import_module(f'workers.dataScraper.scraper.{channelCode}')
-            tmp.scraping_response(session, channelCode, channelUrl)
-            # result = scraper.scraping_response(session, channelCode, channelUrl)
+            scraper = importlib.import_module(f'workers.dataScraper.scraper.{channelCode}').Scraper()
+            scraper.scraping_process(session, channelCode, channelUrl)
             break

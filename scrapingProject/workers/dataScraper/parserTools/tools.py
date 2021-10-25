@@ -1,8 +1,72 @@
 from bs4 import BeautifulSoup
+from datetime import datetime
+import re
 
 def convert_response_text_to_BeautifulSoup(responseText):
     soup = BeautifulSoup(responseText, 'html.parser')
     return soup
+
+def search_tags_in_soup(soup, tags, attrs={}, parsingType=''):
+    if parsingType == 'contents':
+        result = [i.contents[0] for i in soup.findAll(tags, attrs=attrs)]
+    elif parsingType == 'text':
+        result = [i.text for i in soup.findAll(tags, attrs=attrs)]
+    else :
+        result = soup.findAll(tags, attrs=attrs)
+    return result
+
+def extract_attrs_from_tags(items, tags, attrs, isMultiple = False):
+    if isMultiple :
+        result = [i.find(tags)[attrs] for i in items]
+    else :
+        result = items.find(tags)[attrs]
+    return result 
+
+def extract_text_from_tags(items, tags, isMultiple=False):
+    if isMultiple:
+        result = [item.find(tags).text for item in items]
+    else:
+        result = items.find(tags).text
+    return result
+
+
+def convert_same_length_merged_list_to_dict(keyList, valueList):
+    result = []
+    for idx in range(len(valueList[0])):
+        frame = {
+            key: valueList[key_idx][idx] for key_idx, key in enumerate(keyList)
+        }
+        result.append(frame)
+    return result
+
+def convert_merged_list_to_dict(keyList, valueList):
+    result = {}
+    for idx, key in enumerate(keyList):
+        result.update({key : valueList[idx]})
+    return result
+
+def convert_datetime_string_to_actual_datetime(datetimeString):
+    if datetimeString.count('-') == 2 and datetimeString.count(':') == 2:
+        time = datetime.strptime(datetimeString, "%Y-%m-%d %H:%M:%S")
+    elif datetimeString.count('-') == 2 and datetimeString.count(':') != 2:
+        time = datetime.strptime(datetimeString, "%Y-%m-%d")
+    return time
+
+def extract_numbers_in_text(text):
+    return re.sub('[^0-9]', '', text)
+
+def erase_html_tags(text):
+    return re.sub('(<([^>]+)>)', '', text)
+
+def clean_text(text):
+    text = text.replace('\xa0', ' ').replace('\n', ' ')
+    text = convert_multiple_empty_erea_to_one_erea(text)
+    return text
+
+def convert_multiple_empty_erea_to_one_erea(text):
+    return re.sub('\s+', ' ', text).strip()
+  
+
 
 # def search_tag_data_in_BeautifulSoup(soup, tagName):
 #     if type(tagName) == str :
