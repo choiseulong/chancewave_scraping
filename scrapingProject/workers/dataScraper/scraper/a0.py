@@ -1,6 +1,7 @@
 from ..scraperTools.tools import *
 from ..parser.channel_a import * 
 from workers.dataServer.mongoServer import MongoServer
+import requests as req
 
 '''
     required :
@@ -15,6 +16,7 @@ class Scraper:
         self.postListResult = []
         self.contentsResultList = []
         self.session = session
+        self.dateRange = []
     
     def get_headers(self):
         headers = {
@@ -28,17 +30,15 @@ class Scraper:
         }
         return data
 
-    def scraping_process(self, channelCode, channelUrl):
+    def scraping_process(self, channelCode, channelUrl, dateRange):
         mongo = MongoServer()
-        mongo.connection_mongodb()
-        mongo.set_collection(channelCode)
+        self.dateRange = dateRange
         self.session.headers = self.get_headers()
         totalPageCount = 0
         pageCount = 1
 
         while True :
             self.postListResult = self.search_post_list(pageCount, channelUrl)
-            contentsUrl = self.postListResult['contentsUrl']
             if not totalPageCount :
                 totalPageCount = search_total_post_count(self.postListResult[0])
             self.contentsResultList = self.search_post_contents(self.postListResult)
@@ -46,9 +46,7 @@ class Scraper:
                 break
             else :
                 collectedDataList = self.collect_data(channelCode, channelUrl)
-                insert_result = mongo.insert_many(collectedDataList)
-                print(insert_result, channelCode)
-                # print(collectedDataList)
+                mongo.reflect_scraped_data(collectedDataList)
                 pageCount += 1
             break
     
@@ -56,7 +54,7 @@ class Scraper:
         data = self.get_post_body_post_list_page(pageCount)
         status, response = post_method_response(self.session, channelUrl, {}, data)
         if status == 'ok' :
-            result = extract_post_list_from_response_text(response.text)
+            result = extract_post_list_from_response_text(response.text, self.dateRange)
             return result
         else :
             raise Exception('scraping channel a1 post list error')

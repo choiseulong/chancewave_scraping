@@ -1,27 +1,20 @@
 from workers.dataServer.mongoServer import MongoServer
-from workers.dataParser.parser import Parser
-from workers.scrapingScheduler.scheduler import Scheduler 
+# from workers.scrapingScheduler.scheduler import Scheduler 
 from workers.dataScraper.scrapingManager import ScrapingManager 
 
 class ProjectManager:
     def __init__(self):
-        self.schedule = {}
-        
-    def check_scraping_schedule(self):
-        scheduler = Scheduler()
-        self.schedule = scheduler.check()
-
-    def channel_response_request(self):
-        req_response = ScrapingManager()
-
-    def job_init(self):
-        scrapingManager = ScrapingManager()
-        scrapingManager.get_scraped_response()
+        self.TargetDateRange = None
+        self.scrapingManager = ScrapingManager()
     
-    def new_target_init(self, Target):
-        mongoServer = MongoServer()
-        result = mongoServer.insert_new_target_channel(Target)
-        return result
+    def job_init_with_target_date(self, targetDate:dict):
+        self.TargetDateRange = self.scrapingManager.get_date_range(targetDate)
+        self.scrapingManager.scraping_worker_job_init()
+
+
+
+
+
     
         
 

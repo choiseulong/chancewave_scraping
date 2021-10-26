@@ -44,18 +44,18 @@ def get_post_data_frame(channelCode='', channelUrl=''):
     return {
         'channelCode' : channelCode,
         'channelUrl' : channelUrl,
-        'contentsUrl' : '',
+        'contentsUrl' : None,
         'createdTime' : now,
-        'postTitle' : '',
-        'postSubject' : '',
-        'postText' : '',
-        'contact': '',
+        'postTitle' : None,
+        'postSubject' : None,
+        'postText' : None,
+        'contact': None,
         'postImageUrl': [],
-        'viewCount' : 0,
-        'uploadedTime' : '',
-        'uploader' : '',
+        'viewCount' : None,
+        'uploadedTime' : None,
+        'uploader' : None,
         'isUpdate' : False,
-        'updatedTime' : '',
+        'updatedTime' : None,
     }
 
 def find_key_root(keyName) : 
@@ -74,21 +74,15 @@ def enter_data_into_dataFrame(dataFrame, result):
     for key in result:
         keyRoot = find_key_root(key)
         if not keyRoot:
-            if isinstance(result[key], DateTime.date):
-                dataFrame[key] = result[key]
-                continue
-            dataFrame[key] += result[key]
+            dataFrame[key] = result[key]
         else :
-            dataFrame[keyRoot][key] += result[key]
+            dataFrame[keyRoot][key] = result[key]
     return dataFrame
 
-
-def get_channel_data_frame(channelCode, channelUrl):
-    now = datetime.now(timezone('Asia/Seoul'))
-    return {
-        'channelCode' : channelCode,
-        'channelUrl' : channelUrl,
-        'createdTime' : now,
-        'updateTime' : '',
-        'contentsUrl' : []
-    }
+def check_date_range_availability(dateRange, date):
+    startDate = dateRange[0]
+    endDate = dateRange[0]
+    if (date - endDate).days <= 0 and (startDate - date).days >= 0:
+        return 'vaild'
+    else :
+        return 

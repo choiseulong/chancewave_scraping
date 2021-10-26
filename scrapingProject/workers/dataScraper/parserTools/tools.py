@@ -52,11 +52,17 @@ def convert_datetime_string_to_actual_datetime(datetimeString):
         time = datetime.strptime(datetimeString, "%Y-%m-%d")
     return time
 
+def convert_datetime_to_isoformat(postDate):
+    if isinstance(postDate, datetime):
+        return postDate.isoformat()
+    else :
+        raise Exception('convert_datetime_to_isoformat, postDate 타입 에러')
+
 def extract_numbers_in_text(text):
     return re.sub('[^0-9]', '', text)
 
 def extract_korean_in_text(text):
-    return re.sub('[^가-힣]', "", text)
+    return ' '.join(re.compile('[가-힣]+').findall(text))
 
 def erase_html_tags(text):
     return re.sub('(<([^>]+)>)', '', text)
