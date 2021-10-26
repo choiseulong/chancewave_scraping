@@ -19,3 +19,8 @@ body : {
     #optional  
     "endDate" : "2021-10-01",  --> "%Y-%m-%d"  
 }  
+
+# 처리된 ChannleCode : Url
+a0 = https://www.seoul.go.kr/realmnews/in/list.do  
+a1 = https://www.seoul.go.kr/thismteventfstvl/list.do  
+a2 = https://www.seoul.go.kr/eventreqst/list.do  
