@@ -24,3 +24,4 @@ body : {
 a0 = https://www.seoul.go.kr/realmnews/in/list.do  
 a1 = https://www.seoul.go.kr/thismteventfstvl/list.do  
 a2 = https://www.seoul.go.kr/eventreqst/list.do  
+a3 = 포스트가 각기 다른 채널로 이어져있어 추후 처리 예정
