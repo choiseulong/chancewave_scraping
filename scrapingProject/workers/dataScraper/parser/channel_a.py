@@ -21,17 +21,17 @@ def extract_post_list_from_response_text(text, dateRange):
         if check_date_range_availability(dateRange, date) == 'vaild'
     ]
     validPostCount = len(uploadTime)
+    print(validPostCount)
     postSubject = extract_text_from_tags(postListInfo, "i", isMultiple)
     if postSubject :
         postSubject = [extract_korean_in_text(subject) for subject in postSubject]
     postTitle = search_tags_in_soup(soup, "em", {"class" : "subject"}, parsingType)
     local_var = locals()
     valueList = [local_var[key][:validPostCount] for key in keyList]
-    dataLength = len(postListInfo)
 
     for i in [len(valueList) for valueList in valueList]:
-        if i != dataLength:
-            raise Exception("Channel a0, data parsing error")
+        if i != validPostCount:
+            raise Exception("maybe channel a[0,1,2], data parsing error")
     result = convert_same_length_merged_list_to_dict(keyList, valueList)
     return result
  

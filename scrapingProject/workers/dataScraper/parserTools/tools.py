@@ -75,8 +75,3 @@ def clean_text(text):
 def convert_multiple_empty_erea_to_one_erea(text):
     return re.sub('\s+', ' ', text).strip()
   
-
-
-# def search_tag_data_in_BeautifulSoup(soup, tagName):
-#     if type(tagName) == str :
-#         soup

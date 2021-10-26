@@ -81,8 +81,10 @@ def enter_data_into_dataFrame(dataFrame, result):
 
 def check_date_range_availability(dateRange, date):
     startDate = dateRange[0]
-    endDate = dateRange[0]
-    if (date - endDate).days <= 0 and (startDate - date).days >= 0:
+    endDate = dateRange[1]
+    print(startDate, endDate, date)
+    print((startDate - date).days, (date - endDate).days)
+    if (startDate - date).days >= -1 and (date - endDate).days >= 0 :
         return 'vaild'
     else :
         return 
