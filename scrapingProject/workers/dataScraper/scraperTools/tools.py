@@ -34,6 +34,7 @@ def search_channel_path_in_globals(Globals, channelCode):
     return channelUrl
 
 def return_key_value(data):
+    print(data)
     key = list(data.keys())[0]
     value = data[key]
     return key, value
@@ -46,17 +47,15 @@ def get_post_data_frame(channelCode='', channelUrl=''):
         'contentsUrl' : '',
         'createdTime' : now,
         'postTitle' : '',
-        'postContents' : {
-            'postSubject' : '',
-            'postText' : '',
-            'contact': '',
-            'postImageUrl': []
-        },
+        'postSubject' : '',
+        'postText' : '',
+        'contact': '',
+        'postImageUrl': [],
         'viewCount' : 0,
-        'uploadTime' : '',
+        'uploadedTime' : '',
         'uploader' : '',
         'isUpdate' : False,
-        'updateTime' : '',
+        'updatedTime' : '',
     }
 
 def find_key_root(keyName) : 

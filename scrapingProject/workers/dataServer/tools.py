@@ -8,10 +8,10 @@ def get_channel_data_frame(channelName, channelUrl, count):
     return {
         'channelName' : channelName,
         'channelCode' : channelCode,
-        'channelUrl' : [{channelCode+str(idx) : url} for idx, url in enumerate(channelUrl)],
+        'channelUrl' : {channelCode+str(idx) : url for idx, url in enumerate(channelUrl)},
         'createdTime' : now,
         'updateTime' : '',
-        'contentsUrl' : [{channelCode+str(idx) : []} for idx in range(len(channelUrl))]
+        'contentsUrl' : {channelCode+str(idx) : [] for idx in range(len(channelUrl))}
     }
 
 def make_channel_code(count):

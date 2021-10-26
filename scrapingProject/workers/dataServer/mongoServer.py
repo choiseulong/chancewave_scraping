@@ -10,7 +10,7 @@ class MongoServer:
     def connection_mongodb(self):
         url = 'mongodb://admin:mysterico@k8s.mysterico.com:31489'
         connection = MongoClient(url)
-        self.db = connection.get_database('data_voucher')
+        self.db = connection.get_database('chancewave_scraper')
     
     def set_collection(self, collection_name):
         self.collection = self.db.get_collection(collection_name)
@@ -24,6 +24,9 @@ class MongoServer:
     def find(self, query={}):
         cursor = self.collection.find(query)
         return [i for i in cursor]
+    
+    def insert_many(self, data):
+        return self.collection.insert_many(data)
     
     def insert_new_target_channel(self, target):
         self.connection_mongodb()
@@ -47,6 +50,15 @@ class MongoServer:
         self.set_collection('scrapingHistory')
         dataList = self.find()
         return dataList
+    
+    def reflect_scraped_data(self, channelCode, contentsUrl, collectedDataList):
+        self.set_collection('scrapingHistory')
+        targetChannelDoc = self.fine_one({'channelCode' : channelCode})
+        for urlDoc in targetChannelDoc['contentsUrl']:
+            if urlDoc[0].keys()[0]:
+                pass
+
+
 
 
 

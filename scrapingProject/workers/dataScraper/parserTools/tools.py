@@ -55,6 +55,9 @@ def convert_datetime_string_to_actual_datetime(datetimeString):
 def extract_numbers_in_text(text):
     return re.sub('[^0-9]', '', text)
 
+def extract_korean_in_text(text):
+    return re.sub('[^가-힣]', "", text)
+
 def erase_html_tags(text):
     return re.sub('(<([^>]+)>)', '', text)
 

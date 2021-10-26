@@ -23,15 +23,16 @@ class ScrapingManager:
     def get_channel_url(self):
         mongoServer = MongoServer()
         channelData = mongoServer.serve_channel_data()
-        for i in channelData:
-            channelUrl = i['channelUrl']
-            self.channelUrlList.extend(channelUrl)
+        for channel in channelData:
+            for channelCode in channel['channelUrl']:
+                self.channelUrlList.append({channelCode:channel['channelUrl'][channelCode]})
 
     def get_scraped_response(self):
         self.get_channel_url()
-        for UrlData in self.channelUrlList:
+        for UrlData in self.channelUrlList[:3]:
             session = self.get_requests_session()
             channelCode, channelUrl = return_key_value(UrlData)
-            scraper = importlib.import_module(f'workers.dataScraper.scraper.{channelCode}').Scraper()
-            scraper.scraping_process(session, channelCode, channelUrl)
-            break
+            print(channelCode, channelUrl)
+            # scraper = importlib.import_module(f'workers.dataScraper.scraper.{channelCode}').Scraper()
+            # scraper.scraping_process(session, channelCode, channelUrl)
+            

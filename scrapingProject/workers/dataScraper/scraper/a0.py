@@ -1,5 +1,6 @@
 from ..scraperTools.tools import *
-from ..parser.a0 import * 
+from ..parser.channel_a import * 
+from workers.dataServer.mongoServer import MongoServer
 
 '''
     required :
@@ -27,12 +28,16 @@ class Scraper:
         return data
 
     def scraping_process(self, session, channelCode, channelUrl):
+        mongo = MongoServer()
+        mongo.connection_mongodb()
+        mongo.set_collection(channelCode)
         session.headers = self.get_headers()
         totalPageCount = 0
         pageCount = 1
 
         while True :
             self.postListResult = self.search_post_list(pageCount, session, channelUrl)
+            contentsUrl = self.postListResult['contentsUrl']
             if not totalPageCount :
                 totalPageCount = search_total_post_count(self.postListResult[0])
             self.contentsResultList = self.search_post_contents(session, self.postListResult)
@@ -40,7 +45,9 @@ class Scraper:
                 break
             else :
                 collectedDataList = self.collect_data(channelCode, channelUrl)
-                print(collectedDataList)
+                insert_result = mongo.insert_many(collectedDataList)
+                print(insert_result, channelCode)
+                # print(collectedDataList)
                 pageCount += 1
             break
     

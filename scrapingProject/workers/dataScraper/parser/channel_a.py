@@ -13,6 +13,8 @@ def extract_post_list_from_response_text(text):
         search_tags_in_soup(soup, "em", {"class" : "date"}, parsingType)
     ]
     postSubject = extract_text_from_tags(postListInfo, "i", isMultiple)
+    if postSubject :
+        postSubject = extract_korean_in_text(postSubject)
     postTitle = search_tags_in_soup(soup, "em", {"class" : "subject"}, parsingType)
     local_var = locals()
     valueList = [local_var[key] for key in keyList]
@@ -22,7 +24,7 @@ def extract_post_list_from_response_text(text):
         if i != dataLength:
             raise Exception("Channel a0, data parsing error")
     result = convert_same_length_merged_list_to_dict(keyList, valueList)
-    return result 
+    return result
  
 def extract_post_contents_from_response_text(text):
     parsingType = 'text' 
@@ -34,9 +36,9 @@ def extract_post_contents_from_response_text(text):
     contact = search_tags_in_soup(soup, "dl", {"class" : "top-row row2"}, parsingType)
     if contact :
         contact = clean_text(contact[0])
-    postSubject = search_tags_in_soup(soup, "dd", {"class" : "dept"}, parsingType)
-    if postSubject :
-        postSubject = ', '.join(postSubject)
+    uploader = search_tags_in_soup(soup, "dd", {"class" : "dept"}, parsingType)
+    if uploader :
+        uploader = ', '.join(uploader)
     local_var = locals()
     valueList = [local_var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
