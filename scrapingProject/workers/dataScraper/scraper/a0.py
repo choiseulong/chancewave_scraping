@@ -10,10 +10,11 @@ from workers.dataServer.mongoServer import MongoServer
             {"fetchStart" : Number}
 '''
 class Scraper:
-    def __init__(self):
+    def __init__(self, session):
         self.headers = ''
         self.postListResult = []
         self.contentsResultList = []
+        self.session = session
     
     def get_headers(self):
         headers = {
@@ -27,20 +28,20 @@ class Scraper:
         }
         return data
 
-    def scraping_process(self, session, channelCode, channelUrl):
+    def scraping_process(self, channelCode, channelUrl):
         mongo = MongoServer()
         mongo.connection_mongodb()
         mongo.set_collection(channelCode)
-        session.headers = self.get_headers()
+        self.session.headers = self.get_headers()
         totalPageCount = 0
         pageCount = 1
 
         while True :
-            self.postListResult = self.search_post_list(pageCount, session, channelUrl)
+            self.postListResult = self.search_post_list(pageCount, channelUrl)
             contentsUrl = self.postListResult['contentsUrl']
             if not totalPageCount :
                 totalPageCount = search_total_post_count(self.postListResult[0])
-            self.contentsResultList = self.search_post_contents(session, self.postListResult)
+            self.contentsResultList = self.search_post_contents(self.postListResult)
             if pageCount > totalPageCount :
                 break
             else :
@@ -51,20 +52,20 @@ class Scraper:
                 pageCount += 1
             break
     
-    def search_post_list(self, pageCount, session, channelUrl):
+    def search_post_list(self, pageCount, channelUrl):
         data = self.get_post_body_post_list_page(pageCount)
-        status, response = post_method_response(session, channelUrl, {}, data)
+        status, response = post_method_response(self.session, channelUrl, {}, data)
         if status == 'ok' :
             result = extract_post_list_from_response_text(response.text)
             return result
         else :
             raise Exception('scraping channel a1 post list error')
 
-    def search_post_contents(self, session, postListResult):
+    def search_post_contents(self, postListResult):
         contentsResultList = []
         for postData in postListResult :
             url = postData['contentsUrl']
-            status, response = get_method_response(session, url)
+            status, response = get_method_response(self.session, url)
             if status == 'ok':
                 contentsResult = extract_post_contents_from_response_text(response.text)
                 contentsResultList.append(contentsResult)
