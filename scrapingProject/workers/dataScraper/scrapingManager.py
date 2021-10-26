@@ -33,6 +33,6 @@ class ScrapingManager:
             session = self.get_requests_session()
             channelCode, channelUrl = return_key_value(UrlData)
             print(channelCode, channelUrl)
-            # scraper = importlib.import_module(f'workers.dataScraper.scraper.{channelCode}').Scraper()
+            scraper = importlib.import_module(f'workers.dataScraper.scraper.{channelCode}').Scraper()
             # scraper.scraping_process(session, channelCode, channelUrl)
             
