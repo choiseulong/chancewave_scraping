@@ -21,7 +21,6 @@ def extract_post_list_from_response_text(text, dateRange):
         if check_date_range_availability(dateRange, date) == 'vaild'
     ]
     validPostCount = len(uploadTime)
-    print(validPostCount)
     postSubject = extract_text_from_tags(postListInfo, "i", isMultiple)
     if postSubject :
         postSubject = [extract_korean_in_text(subject) for subject in postSubject]

@@ -1,7 +1,7 @@
-from ..scraperTools.tools import *
-from ..parser.channel_a import * 
+from workers.dataScraper.scraperTools.tools import *
+from workers.dataScraper.parserTools.tools import * 
+from workers.dataScraper.parser.channel_a import *
 from workers.dataServer.mongoServer import MongoServer
-import requests as req
 
 '''
     required :
@@ -34,30 +34,24 @@ class Scraper:
         mongo = MongoServer()
         self.dateRange = dateRange
         self.session.headers = self.get_headers()
-        totalPageCount = 0
         pageCount = 1
-
         while True :
-            self.postListResult = self.search_post_list(pageCount, channelUrl)
-            if not totalPageCount :
-                totalPageCount = search_total_post_count(self.postListResult[0])
-            self.contentsResultList = self.search_post_contents(self.postListResult)
-            if pageCount > totalPageCount :
-                break
-            else :
+            self.postListResult = self.search_post_list(channelCode, pageCount, channelUrl)
+            if self.postListResult :
+                self.contentsResultList = self.search_post_contents(self.postListResult)
                 collectedDataList = self.collect_data(channelCode, channelUrl)
                 mongo.reflect_scraped_data(collectedDataList)
                 pageCount += 1
             break
     
-    def search_post_list(self, pageCount, channelUrl):
+    def search_post_list(self, channelCode, pageCount, channelUrl):
         data = self.get_post_body_post_list_page(pageCount)
         status, response = post_method_response(self.session, channelUrl, {}, data)
         if status == 'ok' :
             result = extract_post_list_from_response_text(response.text, self.dateRange)
             return result
         else :
-            raise Exception('scraping channel a1 post list error')
+            raise Exception(f'scraping channel {channelCode} post list error')
 
     def search_post_contents(self, postListResult):
         contentsResultList = []

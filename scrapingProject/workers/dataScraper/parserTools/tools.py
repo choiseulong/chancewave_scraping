@@ -8,11 +8,20 @@ def convert_response_text_to_BeautifulSoup(responseText):
 
 def search_tags_in_soup(soup, tags, attrs={}, parsingType=''):
     if parsingType == 'contents':
-        result = [i.contents[0] for i in soup.findAll(tags, attrs=attrs)]
+        if not attrs :
+            result = [i.contents[0] for i in soup.findAll(tags)]
+        else:
+            result = [i.contents[0] for i in soup.findAll(tags, attrs=attrs)]
     elif parsingType == 'text':
-        result = [i.text for i in soup.findAll(tags, attrs=attrs)]
+        if not attrs :
+            result = [i.text for i in soup.findAll(tags)]
+        else:
+            result = [i.text for i in soup.findAll(tags, attrs=attrs)]
     else :
-        result = soup.findAll(tags, attrs=attrs)
+        if not attrs:
+            result = soup.findAll(tags)
+        else:
+            result = soup.findAll(tags, attrs=attrs)
     return result
 
 def extract_attrs_from_tags(items, tags, attrs, isMultiple = False):
@@ -49,7 +58,10 @@ def convert_datetime_string_to_actual_datetime(datetimeString):
     if datetimeString.count('-') == 2 and datetimeString.count(':') == 2:
         time = datetime.strptime(datetimeString, "%Y-%m-%d %H:%M:%S")
     elif datetimeString.count('-') == 2 and datetimeString.count(':') != 2:
-        time = datetime.strptime(datetimeString, "%Y-%m-%d")
+        try :
+            time = datetime.strptime(datetimeString, "%Y-%m-%d")
+        except ValueError :
+            time = datetime.strptime(datetimeString, "%y-%m-%d")
     return time
 
 def convert_datetime_to_isoformat(postDate):
@@ -67,11 +79,15 @@ def extract_korean_in_text(text):
 def erase_html_tags(text):
     return re.sub('(<([^>]+)>)', '', text)
 
+def extract_english_in_text(text):
+    return ''.join(re.compile('[a-zA-Z]+').findall(text))
+
 def clean_text(text):
-    text = text.replace('\xa0', ' ').replace('\n', ' ')
+    text = text.replace('\xa0', ' ').replace('\n', ' ').replace('\t', ' ').replace('\r', '')
     text = convert_multiple_empty_erea_to_one_erea(text)
     return text
 
 def convert_multiple_empty_erea_to_one_erea(text):
     return re.sub('\s+', ' ', text).strip()
+
   

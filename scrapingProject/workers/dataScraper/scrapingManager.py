@@ -9,7 +9,7 @@ from configparser import ConfigParser
 class ScrapingManager:
     def __init__(self):
         self.channelUrlList = []
-        self.dataRange = []
+        self.dateRange = []
         config = ConfigParser()
         config.read('./scraperTools/url.ini')
         for section in config.sections():
@@ -32,7 +32,7 @@ class ScrapingManager:
     
     def get_channel_url(self):
         config = ConfigParser()
-        config.read('./workers/dataScraper/scraperTools/url.ini')
+        config.read('./workers/dataScraper/scraperTools/url.ini', encoding='utf-8')
         for section in config.sections():
             sectionName = section.lower()
             for item in list(config[section].items()):
@@ -45,16 +45,19 @@ class ScrapingManager:
 
     def scraping_worker_job_init(self):
         self.get_channel_url()
-        dataRange = self.dataRange
-        for channelCode, channelUrl in self.channelUrlList[:3]:
+        for channelCode, channelUrl in self.channelUrlList:
+            groupCode = extract_english_in_text(channelCode)
+            # pass channel a
+            if groupCode == 'a':
+                continue
             session = self.get_requests_session()
-            scraper = importlib.import_module(f'workers.dataScraper.scraper.{channelCode}').Scraper(session)
-            scraper.scraping_process(channelCode, channelUrl, dataRange)
+            scraper = importlib.import_module(f'workers.dataScraper.scraper.channel_{groupCode}.{channelCode}').Scraper(session)
+            scraper.scraping_process(channelCode, channelUrl, self.dateRange)
     
     def get_date_range(self, targetDate):
         startDate = convert_datetime_string_to_actual_datetime(targetDate['startDate'])
         endDate = convert_datetime_string_to_actual_datetime(targetDate['endDate'])
-        self.dataRange = [startDate, endDate]
-        return self.dataRange
+        self.dateRange = [startDate, endDate]
+        return self.dateRange
 
             
