@@ -6,7 +6,7 @@ parsingTypeText = 'text'
 isMultiple = True
 
 def extract_post_list_from_response_text(text, dateRange, channelCode = ''):
-    keyList = ["contentsReqParams", "uploadTime", "postSubject"]
+    keyList = ["contentsReqParams", "uploadedTime", "postSubject"]
 
     soup = convert_response_text_to_BeautifulSoup(text)
     postListInfo = search_tags_in_soup(soup, "tr", {}, parsingTypeNone)
@@ -19,27 +19,28 @@ def extract_post_list_from_response_text(text, dateRange, channelCode = ''):
     elif isExists == 'not exists':
         postSubject = [None for _ in range(len(postListInfo))]
 
-    uploadTime = [
-        convert_datetime_string_to_actual_datetime(
+    uploadedTime = [
+        convert_datetime_string_to_isoformat_datetime(
             tr.findAll('td')[-1].text.replace('.', '-')
         )
         for tr \
-        in postListInfo
+        in postListInfo \
+        if check_date_range_availability(dateRange, tr.findAll('td')[-1].text.replace('.', '-')) == 'vaild'
     ]
-    uploadTime = [
-        convert_datetime_to_isoformat(date) \
-        for date \
-        in uploadTime \
-        if check_date_range_availability(dateRange, date) == 'vaild'
-    ]
+    # uploadedTime = [
+    #     convert_datetime_to_isoformat(date) \
+    #     for date \
+    #     in uploadedTime \
+    #     if check_date_range_availability(dateRange, date) == 'vaild'
+    # ]
     contentsReqParams = [
         convert_bs4_tag_to_actual_post_body(data)
         for data in postListInfo
     ]
-    validPostCount = len(uploadTime)
+    validPostCount = len(uploadedTime)
     if validPostCount == 0 :
         return 
-    print(f'\n {channelCode}, vaildPostCount : {validPostCount} \n 마지막 포스트 업로드 일자 : {uploadTime[-1]}')
+    print(f'\n {channelCode}, vaildPostCount : {validPostCount} \n 마지막 포스트 업로드 일자 : {uploadedTime[-1]}')
     result = collect_locals_data(locals(), keyList, validPostCount, channelCode)
     return result
 

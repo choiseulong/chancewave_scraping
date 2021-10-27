@@ -60,17 +60,15 @@ def convert_merged_list_to_dict(keyList, valueList):
         result.update({key : valueList[idx]})
     return result
 
-def convert_datetime_string_to_actual_datetime(datetimeString):
+def convert_datetime_string_to_isoformat_datetime(datetimeString):
     if datetimeString.count('-') == 2 and datetimeString.count(':') == 2:
-        time = datetime.strptime(datetimeString, "%Y-%m-%d %H:%M:%S")
+        time = datetime.strptime(datetimeString, "%Y-%m-%d %H:%M:%S").isoformat()
     elif datetimeString.count('-') == 2 and datetimeString.count(':') != 2:
         try :
-            time = datetime.strptime(datetimeString, "%Y-%m-%d")
+            time = datetime.strptime(datetimeString, "%Y-%m-%d").isoformat()
         except ValueError :
-            time = datetime.strptime(datetimeString, "%y-%m-%d")
+            time = datetime.strptime(datetimeString, "%y-%m-%d").isoformat()
     return time
-
-
 
 def convert_datetime_to_isoformat(postDate):
     if isinstance(postDate, datetime):

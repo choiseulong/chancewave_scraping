@@ -51,16 +51,16 @@ class ScrapingManager:
             if groupCode in ['seoul_city']:
                 continue
 
-            if channelCode in ['job_seoul_0']:
-                continue
+            # if channelCode in ['job_seoul_0']:
+            #     continue
 
             session = self.get_requests_session()
             scraper = importlib.import_module(f'workers.dataScraper.scraper.{groupCode}.{channelCode}').Scraper(session)
             scraper.scraping_process(channelCode, channelUrl, self.dateRange)
     
     def get_date_range(self, targetDate):
-        startDate = convert_datetime_string_to_actual_datetime(targetDate['startDate'])
-        endDate = convert_datetime_string_to_actual_datetime(targetDate['endDate'])
+        startDate = convert_datetime_string_to_isoformat_datetime(targetDate['startDate'])
+        endDate = convert_datetime_string_to_isoformat_datetime(targetDate['endDate'])
         self.dateRange = [startDate, endDate]
         return self.dateRange
 

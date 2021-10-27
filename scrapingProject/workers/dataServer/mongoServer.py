@@ -36,6 +36,7 @@ class MongoServer:
                 if beforeData['crc'] == newData['crc']:
                     continue
                 elif beforeData['crc'] - newData['crc']:
+                    print(beforeData['crc'], newData['crc'])
                     print(f'{contentsUrl} \n@@ 문서 업데이트 @@')
                     self.update_data_process(newData, beforeData)
             else :
@@ -45,8 +46,8 @@ class MongoServer:
 
     def update_data_process(self, newData, beforeData):
         now = datetime.now(timezone('Asia/Seoul')).isoformat()
-        newData['isupdated'] = not newData['isupdated']
-        beforeData['updatedTime'] = now
+        newData['isUpdate'] = not newData['isUpdate']
+        newData['updatedTime'] = now
         beforeDocId = beforeData['_id']
         targetQuery = {'_id' : beforeDocId}
         self.delete_and_insert(targetQuery, newData)

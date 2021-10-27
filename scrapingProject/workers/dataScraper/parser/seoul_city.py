@@ -7,27 +7,28 @@ parsingTypeNone = None
 isMultiple = True
 
 def extract_post_list_from_response_text(text, dateRange, channelCode):
-    keyList = ["contentsUrl", "uploadTime", "postSubject"]
+    keyList = ["contentsUrl", "uploadedTime", "postSubject"]
 
     soup = convert_response_text_to_BeautifulSoup(text)
     postListInfo = search_tags_in_soup(soup, "div", {"class" : "item"})
     contentsUrl = extract_attrs_from_tags(postListInfo, "a", "href", isMultiple)
-    uploadTime = [
-        convert_datetime_string_to_actual_datetime(dateString[:19]) \
+    uploadedTime = [
+        convert_datetime_string_to_isoformat_datetime(dateString[:19]) \
         for dateString \
-        in search_tags_in_soup(soup, "em", {"class" : "date"}, parsingTypeContents)
+        in search_tags_in_soup(soup, "em", {"class" : "date"}, parsingTypeContents) \
+        if check_date_range_availability(dateRange, dateString[:19]) == 'vaild'
     ]
-    uploadTime = [
-        convert_datetime_to_isoformat(date) \
-        for date \
-        in uploadTime \
-        if check_date_range_availability(dateRange, date) == 'vaild'
-    ]
-    validPostCount = len(uploadTime)
+    # uploadedTime = [
+    #     convert_datetime_to_isoformat(date) \
+    #     for date \
+    #     in uploadedTime \
+    #     if check_date_range_availability(dateRange, date) == 'vaild'
+    # ]
+    validPostCount = len(uploadedTime)
     if not validPostCount :
         return 
 
-    print(f'\n {channelCode}, vaildPostCount : {validPostCount} \n 마지막 포스트 업로드 일자 : {uploadTime[-1]}')
+    print(f'\n {channelCode}, vaildPostCount : {validPostCount} \n 마지막 포스트 업로드 일자 : {uploadedTime[-1]}')
     postSubject = extract_text_from_tags(postListInfo, "i", isMultiple)
     if postSubject :
         postSubject = [extract_korean_in_text(subject) for subject in postSubject]

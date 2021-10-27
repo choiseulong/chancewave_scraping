@@ -4,7 +4,8 @@ from pytz import timezone
 
 def make_crc(data):
     text = ''
-    for key in data:
+    keyList = ['postTitle', 'postText', 'postSubject', 'contact']
+    for key in keyList:
         if isinstance(data[key], str):
             text += data[key]
     if text :
@@ -22,12 +23,3 @@ def convert_datetime_to_isoformat(postDate):
         return postDate.isoformat()
     else :
         raise Exception('convert_datetime_to_isoformat, postDate 타입 에러')
-
-def update_data(newData, beforeData):
-    now = datetime.now(timezone('Asia/Seoul')).isoformat()
-    for key in beforeData :
-        if key != '_id':
-            beforeData[key] = newData[key]
-    beforeData['isupdated'] = not beforeData['isupdated']
-    beforeData['updatedTime'] = now
-    return beforeData

@@ -24,9 +24,9 @@ async def scraping_with_target_date(targetDate : TargetDate):
         return "날짜 입력 형식을 확인해 주세요"
 
 def check_input_date_vaildation(inputDate):
-    startDate = datetime.strptime(inputDate["startDate"], "%Y-%m-%d")
-    endDate = datetime.strptime(inputDate["endDate"], "%Y-%m-%d")
-    if (startDate - endDate).days > 0 :
+    startDate = datetime.strptime(inputDate["startDate"], "%Y-%m-%d").isoformat()
+    endDate = datetime.strptime(inputDate["endDate"], "%Y-%m-%d").isoformat()
+    if startDate >= endDate :
         return 'vaild'
     else :
         return

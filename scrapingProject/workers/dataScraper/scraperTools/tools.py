@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 import datetime as DateTime
 from pytz import timezone
+from ..parserTools.tools import *
 
 def get_method_response(session, url, header={}):
     response = session.get(url, headers=header)
@@ -57,6 +58,8 @@ def get_post_data_frame(channelCode='', channelUrl=''):
         'uploader' : None,
         'isUpdate' : False,
         'updatedTime' : None,
+        'crc' : None,
+        'extraInfo' : []
     }
 
 def find_key_root(keyName) : 
@@ -81,9 +84,12 @@ def enter_data_into_dataFrame(dataFrame, result):
     return dataFrame
 
 def check_date_range_availability(dateRange, date):
+    date = convert_datetime_string_to_isoformat_datetime(date)
     startDate = dateRange[0]
     endDate = dateRange[1]
-    if (startDate - date).days >= -1 and (date - endDate).days >= 0 :
+    if startDate >= date and endDate <= date:
         return 'vaild'
+    # if (startDate - date).days >= -1 and (date - endDate).days >= 0 :
+    #     return 'vaild'
     else :
         return 
