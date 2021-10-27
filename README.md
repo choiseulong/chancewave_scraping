@@ -21,7 +21,12 @@ body : {
 }  
 
 # 처리된 ChannleCode : Url
-a0 = https://www.seoul.go.kr/realmnews/in/list.do  
-a1 = https://www.seoul.go.kr/thismteventfstvl/list.do  
-a2 = https://www.seoul.go.kr/eventreqst/list.do  
-a3 = 포스트가 각기 다른 채널로 이어져있어 추후 처리 예정
+seoul_city_0 = https://www.seoul.go.kr/realmnews/in/list.do  
+seoul_city_1 = https://www.seoul.go.kr/thismteventfstvl/list.do  
+seoul_city_2 = https://www.seoul.go.kr/eventreqst/list.do  
+seoul_city_3 # 포스트가 각기 다른 채널로 이어져있어 추후 처리 예정 #
+
+job_seoul_0 : https://job.seoul.go.kr/www/custmr_cntr/ntce/WwwNotice.do?method=selectWwwNoticeList&pageIndex={}
+job_seoul_1 : https://job.seoul.go.kr/www/custmr_cntr/ntce/WwwNotice.do?method=selectNewsList&noticeCmmnSeNo=3&pageIndex={}
+
+
