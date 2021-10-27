@@ -48,8 +48,8 @@ class ScrapingManager:
         for channelCode, channelUrl in self.channelUrlList:
             print(channelCode)
             groupCode = extract_groupCode(channelCode)
-            if groupCode in ['seoul_city']:
-                continue
+            # if groupCode in ['seoul_city']:
+            #     continue
 
             # if channelCode in ['job_seoul_0']:
             #     continue

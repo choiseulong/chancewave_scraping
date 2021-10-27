@@ -18,12 +18,6 @@ def extract_post_list_from_response_text(text, dateRange, channelCode):
         in search_tags_in_soup(soup, "em", {"class" : "date"}, parsingTypeContents) \
         if check_date_range_availability(dateRange, dateString[:19]) == 'vaild'
     ]
-    # uploadedTime = [
-    #     convert_datetime_to_isoformat(date) \
-    #     for date \
-    #     in uploadedTime \
-    #     if check_date_range_availability(dateRange, date) == 'vaild'
-    # ]
     validPostCount = len(uploadedTime)
     if not validPostCount :
         return 

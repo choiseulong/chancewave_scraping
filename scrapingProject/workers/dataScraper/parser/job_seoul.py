@@ -27,12 +27,6 @@ def extract_post_list_from_response_text(text, dateRange, channelCode = ''):
         in postListInfo \
         if check_date_range_availability(dateRange, tr.findAll('td')[-1].text.replace('.', '-')) == 'vaild'
     ]
-    # uploadedTime = [
-    #     convert_datetime_to_isoformat(date) \
-    #     for date \
-    #     in uploadedTime \
-    #     if check_date_range_availability(dateRange, date) == 'vaild'
-    # ]
     contentsReqParams = [
         convert_bs4_tag_to_actual_post_body(data)
         for data in postListInfo
