@@ -12,8 +12,9 @@ def get_method_response(session, url, header={}):
     sleep(1)
     return status, response
 
-def post_method_response(session, url, header={}, data={}):
-    data = json.dumps(data)
+def post_method_response(session, url, header={}, data={}, jsonize=False):
+    if jsonize and data:
+        data = json.dumps(data)
     response = session.post(url, headers=header, data=data)
     status = 'fail'
     if response.status_code == 200 :
@@ -45,12 +46,12 @@ def get_post_data_frame(channelCode='', channelUrl=''):
         'channelCode' : channelCode,
         'channelUrl' : channelUrl,
         'contentsUrl' : None,
-        'createdTime' : now,
+        'createdTime' : now.isoformat(),
         'postTitle' : None,
         'postSubject' : None,
         'postText' : None,
         'contact': None,
-        'postImageUrl': [],
+        'postImageUrl': None,
         'viewCount' : None,
         'uploadedTime' : None,
         'uploader' : None,

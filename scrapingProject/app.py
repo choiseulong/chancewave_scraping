@@ -8,7 +8,7 @@ app = FastAPI()
 
 now = datetime.now(timezone('Asia/Seoul'))
 todayString = now.strftime('%Y-%m-%d')
-before2WeekString = (now-timedelta(days=14)).strftime('%Y-%m-%d')
+before2WeekString = (now-timedelta(days=7)).strftime('%Y-%m-%d')
 
 class TargetDate(BaseModel):
     startDate : str = todayString # 오늘 부터

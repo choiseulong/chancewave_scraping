@@ -46,12 +46,16 @@ class ScrapingManager:
     def scraping_worker_job_init(self):
         self.get_channel_url()
         for channelCode, channelUrl in self.channelUrlList:
-            groupCode = extract_english_in_text(channelCode)
-            # pass channel a
-            if groupCode == 'a':
+            print(channelCode)
+            groupCode = extract_groupCode(channelCode)
+            if groupCode in ['seoul_city']:
                 continue
+
+            if channelCode in ['job_seoul_0']:
+                continue
+
             session = self.get_requests_session()
-            scraper = importlib.import_module(f'workers.dataScraper.scraper.channel_{groupCode}.{channelCode}').Scraper(session)
+            scraper = importlib.import_module(f'workers.dataScraper.scraper.{groupCode}.{channelCode}').Scraper(session)
             scraper.scraping_process(channelCode, channelUrl, self.dateRange)
     
     def get_date_range(self, targetDate):

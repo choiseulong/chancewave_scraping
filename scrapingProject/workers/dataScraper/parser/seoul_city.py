@@ -1,10 +1,13 @@
 from ..parserTools.tools import *
 from ..scraperTools.tools import *
 
-def extract_post_list_from_response_text(text, dateRange):
-    parsingType = 'contents' 
-    isMultiple = True
-    keyList = ["contentsUrl", "uploadTime", "postSubject", "postTitle"]
+parsingTypeContents = 'contents' 
+parsingTypeText = 'text' 
+parsingTypeNone = None
+isMultiple = True
+
+def extract_post_list_from_response_text(text, dateRange, channelCode):
+    keyList = ["contentsUrl", "uploadTime", "postSubject"]
 
     soup = convert_response_text_to_BeautifulSoup(text)
     postListInfo = search_tags_in_soup(soup, "div", {"class" : "item"})
@@ -12,7 +15,7 @@ def extract_post_list_from_response_text(text, dateRange):
     uploadTime = [
         convert_datetime_string_to_actual_datetime(dateString[:19]) \
         for dateString \
-        in search_tags_in_soup(soup, "em", {"class" : "date"}, parsingType)
+        in search_tags_in_soup(soup, "em", {"class" : "date"}, parsingTypeContents)
     ]
     uploadTime = [
         convert_datetime_to_isoformat(date) \
@@ -21,10 +24,14 @@ def extract_post_list_from_response_text(text, dateRange):
         if check_date_range_availability(dateRange, date) == 'vaild'
     ]
     validPostCount = len(uploadTime)
+    if not validPostCount :
+        return 
+
+    print(f'\n {channelCode}, vaildPostCount : {validPostCount} \n 마지막 포스트 업로드 일자 : {uploadTime[-1]}')
     postSubject = extract_text_from_tags(postListInfo, "i", isMultiple)
     if postSubject :
         postSubject = [extract_korean_in_text(subject) for subject in postSubject]
-    postTitle = search_tags_in_soup(soup, "em", {"class" : "subject"}, parsingType)
+
     local_var = locals()
     valueList = [local_var[key][:validPostCount] for key in keyList]
 
@@ -34,17 +41,27 @@ def extract_post_list_from_response_text(text, dateRange):
     result = convert_same_length_merged_list_to_dict(keyList, valueList)
     return result
  
-def extract_post_contents_from_response_text(text):
-    parsingType = 'text' 
+def extract_post_contents_from_response_text(text, url):
     soup = convert_response_text_to_BeautifulSoup(text)
-    keyList = ['postText', 'contact', 'uploader']
-    postText = search_tags_in_soup(soup, "div", {"id" : "post_content"}, parsingType)
+    keyList = ['postText', 'contact', 'uploader', 'postImageUrl', 'postTitle']
+
+    view_top = search_tags_in_soup(soup, "div", {"id" : "view_top"}, parsingTypeNone)
+    postTitle = extract_text_from_tags(view_top, 'h3', isMultiple)
+    if postTitle:
+        postTitle = postTitle[0]
+
+    postText = search_tags_in_soup(soup, "div", {"id" : "post_content"}, parsingTypeText)
     if postText:
         postText = clean_text(' '.join(postText))
-    contact = search_tags_in_soup(soup, "dl", {"class" : "top-row row2"}, parsingType)
+    postContent = search_tags_in_soup(soup, "div", {"id" : "post_content"}, parsingTypeNone)
+    try :
+        postImageUrl = extract_attrs_from_tags(postContent, 'img', 'src', isMultiple)
+    except TypeError as e :
+        postImageUrl = []
+    contact = search_tags_in_soup(soup, "dl", {"class" : "top-row row2"}, parsingTypeText)
     if contact :
         contact = clean_text(contact[0])
-    uploader = search_tags_in_soup(soup, "dd", {"class" : "dept"}, parsingType)
+    uploader = search_tags_in_soup(soup, "dd", {"class" : "dept"}, parsingTypeText)
     if uploader :
         uploader = ', '.join(uploader)
     local_var = locals()

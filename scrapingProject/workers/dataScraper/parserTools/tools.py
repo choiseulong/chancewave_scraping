@@ -38,6 +38,12 @@ def extract_text_from_tags(items, tags, isMultiple=False):
         result = items.find(tags).text
     return result
 
+def check_children_tags_existence_in_parents_tags(parents_tags, children_tags):
+    if parents_tags.find(children_tags):
+        return 'exists'
+    else :
+        return 'not exists'
+
 
 def convert_same_length_merged_list_to_dict(keyList, valueList):
     result = []
@@ -64,6 +70,8 @@ def convert_datetime_string_to_actual_datetime(datetimeString):
             time = datetime.strptime(datetimeString, "%y-%m-%d")
     return time
 
+
+
 def convert_datetime_to_isoformat(postDate):
     if isinstance(postDate, datetime):
         return postDate.isoformat()
@@ -79,8 +87,8 @@ def extract_korean_in_text(text):
 def erase_html_tags(text):
     return re.sub('(<([^>]+)>)', '', text)
 
-def extract_english_in_text(text):
-    return ''.join(re.compile('[a-zA-Z]+').findall(text))
+def extract_groupCode(text):
+    return '_'.join(text.split('_')[:-1])
 
 def clean_text(text):
     text = text.replace('\xa0', ' ').replace('\n', ' ').replace('\t', ' ').replace('\r', '')
@@ -89,5 +97,7 @@ def clean_text(text):
 
 def convert_multiple_empty_erea_to_one_erea(text):
     return re.sub('\s+', ' ', text).strip()
+
+
 
   

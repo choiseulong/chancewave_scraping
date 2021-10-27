@@ -14,9 +14,9 @@ https://www.notion.so/mysterico/API-ef38832851e94bf781edddde026ea0ea
 url : scraping-start-with-date  
 method : post  
 body : {  
-    #optional  
+    #optional  (상대적 최근 날짜)이날부터
     "startDate" : "2021-10-26",  --> "%Y-%m-%d"  
-    #optional  
+    #optional  (상대적 과거 날짜)이날까지
     "endDate" : "2021-10-01",  --> "%Y-%m-%d"  
 }  
 

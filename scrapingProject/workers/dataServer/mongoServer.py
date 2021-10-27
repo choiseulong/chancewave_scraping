@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from .tools import *
+from datetime import datetime
 
 class MongoServer:
     def __init__(self):
@@ -16,24 +17,40 @@ class MongoServer:
         cursor = self.collection.find(query)
         return [i for i in cursor]
     
+    def delete_and_insert(self, targetQuery, newData):
+        self.collection.remove(targetQuery)
+        self.collection.insert_one(newData)
+    
     def insert_many(self, data):
         result = self.collection.insert_many(data)
         return result
     
     def reflect_scraped_data(self, collectedDataList):
         bulkInsertDataList = []
-        for data in collectedDataList:
-            contentsUrl = data['contentsUrl']
-            doc = self.fine_one({'contentsUrl' : contentsUrl})
-            if doc :
-                self.update_data_process(doc)
+        for newData in collectedDataList:
+            contentsUrl = newData['contentsUrl']
+            crc32 = make_crc(newData)
+            newData['crc'] = crc32
+            beforeData = self.fine_one({'contentsUrl' : contentsUrl})
+            if beforeData :
+                if beforeData['crc'] == newData['crc']:
+                    continue
+                elif beforeData['crc'] - newData['crc']:
+                    print(f'{contentsUrl} \n@@ 문서 업데이트 @@')
+                    self.update_data_process(newData, beforeData)
             else :
-                bulkInsertDataList.append(data)
+                bulkInsertDataList.append(newData)
         if bulkInsertDataList:
             self.insert_many(bulkInsertDataList)
 
-    def update_data_process(self, doc):
-        pass
+    def update_data_process(self, newData, beforeData):
+        now = datetime.now(timezone('Asia/Seoul')).isoformat()
+        newData['isupdated'] = not newData['isupdated']
+        beforeData['updatedTime'] = now
+        beforeDocId = beforeData['_id']
+        targetQuery = {'_id' : beforeDocId}
+        self.delete_and_insert(targetQuery, newData)
+        
 
 
 
