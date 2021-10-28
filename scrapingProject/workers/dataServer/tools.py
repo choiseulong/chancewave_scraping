@@ -4,10 +4,13 @@ from pytz import timezone
 
 def make_crc(data):
     text = ''
-    keyList = ['postTitle', 'postText', 'postSubject', 'contact']
+    keyList = ['postTitle', 'postText', 'postSubject', 'contact', 'extraInfoList']
     for key in keyList:
         if isinstance(data[key], str):
             text += data[key]
+        elif isinstance(data[key], list):
+            for infoElement in data[key]:
+                text += ', '.join(infoElement)
     if text :
         binaryText = convert_text_to_binary(text)
         crc32 = zlib.crc32(binaryText)

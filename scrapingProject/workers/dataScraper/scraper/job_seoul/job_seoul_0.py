@@ -16,7 +16,12 @@ class Scraper:
         self.scrapingTarget = []
         self.scrapingTargetContents = []
         self.collectedDataList = []
-        self.contentsUrl = 'https://job.seoul.go.kr/www/custmr_cntr/ntce/WwwNotice.do?method=getWwwNotice&noticeCmmnSeNo=1'
+        self.postUrl = 'https://job.seoul.go.kr/www/custmr_cntr/ntce/WwwNotice.do?method=getWwwNotice&noticeCmmnSeNo=1'
+        self.additinalHeaderElement = [['Content-Type', 'application/x-www-form-urlencoded']]
+
+        # function
+        self.extract_post_list_from_response_text = extract_post_list_from_response_text
+        self.extract_post_contents_from_response_text = extract_post_contents_from_response_text
     
     def set_headers(self, additionalKeyValue=None):
         headers = {
@@ -52,7 +57,7 @@ class Scraper:
     def post_list_scraping(self, channelCode, channelUrl):
         status, response = get_method_response(self.session, channelUrl)
         if status == 'ok':
-            self.scrapingTarget = extract_post_list_from_response_text(response.text, self.dateRange, channelCode)
+            self.scrapingTarget = self.extract_post_list_from_response_text(response.text, self.dateRange, channelCode)
         else :
             raise Exception(f'scraping channel {channelCode} post list error')
         
@@ -61,10 +66,10 @@ class Scraper:
         for target in self.scrapingTarget :
             data = target['contentsReqParams']
             dummpyHeaders = {}
-            self.set_headers([['Content-Type', 'application/x-www-form-urlencoded']])
-            status, response = post_method_response(self.session, self.contentsUrl, dummpyHeaders, data)
+            self.set_headers(self.additinalHeaderElement)
+            status, response = post_method_response(self.session, self.postUrl, dummpyHeaders, data)
             if status == 'ok':
-                targetContents = extract_post_contents_from_response_text(response.text)
+                targetContents = self.extract_post_contents_from_response_text(response.text)
                 scrapingTargetContents.append(targetContents)
         self.scrapingTargetContents = scrapingTargetContents
            
@@ -73,7 +78,7 @@ class Scraper:
         for postList, contents in zip(self.scrapingTarget, self.scrapingTargetContents):
             reqBody = postList['contentsReqParams']
             del postList['contentsReqParams']
-            postList.update({'contentsUrl': self.contentsUrl + json.dumps(reqBody)}) 
+            postList.update({'postUrl': self.postUrl + json.dumps(reqBody)}) 
             dataFrame = get_post_data_frame(channelCode, channelUrl)
             dataFrameWithPostList = enter_data_into_dataFrame(dataFrame, postList)
             dataFrameWithContents = enter_data_into_dataFrame(dataFrameWithPostList, contents)

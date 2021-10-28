@@ -7,8 +7,8 @@ from pytz import timezone
 app = FastAPI()
 
 now = datetime.now(timezone('Asia/Seoul'))
-todayString = now.strftime('%Y-%m-%d')
-before2WeekString = (now-timedelta(days=7)).strftime('%Y-%m-%d')
+todayString = now.strftime('%Y-%m-%d %H:%M:%S')
+before2WeekString = (now-timedelta(days=7)).strftime('%Y-%m-%d %H:%M:%S')
 
 class TargetDate(BaseModel):
     startDate : str = todayString # 오늘 부터
@@ -24,8 +24,18 @@ async def scraping_with_target_date(targetDate : TargetDate):
         return "날짜 입력 형식을 확인해 주세요"
 
 def check_input_date_vaildation(inputDate):
-    startDate = datetime.strptime(inputDate["startDate"], "%Y-%m-%d").isoformat()
-    endDate = datetime.strptime(inputDate["endDate"], "%Y-%m-%d").isoformat()
+    startDate = inputDate["startDate"]
+    endDate = inputDate["endDate"]
+
+    if ":" not in startDate:
+        startDate += " 23:59:59"
+
+    if ":" not in endDate:
+        endDate += " 00:00:01"
+
+    endDate = datetime.strptime(endDate, "%Y-%m-%d %H:%M:%S").isoformat()
+    startDate = datetime.strptime(startDate, "%Y-%m-%d %H:%M:%S").isoformat()
+
     if startDate >= endDate :
         return 'vaild'
     else :

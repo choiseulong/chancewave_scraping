@@ -67,7 +67,7 @@ class Scraper:
     def target_contents_scraping(self):
         scrapingTargetContents = []
         for target in self.scrapingTarget :
-            url = target['contentsUrl']
+            url = target['postUrl']
             status, response = get_method_response(self.session, url)
             if status == 'ok':
                 contentsResult = extract_post_contents_from_response_text(response.text, url)

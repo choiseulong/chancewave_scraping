@@ -31,6 +31,21 @@ def extract_attrs_from_tags(items, tags, attrs, isMultiple = False):
         result = items.find(tags)[attrs]
     return result 
 
+def extract_contetns_from_tags(items, tags, isMultiple = False):
+    if isMultiple :
+        result = [i.find(tags).contents for i in items]
+    else :
+        result = items.find(tags).contents
+    return result 
+
+def extract_children_tags_from_parents_tags(parentsTags, childrenTags, isMultiple = False):
+    if isMultiple :
+        result = parentsTags.findAll(childrenTags)
+    else :
+        result = parentsTags.find(childrenTags)
+    return result 
+
+
 def extract_text_from_tags(items, tags, isMultiple=False):
     if isMultiple:
         result = [item.find(tags).text for item in items]

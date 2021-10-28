@@ -1,5 +1,7 @@
 from workers.dataScraper.scraperTools.tools import *
 from workers.dataScraper.parserTools.tools import * 
+from datetime import datetime
+from pytz import timezone
 
 parsingTypeNone = None
 parsingTypeText = 'text' 
@@ -76,10 +78,87 @@ def extract_post_contents_from_response_text(text):
     if postText:
         postText = clean_text(' '.join(postText))
     else :
-        print(postTitle)
+        print(f'{postTitle}, postText not exists')
     local_var = locals()
     valueList = [local_var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     return result
 
+
+def other_extract_post_list_from_response_text(text, dateRange, channelCode = ''):
+    keyList = ['postUrl', 'postTitle', 'uploadedTime']
+    soup = convert_response_text_to_BeautifulSoup(text)
+    postListInfo = search_tags_in_soup(soup, "tr", {}, parsingTypeNone)
+    postUrl = []
+    postTitle = []
+    uploadedTime = []
+
+    if postListInfo:
+        postListInfo = postListInfo[1:]
+        for post in postListInfo:
+            url = extract_attrs_from_tags(post, 'a', 'href')[1:]
+            title = extract_text_from_tags(post, 'a').strip()
+            tdData = extract_children_tags_from_parents_tags(post, 'td', isMultiple)
+            recruitDateRange = tdData[2].text
+            studyDateRange = tdData[3].text
+            uploadTime = check_education_date_range_availability(recruitDateRange, studyDateRange)
+            if uploadTime :
+                postUrl.append(url)
+                postTitle.append(title)
+                uploadedTime.append(uploadTime)
+    validPostCount = len(uploadedTime)
+    if validPostCount:
+        result = collect_locals_data(locals(), keyList, validPostCount, channelCode)
+        result.append(search_jsessionid(soup))
+        return result
+
+def check_education_date_range_availability(recruitDateRange, studyDateRange): 
+    now = datetime.now(timezone('Asia/Seoul')).isoformat()
+    recruitDateStart = convert_datetime_string_to_isoformat_datetime(
+        recruitDateRange.split('~')[0].strip()
+    )
+    studyDateEnd = convert_datetime_string_to_isoformat_datetime(
+        studyDateRange.split('~')[1].strip()
+    )
+    if recruitDateStart <= now <= studyDateEnd:
+        return recruitDateStart
+    elif now <  recruitDateStart:
+        return now
+    elif studyDateEnd < now :
+        return 
+
+def search_jsessionid(soup):
+    formTag = search_tags_in_soup(soup, 'form', {'name' : 'rEdcLst'}, parsingTypeNone)
+    attrsAction = formTag[0]['action']
+    startIndex = attrsAction.find('jsessionid=')
+    endIndex = attrsAction.find('?method')
+    jsessionid = attrsAction[startIndex+len('jsessionid='):endIndex]
+    return jsessionid
+
+def other_extract_post_contents_from_response_text(text):
+    keyList = ['postText', 'extraInfoList']
+    soup = convert_response_text_to_BeautifulSoup(text)
+    trTags = search_tags_in_soup(soup, 'tr', {}, parsingTypeNone)
+    extraInfoList = []
+    for idx, tr in enumerate(trTags):
+        th = tr.find('th', attrs={'scope' : 'row'})
+        if not th :
+            continue
+        else :
+            thText = clean_text(th.text)
+            trText = clean_text(tr.find('td').text)
+            if thText and trText:
+                if thText == '교육내용':
+                    postText = trText
+                else :
+                    info = (thText, trText)
+                    extraInfoList.append(info)
+    local_var = locals()
+    valueList = [local_var[key] for key in keyList]
+    result = convert_merged_list_to_dict(keyList, valueList)
+    return result
+
+
+
     
+

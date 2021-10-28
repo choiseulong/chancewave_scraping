@@ -46,7 +46,7 @@ def get_post_data_frame(channelCode='', channelUrl=''):
     return {
         'channelCode' : channelCode,
         'channelUrl' : channelUrl,
-        'contentsUrl' : None,
+        'postUrl' : None,
         'createdTime' : now.isoformat(),
         'postTitle' : None,
         'postSubject' : None,
@@ -56,10 +56,12 @@ def get_post_data_frame(channelCode='', channelUrl=''):
         'viewCount' : None,
         'uploadedTime' : None,
         'uploader' : None,
+        'startDate' : None,
+        'endDate' : None,
         'isUpdate' : False,
         'updatedTime' : None,
         'crc' : None,
-        'extraInfo' : []
+        'extraInfoList' : []
     }
 
 def find_key_root(keyName) : 
@@ -87,9 +89,7 @@ def check_date_range_availability(dateRange, date):
     date = convert_datetime_string_to_isoformat_datetime(date)
     startDate = dateRange[0]
     endDate = dateRange[1]
-    if startDate >= date and endDate <= date:
+    if endDate <= date <= startDate:
         return 'vaild'
-    # if (startDate - date).days >= -1 and (date - endDate).days >= 0 :
-    #     return 'vaild'
     else :
-        return 
+        return 'not valid'

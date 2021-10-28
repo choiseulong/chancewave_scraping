@@ -7,11 +7,11 @@ parsingTypeNone = None
 isMultiple = True
 
 def extract_post_list_from_response_text(text, dateRange, channelCode):
-    keyList = ["contentsUrl", "uploadedTime", "postSubject"]
+    keyList = ["postUrl", "uploadedTime", "postSubject"]
 
     soup = convert_response_text_to_BeautifulSoup(text)
     postListInfo = search_tags_in_soup(soup, "div", {"class" : "item"})
-    contentsUrl = extract_attrs_from_tags(postListInfo, "a", "href", isMultiple)
+    postUrl = extract_attrs_from_tags(postListInfo, "a", "href", isMultiple)
     uploadedTime = [
         convert_datetime_string_to_isoformat_datetime(dateString[:19]) \
         for dateString \
