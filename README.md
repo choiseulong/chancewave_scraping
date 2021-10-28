@@ -20,13 +20,13 @@ body : {
     "endDate" : "2021-10-01",  --> "%Y-%m-%d"  
 }  
 
-# 처리된 ChannleCode : Url
-seoul_city_0 = https://www.seoul.go.kr/realmnews/in/list.do  
-seoul_city_1 = https://www.seoul.go.kr/thismteventfstvl/list.do  
-seoul_city_2 = https://www.seoul.go.kr/eventreqst/list.do  
-seoul_city_3 # 포스트가 각기 다른 채널로 이어져있어 추후 처리 예정 #
+# 처리된 ChannleCode 표기
+seoul_city_0  
+seoul_city_1  
+seoul_city_2  
+(seoul_city_3 - 포스트가 각기 다른 채널로 이어져있어 추후 처리 예정)  
 
-job_seoul_0 : https://job.seoul.go.kr/www/custmr_cntr/ntce/WwwNotice.do?method=selectWwwNoticeList&pageIndex={}  
-job_seoul_1 : https://job.seoul.go.kr/www/custmr_cntr/ntce/WwwNotice.do?method=selectNewsList&noticeCmmnSeNo=3&pageIndex={}
-
+job_seoul_0  
+job_seoul_1    
+job_seoul_2  
 
