@@ -21,11 +21,13 @@ body : {
 }  
 
 # 처리된 ChannleCode 표기
+서울시청  
 seoul_city_0  
 seoul_city_1  
 seoul_city_2  
 (seoul_city_3 - 포스트가 각기 다른 채널로 이어져있어 추후 처리 예정)  
 
+서울일자리센터  
 job_seoul_0  
 job_seoul_1    
 job_seoul_2  
