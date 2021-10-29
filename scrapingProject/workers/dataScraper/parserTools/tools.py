@@ -38,11 +38,18 @@ def extract_contetns_from_tags(items, tags, isMultiple = False):
         result = items.find(tags).contents
     return result 
 
-def extract_children_tags_from_parents_tags(parentsTags, childrenTags, isMultiple = False):
+def extract_children_tags_from_parents_tags(parentsTags, childrenTags, isMultiple = False, attrs={}):
     if isMultiple :
-        result = parentsTags.findAll(childrenTags)
+        if attrs: 
+            result = parentsTags.findAll(childrenTags, attrs=attrs)
+        else :
+            result = parentsTags.findAll(childrenTags)
+
     else :
-        result = parentsTags.find(childrenTags)
+        if attrs: 
+            result = parentsTags.find(childrenTags, attrs=attrs)
+        else:
+            result = parentsTags.find(childrenTags)
     return result 
 
 

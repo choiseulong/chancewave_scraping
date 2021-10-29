@@ -21,7 +21,6 @@ class Scraper(job_seoul_0_Scraper):
     def __init__(self, session):
         super().__init__(session)
         self.postUrl = 'https://job.seoul.go.kr/www/training/center_training'
-        # ./Www~~ 형식으로 postUrl 이 들어오니 [1:] 부터 기존에 url 에 붙여서 사용하면 될듯
         self.additinalHeaderElement = []
         self.extract_post_list_from_response_text = other_extract_post_list_from_response_text
         self.extract_post_contents_from_response_text = other_extract_post_contents_from_response_text

@@ -107,10 +107,12 @@ def other_extract_post_list_from_response_text(text, dateRange, channelCode = ''
                 postTitle.append(title)
                 uploadedTime.append(uploadTime)
     validPostCount = len(uploadedTime)
-    if validPostCount:
-        result = collect_locals_data(locals(), keyList, validPostCount, channelCode)
-        result.append(search_jsessionid(soup))
-        return result
+    if not validPostCount:
+        return
+    print(f'\n {channelCode}, vaildPostCount : {validPostCount} \n 마지막 포스트 업로드 일자 : {uploadedTime[-1]}')
+    result = collect_locals_data(locals(), keyList, validPostCount, channelCode)
+    result.append(search_jsessionid(soup))
+    return result
 
 def check_education_date_range_availability(recruitDateRange, studyDateRange): 
     now = datetime.now(timezone('Asia/Seoul')).isoformat()
@@ -136,23 +138,36 @@ def search_jsessionid(soup):
     return jsessionid
 
 def other_extract_post_contents_from_response_text(text):
-    keyList = ['postText', 'extraInfoList']
+    keyList = ['postText', 'extraInfoList', 'extraInfoList', 'postImageUrl'] 
     soup = convert_response_text_to_BeautifulSoup(text)
     trTags = search_tags_in_soup(soup, 'tr', {}, parsingTypeNone)
+    infoTags = search_tags_in_soup(soup, 'h2', {"class" : "tit1"}, parsingTypeText)
+    infoTable = search_tags_in_soup(soup, 'table', {"class" : "tb_bbs view"}, parsingTypeNone)
     extraInfoList = []
-    for idx, tr in enumerate(trTags):
-        th = tr.find('th', attrs={'scope' : 'row'})
-        if not th :
-            continue
-        else :
-            thText = clean_text(th.text)
-            trText = clean_text(tr.find('td').text)
-            if thText and trText:
-                if thText == '교육내용':
-                    postText = trText
-                else :
-                    info = (thText, trText)
-                    extraInfoList.append(info)
+    postImageUrl = []
+    postText = ''
+    for title, table in zip(infoTags, infoTable):
+        extraObj = {"infoTitle" : title}
+        trTags = extract_children_tags_from_parents_tags(table, "tr", isMultiple)
+        for tr in trTags:
+            th = tr.find('th', attrs={'scope' : 'row'})
+            if not th :
+                continue
+            else :
+                thText = clean_text(th.text)
+                trText = clean_text(tr.find('td').text)
+                if thText and trText:
+                    if thText == '교육내용':
+                        if trText:
+                            postText = trText
+                        imageTag = tr.find('img')
+                        if imageTag :
+                            imageUrl = imageTag['src']
+                            postImageUrl.append(imageUrl)
+                    else :
+                        extraObjKeysLength = len(list(extraObj.keys()))
+                        extraObj.update({f'info_{extraObjKeysLength}' : (thText, trText)})
+        extraInfoList.append(extraObj)
     local_var = locals()
     valueList = [local_var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)

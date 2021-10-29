@@ -25,21 +25,30 @@ class MongoServer:
         result = self.collection.insert_many(data)
         return result
     
+    def update_one(self, target_query, update_query) : 
+        self.collection.update_one(target_query, update_query)
+    
     def reflect_scraped_data(self, collectedDataList):
         bulkInsertDataList = []
+        print(len(collectedDataList))
         for newData in collectedDataList:
             postUrl = newData['postUrl']
             crc32 = make_crc(newData)
             newData['crc'] = crc32
             beforeData = self.fine_one({'postUrl' : postUrl})
+            print(beforeData, postUrl)
             if beforeData :
                 if beforeData['crc'] == newData['crc']:
+                    if beforeData['isUpdate']:
+                        postUrl = beforeData['postUrl']
+                        self.update_isUpdate_to_False(postUrl)
                     continue
                 elif beforeData['crc'] - newData['crc']:
                     print(beforeData['crc'], newData['crc'])
                     print(f'{postUrl} \n@@ 문서 업데이트 @@')
                     self.update_data_process(newData, beforeData)
             else :
+                print('append')
                 bulkInsertDataList.append(newData)
         if bulkInsertDataList:
             self.insert_many(bulkInsertDataList)
@@ -51,7 +60,11 @@ class MongoServer:
         beforeDocId = beforeData['_id']
         targetQuery = {'_id' : beforeDocId}
         self.delete_and_insert(targetQuery, newData)
-        
+    
+    def update_isUpdate_to_False(self, postUrl):
+        target_query = {'postUrl' : postUrl}
+        update_query= {'$set' : {'isUpdate' : False}}
+        self.update_one(target_query, update_query)
 
 
 
