@@ -10,8 +10,8 @@ def extract_post_list_from_response_text(text, dateRange, channelCode):
     keyList = ["postUrl", "uploadedTime", "postSubject"]
 
     soup = convert_response_text_to_BeautifulSoup(text)
-    postListInfo = search_tags_in_soup(soup, "div", {"class" : "item"})
-    postUrl = extract_attrs_from_tags(postListInfo, "a", "href", isMultiple)
+    postInfoList = search_tags_in_soup(soup, "div", {"class" : "item"})
+    postUrl = extract_attrs_from_tags(postInfoList, "a", "href", isMultiple)
     uploadedTime = [
         convert_datetime_string_to_isoformat_datetime(dateString[:19]) \
         for dateString \
@@ -23,7 +23,7 @@ def extract_post_list_from_response_text(text, dateRange, channelCode):
         return 
 
     print(f'\n {channelCode}, vaildPostCount : {validPostCount} \n 마지막 포스트 업로드 일자 : {uploadedTime[-1]}')
-    postSubject = extract_text_from_tags(postListInfo, "i", isMultiple)
+    postSubject = extract_text_from_tags(postInfoList, "i", isMultiple)
     if postSubject :
         postSubject = [extract_korean_in_text(subject) for subject in postSubject]
 

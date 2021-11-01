@@ -31,7 +31,7 @@ class Scraper:
         self.session = set_headers(self.session)
         pageCount = 1
         while True :
-            self.scrapingTarget = self.post_list_scraping(channelCode, pageCount, channelUrl)
+            self.post_list_scraping(channelCode, pageCount, channelUrl)
             if self.scrapingTarget :
                 self.target_contents_scraping()
                 self.collect_data(channelCode, channelUrl)
@@ -45,8 +45,7 @@ class Scraper:
         data = self.get_post_body_post_list_page(pageCount)
         status, response = post_method_response(self.session, channelUrl, data)
         if status == 'ok' :
-            result = extract_post_list_from_response_text(response.text, self.dateRange, channelCode)
-            return result
+            self.scrapingTarget = extract_post_list_from_response_text(response.text, self.dateRange, channelCode)
         else :
             raise Exception(f'scraping channel {channelCode} post list error')
 

@@ -30,13 +30,11 @@ class MongoServer:
     
     def reflect_scraped_data(self, collectedDataList):
         bulkInsertDataList = []
-        print(len(collectedDataList))
         for newData in collectedDataList:
             postUrl = newData['postUrl']
             crc32 = make_crc(newData)
             newData['crc'] = crc32
             beforeData = self.fine_one({'postUrl' : postUrl})
-            print(beforeData, postUrl)
             if beforeData :
                 if beforeData['crc'] == newData['crc']:
                     if beforeData['isUpdate']:
@@ -45,10 +43,9 @@ class MongoServer:
                     continue
                 elif beforeData['crc'] - newData['crc']:
                     print(beforeData['crc'], newData['crc'])
-                    print(f'{postUrl} \n@@ 문서 업데이트 @@')
+                    print(f'{postUrl}\n@@ 문서 업데이트 @@')
                     self.update_data_process(newData, beforeData)
             else :
-                print('append')
                 bulkInsertDataList.append(newData)
         if bulkInsertDataList:
             self.insert_many(bulkInsertDataList)

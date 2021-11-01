@@ -41,10 +41,6 @@ def filtering_channel_path_in_globals(Globals):
             channelCodeList.append({key : Globals[f'{globalVarKey}']})
     return channelCodeList
 
-def search_channel_path_in_globals(Globals, channelCode):
-    channelUrl = {channelCode : Globals[f'url_{channelCode}']}
-    return channelUrl
-
 def return_key_value(data):
     print(data)
     key = list(data.keys())[0]

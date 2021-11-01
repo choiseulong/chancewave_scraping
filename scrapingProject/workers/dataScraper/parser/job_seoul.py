@@ -11,27 +11,27 @@ def extract_post_list_from_response_text(text, dateRange, channelCode = ''):
     keyList = ["contentsReqParams", "uploadedTime", "postSubject"]
 
     soup = convert_response_text_to_BeautifulSoup(text)
-    postListInfo = search_tags_in_soup(soup, "tr", {}, parsingTypeNone)
-    if postListInfo:
-        postListInfo = postListInfo[1:]
+    postInfoList = search_tags_in_soup(soup, "tr", {}, parsingTypeNone)
+    if postInfoList:
+        postInfoList = postInfoList[1:]
     
-    isExists = check_children_tags_existence_in_parents_tags(postListInfo[0], 'p')
+    isExists = check_children_tags_existence_in_parents_tags(postInfoList[0], 'p')
     if isExists == 'exists':
-        postSubject = ['공지' if len(data.attrs) else data.find('p').text for data in postListInfo]
+        postSubject = ['공지' if len(data.attrs) else data.find('p').text for data in postInfoList]
     elif isExists == 'not exists':
-        postSubject = [None for _ in range(len(postListInfo))]
+        postSubject = [None for _ in range(len(postInfoList))]
 
     uploadedTime = [
         convert_datetime_string_to_isoformat_datetime(
             tr.findAll('td')[-1].text.replace('.', '-')
         )
         for tr \
-        in postListInfo \
+        in postInfoList \
         if check_date_range_availability(dateRange, tr.findAll('td')[-1].text.replace('.', '-')) == 'vaild'
     ]
     contentsReqParams = [
         convert_bs4_tag_to_actual_post_body(data)
-        for data in postListInfo
+        for data in postInfoList
     ]
     validPostCount = len(uploadedTime)
     if validPostCount == 0 :
@@ -88,14 +88,14 @@ def extract_post_contents_from_response_text(text):
 def other_extract_post_list_from_response_text(text, dateRange, channelCode = ''):
     keyList = ['postUrl', 'postTitle', 'uploadedTime']
     soup = convert_response_text_to_BeautifulSoup(text)
-    postListInfo = search_tags_in_soup(soup, "tr", {}, parsingTypeNone)
+    postInfoList = search_tags_in_soup(soup, "tr", {}, parsingTypeNone)
     postUrl = []
     postTitle = []
     uploadedTime = []
 
-    if postListInfo:
-        postListInfo = postListInfo[1:]
-        for post in postListInfo:
+    if postInfoList:
+        postInfoList = postInfoList[1:]
+        for post in postInfoList:
             url = extract_attrs_from_tags(post, 'a', 'href')[1:]
             title = extract_text_from_tags(post, 'a').strip()
             tdData = extract_children_tags_from_parents_tags(post, 'td', isMultiple)

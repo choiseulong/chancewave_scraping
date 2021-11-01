@@ -26,7 +26,7 @@ def search_tags_in_soup(soup, tags, attrs={}, parsingType=''):
 
 def extract_attrs_from_tags(items, tags, attrs, isMultiple = False):
     if isMultiple :
-        result = [i.find(tags)[attrs] for i in items]
+        result = [item.find(tags)[attrs] for item in items]
     else :
         result = items.find(tags)[attrs]
     return result 
@@ -60,7 +60,12 @@ def extract_text_from_tags(items, tags, isMultiple=False):
         result = items.find(tags).text
     return result
 
-def check_children_tags_existence_in_parents_tags(parents_tags, children_tags):
+def check_children_tags_existence_in_parents_tags(parents_tags, children_tags, attrs={}):
+    if attrs :
+        if parents_tags.find(children_tags, attrs = attrs):
+            return 'exists'
+        else :
+            return 'not exists'
     if parents_tags.find(children_tags):
         return 'exists'
     else :
@@ -90,6 +95,11 @@ def convert_datetime_string_to_isoformat_datetime(datetimeString):
             time = datetime.strptime(datetimeString, "%Y-%m-%d").isoformat()
         except ValueError :
             time = datetime.strptime(datetimeString, "%y-%m-%d").isoformat()
+    elif datetimeString.count('.') == 2 and datetimeString.count(':') != 2:
+        try :
+            time = datetime.strptime(datetimeString, "%Y.%m.%d").isoformat()
+        except ValueError :
+            time = datetime.strptime(datetimeString, "%y.%m.%d").isoformat()
     return time
 
 def convert_datetime_to_isoformat(postDate):
