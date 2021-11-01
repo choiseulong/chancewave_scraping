@@ -28,7 +28,7 @@ class Scraper(job_seoul_0_Scraper):
     def target_contents_scraping(self):
         scrapingTargetContents = []
         self.additinalHeaderElement.append(['Cookie', 'JSESSIONID_1='+self.scrapingTarget[-1]])
-        self.set_headers(self.additinalHeaderElement)
+        self.session = set_headers(self.session, self.additinalHeaderElement)
         del self.scrapingTarget[-1]
         for target in self.scrapingTarget :
             postUrl = target['postUrl']

@@ -12,22 +12,12 @@ from workers.dataServer.mongoServer import MongoServer
 '''
 class Scraper:
     def __init__(self, session):
-        self.headers = ''
         self.scrapingTarget = []
         self.scrapingTargetContents = []
         self.collectedDataList = []
         self.session = session
         self.dateRange = []
         self.mongo = ''
-
-    def set_headers(self, additionalKeyValue=None):
-        headers = {
-            "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36"
-        }
-        if additionalKeyValue :
-            for key, value in additionalKeyValue:
-                headers.update({key:value})
-        self.session.headers = headers
     
     def get_post_body_post_list_page(self, num=1):
         data = {
@@ -35,13 +25,10 @@ class Scraper:
         }
         return data
     
-    def set_env(self, dateRange):
+    def scraping_process(self, channelCode, channelUrl, dateRange):
         self.mongo = MongoServer()
         self.dateRange = dateRange
-        self.set_headers()
-
-    def scraping_process(self, channelCode, channelUrl, dateRange):
-        self.set_env(dateRange)
+        self.session = set_headers(self.session)
         pageCount = 1
         while True :
             self.scrapingTarget = self.post_list_scraping(channelCode, pageCount, channelUrl)
@@ -53,7 +40,6 @@ class Scraper:
             else:
                 print(f'{channelCode}, 유효한 포스트 미존재 지점에 도달하여 스크래핑을 종료합니다')
                 break
-            
     
     def post_list_scraping(self, channelCode, pageCount, channelUrl):
         data = self.get_post_body_post_list_page(pageCount)

@@ -5,6 +5,16 @@ import datetime as DateTime
 from pytz import timezone
 from ..parserTools.tools import *
 
+def set_headers(session, additionalKeyValue=None):
+    headers = {
+        "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36"
+    }
+    if additionalKeyValue :
+        for keyValue in additionalKeyValue:
+            headers.update({keyValue[0]:keyValue[1]})
+    session.headers = headers
+    return session
+
 def get_method_response(session, url, header={}):
     response = session.get(url, headers=header)
     status = 'fail'

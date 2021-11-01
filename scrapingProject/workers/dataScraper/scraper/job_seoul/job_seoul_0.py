@@ -1,4 +1,5 @@
 from workers.dataScraper.parser.job_seoul import *
+from workers.dataScraper.scraperTools.tools import *
 from workers.dataServer.mongoServer import MongoServer
 import json
 
@@ -22,19 +23,6 @@ class Scraper:
         # function
         self.extract_post_list_from_response_text = extract_post_list_from_response_text
         self.extract_post_contents_from_response_text = extract_post_contents_from_response_text
-    
-    def set_headers(self, additionalKeyValue=None):
-        headers = {
-            "User-Agent" : ""
-        }
-        if additionalKeyValue :
-            for keyValue in additionalKeyValue:
-                key = keyValue[0]
-                value = keyValue[1]
-
-                headers.update({key:value})
-        self.session.headers = headers
-        return headers
 
     def scraping_process(self, channelCode, channelUrl, dateRange):
         self.mongo = MongoServer()
@@ -42,7 +30,7 @@ class Scraper:
         pageCount = 1
 
         while True :
-            self.set_headers()
+            self.session = set_headers(self.session)
             channelUrlWithPageCount = channelUrl.format(pageCount)
             self.post_list_scraping(channelCode, channelUrlWithPageCount)
             if self.scrapingTarget :
@@ -66,7 +54,7 @@ class Scraper:
         for target in self.scrapingTarget :
             data = target['contentsReqParams']
             dummpyHeaders = {}
-            self.set_headers(self.additinalHeaderElement)
+            self.session = set_headers(self.session, self.additinalHeaderElement)
             status, response = post_method_response(self.session, self.postUrl, dummpyHeaders, data)
             if status == 'ok':
                 targetContents = self.extract_post_contents_from_response_text(response.text)
