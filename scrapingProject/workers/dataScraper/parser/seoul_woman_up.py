@@ -22,6 +22,9 @@ def extract_post_list_from_response_text(text, dateRange, channelCode, postUrlFr
             if check_children_tags_existence_in_parents_tags(postInfo, 'th', {"scope" : "col"}) == 'not exists'
         ]
     tdIdxInfo = {1:"postTitle", 2:"uploader", 3:"uploadedTime", 5:"viewCount"}
+    if '1' in channelCode :
+        tdIdxInfo = {0:"uploader", 1:"postTitle", 2:"uploadedTime", 4:"viewCount"}
+
     for postInfo in postInfoList:
         tdList = extract_children_tags_from_parents_tags(postInfo, 'td', isMultiple)
         for idx, td in enumerate(tdList):
@@ -29,15 +32,16 @@ def extract_post_list_from_response_text(text, dateRange, channelCode, postUrlFr
                 break
             if idx in tdIdxInfo.keys():
                 locals()[tdIdxInfo[idx]].append(clean_text(td.text))
-
     uploadedTimeCheckList = [
         True if check_date_range_availability(dateRange, dateString) == 'vaild' else False \
         for dateString \
         in uploadedTime
     ]
+    if len(postInfoList) > 10 :
+        postInfoList = postInfoList[5:]
     postUrl = [
         postUrlFrame.format(extract_post_number_from_bs4_tag(tag))
-        for tag in postInfoList[5:]
+        for tag in postInfoList
     ]
     uploadedTime = [
         convert_datetime_string_to_isoformat_datetime(dateString) \
