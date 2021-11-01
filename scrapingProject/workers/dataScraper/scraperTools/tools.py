@@ -15,18 +15,18 @@ def set_headers(session, additionalKeyValue=None):
     session.headers = headers
     return session
 
-def get_method_response(session, url, header={}):
-    response = session.get(url, headers=header)
+def get_method_response(session, url):
+    response = session.get(url)
     status = 'fail'
     if response.status_code == 200 :
         status = 'ok'
     sleep(1)
     return status, response
 
-def post_method_response(session, url, header={}, data={}, jsonize=False):
+def post_method_response(session, url, data={}, jsonize=False):
     if jsonize and data:
         data = json.dumps(data)
-    response = session.post(url, headers=header, data=data)
+    response = session.post(url, data=data)
     status = 'fail'
     if response.status_code == 200 :
         status = 'ok'

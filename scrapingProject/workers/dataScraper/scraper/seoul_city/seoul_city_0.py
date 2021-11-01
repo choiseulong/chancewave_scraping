@@ -43,7 +43,7 @@ class Scraper:
     
     def post_list_scraping(self, channelCode, pageCount, channelUrl):
         data = self.get_post_body_post_list_page(pageCount)
-        status, response = post_method_response(self.session, channelUrl, {}, data)
+        status, response = post_method_response(self.session, channelUrl, data)
         if status == 'ok' :
             result = extract_post_list_from_response_text(response.text, self.dateRange, channelCode)
             return result
