@@ -50,7 +50,7 @@ class ScrapingManager:
             groupCode = extract_groupCode(channelCode)
             if groupCode in ['seoul_city', 'job_seoul']:
                 continue
-            if channelCode in ['seoul_woman_up_0']:
+            if channelCode in ['seoul_woman_up_0', 'seoul_woman_up_1']:
                 continue
 
             session = self.get_requests_session()

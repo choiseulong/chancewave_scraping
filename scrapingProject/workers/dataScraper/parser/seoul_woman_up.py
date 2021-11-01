@@ -106,3 +106,52 @@ def extract_values_list_in_both_sides_bracket_text(text):
     text = text[startIdx+1 : endIdx]
     valueList = [i.replace("'", "") for i in text.split(',')]
     return valueList[0]
+
+def extract_post_contents_from_response_text_other(text, dateRange):
+    keyList = ['postTitle', 'uploader', 'postSubject', 'extraInfoList', 'startDate2', 'endDate2']
+    postTitle = []
+    uploader = []
+    postSubject = []
+    extraInfoList = []
+    startDate2 = []
+    endDate2 = []
+
+    idxInfo = {0:"postSubject", 1:"postSubject", 2:"extraInfoList", 3:"startDate2", 4:"endDate2", 5:"extraInfoList", 6:"extraInfoList"}
+
+    soup = convert_response_text_to_BeautifulSoup(text)
+    div_lisBox = search_tags_in_soup(soup, 'div', {'class' : 'lis_box'})
+    div_items = extract_children_tags_from_parents_tags(div_lisBox[0], 'div', isMultiple)
+    for item in div_items:
+        for item_idx, item_content in enumerate(item.contents):
+            extraInfo = []
+            subject = []
+            if item_idx == 1 :
+                dt = item_content.find('dt')
+                dt_text = dt.text
+                difficulty = clean_text(dt.find('b', {"class" : "fourb"}).text)
+                extraInfo.append(['필요능력정도', difficulty])
+                dt_text = clean_text(dt_text.replace(difficulty, ''))
+                postTitle.append(dt_text)
+                span_text = [clean_text(span.text) for span in item_content.findAll('span')]
+                em_text = [clean_text(em.text) for em in item_content.findAll('em')]
+                contentsCount = 0
+                for i,j in zip(span_text, em_text):
+                    if contentsCount in idxInfo.keys():
+                        if idxInfo[contentsCount] == 'extraInfoList':
+                            extraInfo.append([i,j])
+                        elif idxInfo[contentsCount] == 'postSubject':
+                            subject.append(j)
+                        else :
+                            locals()[idxInfo[contentsCount]].append(j)
+                    contentsCount += 1
+                postSubject.append('-'.join(subject))
+                extraInfoList.append(extraInfo)
+            if item_idx == 3:
+                uploader.append(clean_text(item_content.text))
+            else :
+                print(item_idx, item_content)
+    local_var = locals()
+    valueList = [local_var[key] for key in keyList]
+    result = convert_merged_list_to_dict(keyList, valueList)
+    print(result)
+

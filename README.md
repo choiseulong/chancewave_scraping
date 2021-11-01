@@ -36,6 +36,9 @@ job_seoul_0
 job_seoul_1    
 job_seoul_2  
 
+서울우먼업
+seoul_woman_up_0
+seoul_woman_up_1
 
 
 ## issue

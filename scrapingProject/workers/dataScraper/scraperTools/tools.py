@@ -64,6 +64,8 @@ def get_post_data_frame(channelCode='', channelUrl=''):
         'uploader' : None,
         'startDate' : None,
         'endDate' : None,
+        'startDate2' : None,
+        'endDate2' : None,
         'isUpdate' : False,
         'updatedTime' : None,
         'crc' : None,
