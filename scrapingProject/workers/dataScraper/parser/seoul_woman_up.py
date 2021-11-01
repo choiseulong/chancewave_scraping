@@ -53,7 +53,7 @@ def extract_post_list_from_response_text(text, dateRange, channelCode, postUrlFr
     ]
     for i in [len(valueList) for valueList in valueList]:
         if i != validPostCount:
-            raise Exception("maybe channel a[0,1,2], data parsing error")
+            raise Exception(f"maybe channel {channelCode}, data parsing error")
     result = convert_same_length_merged_list_to_dict(keyList, valueList)
     return result
 
