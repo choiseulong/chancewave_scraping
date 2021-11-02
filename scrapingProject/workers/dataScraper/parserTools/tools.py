@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
+import xmltodict
 import re
 
 def convert_response_text_to_BeautifulSoup(responseText):
@@ -128,6 +129,7 @@ def clean_text(text):
 def convert_multiple_empty_erea_to_one_erea(text):
     return re.sub('\s+', ' ', text).strip()
 
-
+def convert_response_content_to_dict(content):
+    return xmltodict.parse(content)
 
   
