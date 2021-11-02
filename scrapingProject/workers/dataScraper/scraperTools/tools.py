@@ -42,7 +42,6 @@ def filtering_channel_path_in_globals(Globals):
     return channelCodeList
 
 def return_key_value(data):
-    print(data)
     key = list(data.keys())[0]
     value = data[key]
     return key, value
@@ -94,10 +93,13 @@ def enter_data_into_dataFrame(dataFrame, result):
     return dataFrame
 
 def check_date_range_availability(dateRange, date):
-    date = convert_datetime_string_to_isoformat_datetime(date)
+    try :
+        convertedDate = convert_datetime_string_to_isoformat_datetime(date)
+    except ValueError :
+        convertedDate = date
     startDate = dateRange[0]
     endDate = dateRange[1]
-    if endDate <= date <= startDate:
+    if endDate <= convertedDate <= startDate:
         return 'vaild'
     else :
         return 'not valid'

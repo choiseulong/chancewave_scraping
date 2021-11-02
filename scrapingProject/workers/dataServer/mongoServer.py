@@ -28,6 +28,9 @@ class MongoServer:
     def update_one(self, target_query, update_query) : 
         self.collection.update_one(target_query, update_query)
     
+    def remove(self, channelCode):
+        self.collection.remove({'channelCode' : channelCode})
+    
     def reflect_scraped_data(self, collectedDataList):
         bulkInsertDataList = []
         for newData in collectedDataList:

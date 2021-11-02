@@ -90,7 +90,6 @@ def extract_post_contents_from_response_text(text, channelMainUrl):
     local_var = locals()
     valueList = [local_var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
-    print(postImageUrl)
     return result
 
 
@@ -108,7 +107,7 @@ def extract_values_list_in_both_sides_bracket_text(text):
     return valueList[0]
 
 def extract_post_contents_from_response_text_other(text, dateRange):
-    keyList = ['postTitle', 'uploader', 'postSubject', 'extraInfoList', 'startDate2', 'endDate2']
+    keyList = ['postTitle', 'uploader', 'postSubject', 'extraInfoList', 'startDate2', 'endDate2', 'uploadTime']
     postTitle = []
     uploader = []
     postSubject = []
@@ -128,7 +127,7 @@ def extract_post_contents_from_response_text_other(text, dateRange):
             if item_idx == 1 :
                 dt = item_content.find('dt')
                 dt_text = dt.text
-                difficulty = clean_text(dt.find('b', {"class" : "fourb"}).text)
+                difficulty = clean_text(dt.find('b').text)
                 extraInfo.append(['필요능력정도', difficulty])
                 dt_text = clean_text(dt_text.replace(difficulty, ''))
                 postTitle.append(dt_text)
@@ -148,10 +147,40 @@ def extract_post_contents_from_response_text_other(text, dateRange):
                 extraInfoList.append(extraInfo)
             if item_idx == 3:
                 uploader.append(clean_text(item_content.text))
-            else :
-                print(item_idx, item_content)
+    uploadTime = [
+        check_event_date_range_availability(startDate, endDate) if check_event_date_range_availability(startDate, endDate) \
+        else False \
+        for startDate, endDate \
+        in zip(startDate2, endDate2) \
+        if check_event_date_range_availability(startDate, endDate)
+    ]
+    uploadTime = [
+        date if check_date_range_availability(dateRange, date) == 'vaild' \
+        else False \
+        for date \
+        in uploadTime\
+    ]
     local_var = locals()
-    valueList = [local_var[key] for key in keyList]
-    result = convert_merged_list_to_dict(keyList, valueList)
-    print(result)
+    valueList = [
+        [i for idx, i in enumerate(local_var[key]) if uploadTime[idx]] \
+        for key \
+        in keyList
+    ]
+    result = convert_same_length_merged_list_to_dict(keyList, valueList)
+    return result
 
+
+def check_event_date_range_availability(recruitDateRange, studyDateRange): 
+    now = datetime.now(timezone('Asia/Seoul')).isoformat()
+    recruitDateStart = convert_datetime_string_to_isoformat_datetime(
+        recruitDateRange.split('~')[0].strip()
+    )
+    studyDateEnd = convert_datetime_string_to_isoformat_datetime(
+        studyDateRange.split('~')[1].strip()
+    )
+    if recruitDateStart <= now <= studyDateEnd:
+        return recruitDateStart
+    elif now <  recruitDateStart:
+        return now
+    elif studyDateEnd < now :
+        return 

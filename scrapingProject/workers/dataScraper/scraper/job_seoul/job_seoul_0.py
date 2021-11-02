@@ -63,6 +63,7 @@ class Scraper:
     def collect_data(self, channelCode, channelUrl):
         collectedDataList = []
         for postList, contents in zip(self.scrapingTarget, self.scrapingTargetContents):
+            print(postList, contents)
             reqBody = postList['contentsReqParams']
             del postList['contentsReqParams']
             postList.update({'postUrl': self.postUrl + json.dumps(reqBody)}) 

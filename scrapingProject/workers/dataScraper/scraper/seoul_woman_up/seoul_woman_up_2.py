@@ -10,6 +10,7 @@ class Scraper(default_scraper):
 
     def scraping_process(self, channelCode, channelUrl, dateRange):
         self.mongo = MongoServer()
+        self.mongo.remove(channelCode)
         self.dateRange = dateRange
         self.session = set_headers(self.session)
         pageCount = 1
@@ -17,16 +18,24 @@ class Scraper(default_scraper):
             channelUrlWithPageCount = channelUrl.format(pageCount)
             self.target_contents_scraping(channelUrlWithPageCount)
             if self.scrapingTargetContents :
-                self.mongo.reflect_scraped_data(self.scrapingTarget)
+                self.collect_data(channelCode, channelUrl)
+                self.mongo.reflect_scraped_data(self.collectedDataList)
                 pageCount += 1
             else:
                 print(f'{channelCode}, 유효한 포스트 미존재 지점에 도달하여 스크래핑을 종료합니다')
             break
 
     def target_contents_scraping(self, channelUrlWithPageCount):
-        scrapingTargetContents = []
         status, response = get_method_response(self.session, channelUrlWithPageCount)
         if status == 'ok':
-            targetContents = self.extract_post_contents_from_response_text(response.text, self.dateRange)
-            scrapingTargetContents.append(targetContents)
-        self.scrapingTargetContents = scrapingTargetContents
+            self.scrapingTargetContents = self.extract_post_contents_from_response_text(response.text, self.dateRange)
+    
+    def collect_data(self, channelCode, channelUrl):
+        collectedDataList = []
+        for contents in self.scrapingTargetContents:
+            dataFrame = get_post_data_frame(channelCode, channelUrl)
+            dataFrameWithContents = enter_data_into_dataFrame(dataFrame, contents)
+            collectedDataList.append(dataFrameWithContents)
+        self.collectedDataList = collectedDataList
+        
+        
