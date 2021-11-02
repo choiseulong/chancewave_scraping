@@ -13,7 +13,8 @@ class Scraper:
         self.session = session
         self.dateRange = []
         self.mongo = ''
-        self.postUrl = ''
+
+        self.extract_post_list_from_response_text = extract_post_list_from_response_text
 
     def scraping_process(self, channelCode, channelUrl, dateRange):
         self.mongo = MongoServer()
@@ -33,7 +34,7 @@ class Scraper:
     def post_list_scraping(self, channelCode, channelUrlWithPageCount):
         status, response = get_method_response(self.session, channelUrlWithPageCount)
         if status == 'ok':
-            self.scrapingTarget = extract_post_list_from_response_text(response.content, self.dateRange, channelCode)
+            self.scrapingTarget = self.extract_post_list_from_response_text(response.content, self.dateRange, channelCode)
         else :
             raise Exception(f'scraping channel {channelCode} post list error')
 

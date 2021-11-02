@@ -1,6 +1,7 @@
 from workers.dataScraper.scraperTools.tools import *
 from workers.dataScraper.parserTools.tools import * 
 
+
 def extract_post_list_from_response_text(content, dateRange, channelCode):
     keyList = ['postTitle', 'postUrl', 'uploadedTime', "uploader", "postSubject", "postText", "contact"]
     local_var = locals()
@@ -23,8 +24,6 @@ def extract_post_list_from_response_text(content, dateRange, channelCode):
                 except ValueError :
                     local_var[linkInfo[itemKey]].append(item[itemKey])
                     checkedValueList.append(linkInfo[itemKey])
-
-                    erase_html_tags
     local_var['postText'] = [erase_html_tags(i) for i in local_var['postText']]
     uploadedTime = [
         date if check_date_range_availability(dateRange, date) == 'vaild' \
@@ -44,3 +43,6 @@ def extract_post_list_from_response_text(content, dateRange, channelCode):
     ]
     result = convert_same_length_merged_list_to_dict(keyList, valueList)
     return result
+
+def extract_post_list_from_response_text_other(jsonData, dateRange, channelCode):
+    pass
