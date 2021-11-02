@@ -138,7 +138,7 @@ def search_jsessionid(soup):
     return jsessionid
 
 def other_extract_post_contents_from_response_text(text):
-    keyList = ['postText', 'extraInfoList', 'extraInfoList', 'postImageUrl'] 
+    keyList = ['postText', 'extraInfoList', 'postImageUrl'] 
     soup = convert_response_text_to_BeautifulSoup(text)
     trTags = search_tags_in_soup(soup, 'tr', {}, parsingTypeNone)
     infoTags = search_tags_in_soup(soup, 'h2', {"class" : "tit1"}, parsingTypeText)
