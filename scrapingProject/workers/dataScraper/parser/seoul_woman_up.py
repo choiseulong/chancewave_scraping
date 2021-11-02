@@ -122,13 +122,15 @@ def extract_post_contents_from_response_text_other(text, dateRange):
     div_items = extract_children_tags_from_parents_tags(div_lisBox[0], 'div', isMultiple)
     for item in div_items:
         for item_idx, item_content in enumerate(item.contents):
-            extraInfo = []
+            extraInfo = {}
             subject = []
             if item_idx == 1 :
                 dt = item_content.find('dt')
                 dt_text = dt.text
                 difficulty = clean_text(dt.find('b').text)
-                extraInfo.append(['필요능력정도', difficulty])
+                extraInfo.update({'infoTitle' : '교육 프로그램'})
+                
+                extraInfo.update({f'info_{len(extraInfo)}' : ['필요능력정도',difficulty]})
                 dt_text = clean_text(dt_text.replace(difficulty, ''))
                 postTitle.append(dt_text)
                 span_text = [clean_text(span.text) for span in item_content.findAll('span')]
@@ -137,7 +139,7 @@ def extract_post_contents_from_response_text_other(text, dateRange):
                 for i,j in zip(span_text, em_text):
                     if contentsCount in idxInfo.keys():
                         if idxInfo[contentsCount] == 'extraInfoList':
-                            extraInfo.append([i,j])
+                            extraInfo.update({f'info_{len(extraInfo)}':[i,j]})
                         elif idxInfo[contentsCount] == 'postSubject':
                             subject.append(j)
                         else :
