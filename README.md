@@ -41,6 +41,11 @@ seoul_woman_up_0
 seoul_woman_up_1  
 seoul_woman_up_2  
 
+서울부동산정보광장  
+seoul_real_estate_info_0  
+
+서울특별시평생학습포털  
+seoul_forever_educateion_portal_0  
 
 
 ## issue
