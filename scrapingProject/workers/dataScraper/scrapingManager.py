@@ -52,8 +52,8 @@ class ScrapingManager:
                 'seoul_city', 'job_seoul', 'seoul_woman_up', 
                 'seoul_real_estate_info', 'seoul_forever_educateion_portal'
             ]: continue
-            # if channelCode in []:
-            #     continue
+            if channelCode in ['seoul_welfare_portal_0']:
+                continue
 
             session = self.get_requests_session()
             scraper = importlib.import_module(f'workers.dataScraper.scraper.{groupCode}.{channelCode}').Scraper(session)

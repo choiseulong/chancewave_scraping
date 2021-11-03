@@ -10,7 +10,7 @@ class Scraper(default_scraper):
 
     def scraping_process(self, channelCode, channelUrl, dateRange):
         self.mongo = MongoServer()
-        self.mongo.remove(channelCode)
+        self.mongo.remove_channel_data(channelCode)
         self.dateRange = dateRange
         self.session = set_headers(self.session)
         pageCount = 1

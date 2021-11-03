@@ -48,9 +48,13 @@ seoul_real_estate_info_0
 seoul_forever_educateion_portal_0  
 
 서울복지포털  
-https://wis.seoul.go.kr/news/welfareNews.do  
+seoul_forever_educateion_portal_0  
+seoul_forever_educateion_portal_1  
 
 ## issue
-첫 페이지 포스트 업로드 일자가 모두 시작 시점이 벗어날 경우 중지되지 않고 해당 일자를 찾을때까지 넘어가는것을 처리해야하지 않을까  
-
+첫 페이지 포스트 업로드 일자가 모두 시작 시점이 벗어날 경우 중지되지 않고 해당 일자를 찾을때까지 넘어가는것을 처리해야하지 않을까    
+posturl 없을 시 문구 not exists {channelCode} post url 으로 설정하게끔 수정  
+ 
+## fixed
 postUrl 특정이 불가할 시 해당 채널은 모든 데이터를 재수집 하는 방향으로 설정함.
+

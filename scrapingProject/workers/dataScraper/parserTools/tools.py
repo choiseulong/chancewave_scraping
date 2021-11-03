@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from jsonpath_ng import parse as jsonpath_parse
 from datetime import datetime
 import xmltodict
 import re
@@ -122,8 +123,16 @@ def extract_groupCode(text):
     return '_'.join(text.split('_')[:-1])
 
 def clean_text(text):
-    text = text.replace('\xa0', ' ').replace('\n', ' ').replace('\t', ' ').replace('\r', '')
+    text = text\
+        .replace('\xa0', ' ')\
+        .replace('\n', ' ')\
+        .replace('\t', ' ')\
+        .replace('\r', '')\
+        .replace('&nbsp;', ' ')\
+        .replace('&lsquo;', '')\
+        .replace('&rsquo;', '')
     text = convert_multiple_empty_erea_to_one_erea(text)
+    # re.sub('\xao|\n|\t|')
     return text
 
 def convert_multiple_empty_erea_to_one_erea(text):
@@ -132,4 +141,17 @@ def convert_multiple_empty_erea_to_one_erea(text):
 def convert_response_content_to_dict(content):
     return xmltodict.parse(content)
 
+def search_value_in_json_data_using_path(jsonData, path, number_of_data='multiple', reverse = False):
+    tartget_data = jsonpath_parse(path).find(jsonData)
+    if tartget_data:
+        if number_of_data == 'solo':
+            result = tartget_data[0].value
+            if reverse :
+                result = tartget_data[-1].value
+        else :
+            result = [ _.value for _ in tartget_data]
+        return result
+    else :
+        print(path, '- value not exists')
+        return
   

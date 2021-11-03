@@ -18,19 +18,14 @@ class Scraper(default_scraper):
 
     def scraping_process(self, channelCode, channelUrl, dateRange):
         self.mongo = MongoServer()
+        self.mongo.remove_channel_data(channelCode)
         self.dateRange = dateRange
-        self.session = set_headers([['Content-Type', 'application/json; charset=UTF-8']])
-        pageCount = 1
-        while True :
-            self.post_list_scraping(channelCode, channelUrl)
-            if self.scrapingTarget :
-                self.collect_data(channelCode, channelUrl)
-                self.mongo.reflect_scraped_data(self.collectedDataList)
-                pageCount += 1
-            else :
-                print(f'{channelCode}, 유효한 포스트 미존재 지점에 도달하여 스크래핑을 종료합니다')
-                break
-
+        self.session = set_headers(self.session, [['Content-Type', 'application/json; charset=UTF-8']])
+        self.post_list_scraping(channelCode, channelUrl)
+        if self.collectedDataList:
+            self.mongo.reflect_scraped_data(self.collectedDataList)
+        else :
+            print(f'{channelCode}, 유효한 포스트 미존재로 스크래핑을 종료합니다')
 
     def post_list_scraping(self, channelCode, channelUrl):
         data = json.dumps(
@@ -38,6 +33,6 @@ class Scraper(default_scraper):
         )
         status, response = post_method_response(self.session, channelUrl, data)
         if status == 'ok':
-            self.scrapingTarget = self.extract_post_list_from_response_text(response.json(), self.dateRange, channelCode)
+            self.collectedDataList = self.extract_post_list_from_response_text(response.json(), self.dateRange, channelCode, channelUrl)
         else :
             raise Exception(f'scraping channel {channelCode} post list error')
