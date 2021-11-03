@@ -52,7 +52,7 @@ class ScrapingManager:
                 'seoul_city', 'job_seoul', 'seoul_woman_up', 
                 'seoul_real_estate_info', 'seoul_forever_educateion_portal'
             ]: continue
-            if channelCode in ['seoul_welfare_portal_0']:
+            if channelCode in ['seoul_welfare_portal_0', 'seoul_welfare_portal_1']:
                 continue
 
             session = self.get_requests_session()
