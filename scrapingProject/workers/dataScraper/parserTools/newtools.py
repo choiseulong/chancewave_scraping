@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup as bs
+from bs4 import Tag
 from jsonpath_ng import parse as jsonpath_parse
 from datetime import datetime
 import xmltodict
@@ -8,7 +9,7 @@ def convert_response_text_to_soup(data):
     return bs(data, 'html.parser')
 
 def extract_tag_list_from_soup(soup, tag, attrs={}):
-    return soup.findAll(tag, attrs)
+    return soup.findAll(tag, attrs=attrs)
 
 def extract_text_from_tag(tag, isMultiple=False):
     return [_.text for _ in tag] if isMultiple else tag.text
@@ -19,16 +20,48 @@ def extract_content_from_tag(tag, isMultiple=False):
 def extract_attrs_from_tag(tag, attrsName, isMultiple=False):
     return [_[attrsName] for _ in tag] if isMultiple else tag[attrsName]
 
-def extract_children_tag_text_from_parents_tag(parentsTag, childrenTag, childrenTagAttrs={}, isMultiple=False):
-    return [extract_text_from_tag(kid) for kid in parentsTag.findAll(childrenTag, attrs=childrenTagAttrs)] \
-        if isMultiple \
-        else extract_text_from_tag(parentsTag.find(childrenTag, attrs=childrenTagAttrs))
-
-def extract_children_tag_from_parents_tag(parentsTag, childrenTag, childrenTagAttrs={}, isMultiple=True):
-    return parentsTag.findAll(childrenTag, attrs=childrenTagAttrs) \
-        if isMultiple \
+def extract_children_tag_from_parents_tag(parentsTag, childrenTag, childrenTagAttrs={}, ParentsIsMultiple=False):
+    return parentsTag.find_all(childrenTag, attrs=childrenTagAttrs) \
+        if ParentsIsMultiple \
         else parentsTag.find(childrenTag, attrs=childrenTagAttrs)
 
+def extract_children_tag_text_from_parents_tag(parentsTag, childrenTag, childrenTagAttrs={}, ParentsIsMultiple=False, childIsMultiple=False):
+    return [
+                extract_text_from_tag(
+                    extract_children_tag_from_parents_tag(parents, childrenTag, childIsMultiple),
+                    childIsMultiple
+                )
+                for parents \
+                in parentsTag
+            ] \
+            if ParentsIsMultiple \
+            else [
+                extract_text_from_tag(kids, childIsMultiple) \
+                for kids \
+                in extract_children_tag_from_parents_tag(parentsTag, childrenTag, childrenTagAttrs, childIsMultiple)
+            ] 
+
+def extract_children_tag_content_from_parents_tag(parentsTag, childrenTag, childrenTagAttrs={}, ParentsIsMultiple=False):
+    return [extract_content_from_tag(kid) for kid in extract_children_tag_from_parents_tag(parentsTag, childrenTag, childrenTagAttrs)] \
+        if ParentsIsMultiple \
+        else extract_content_from_tag(parentsTag.find(childrenTag, attrs=childrenTagAttrs))
+
+def extract_children_tag_attrs_from_parents_tag(parentsTag, childrenTag, targetAttrs, childrenTagAttrs={}, ParentsIsMultiple=False, childIsMultiple=False):
+        return [
+                extract_attrs_from_tag(
+                    extract_children_tag_from_parents_tag(parents, childrenTag),
+                    targetAttrs
+                )
+                for parents \
+                in parentsTag
+            ] \
+            if ParentsIsMultiple \
+            else [
+                extract_attrs_from_tag(kids, targetAttrs) \
+                for kids \
+                in extract_children_tag_from_parents_tag(parentsTag, childrenTag, childrenTagAttrs)
+            ] 
+            
 def check_children_tag_existence_in_parents_tag(parentsTag, childrenTag, childrenTagAttrs={}):
     return 'exists' if parentsTag.find(childrenTag, attrs=childrenTagAttrs) \
         else 'not exists' 
@@ -107,5 +140,10 @@ def search_value_in_json_data_using_path(jsonData, path, number_of_data='multipl
         result = [ _.value for _ in tartget_data]
     return result
 
+def extract_emails(in_str):
+    mail_list = re.findall(r'([a-zA-Z0-9-\.]+@[a-zA-Z0-9-]+.+[a-zA-Z0-9-]{2,4})', in_str)
+    return mail_list
 
-
+def extract_contact_numbers(in_str):
+    contact_no_list = re.findall(r'(\d{2,3}[- .]?\d{3,4}[- .]?\d{4})', in_str)
+    return contact_no_list

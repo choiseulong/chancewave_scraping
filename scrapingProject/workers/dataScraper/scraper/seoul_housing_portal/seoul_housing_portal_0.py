@@ -1,6 +1,6 @@
 from workers.dataServer.mongoServer import MongoServer
 from workers.dataScraper.scraperTools.tools import *
-from workers.dataScraper.parserTools.tools import * 
+# from workers.dataScraper.parserTools.tools import * 
 from workers.dataScraper.parser.seoul_housing_portal import *
 
 '''

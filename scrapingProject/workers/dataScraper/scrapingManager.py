@@ -48,16 +48,18 @@ class ScrapingManager:
         for channelCode, channelUrl in self.channelUrlList:
             print(channelCode)
             groupCode = extract_groupCode(channelCode)
-            if groupCode in [
-                'seoul_city', 'job_seoul', 'seoul_woman_up', 
-                'seoul_real_estate_info', 'seoul_forever_educateion_portal'
-            ]: continue
-            if channelCode in ['seoul_welfare_portal_0', 'seoul_welfare_portal_1']:
-                continue
+            # if groupCode in [
+            #     'seoul_city', 'job_seoul', 'seoul_woman_up', 
+            #     'seoul_real_estate_info', 'seoul_forever_educateion_portal'
+            # ]: continue
+            # if channelCode in ['seoul_welfare_portal_0', 'seoul_welfare_portal_1']:
+            #     continue
 
             session = self.get_requests_session()
             scraper = importlib.import_module(f'workers.dataScraper.scraper.{groupCode}.{channelCode}').Scraper(session)
             scraper.scraping_process(channelCode, channelUrl, self.dateRange)
+            if channelCode == 'seoul_city_0':
+                break
     
     def get_date_range(self, targetDate):
         startDate = convert_datetime_string_to_isoformat_datetime(targetDate['startDate'])
