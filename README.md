@@ -50,6 +50,10 @@ seoul_forever_educateion_portal_0
 서울복지포털  
 seoul_forever_educateion_portal_0  
 seoul_forever_educateion_portal_1  
+seoul_forever_educateion_portal_2  
+
+서울주거포털
+
 
 ## issue
 첫 페이지 포스트 업로드 일자가 모두 시작 시점이 벗어날 경우 중지되지 않고 해당 일자를 찾을때까지 넘어가는것을 처리해야하지 않을까    

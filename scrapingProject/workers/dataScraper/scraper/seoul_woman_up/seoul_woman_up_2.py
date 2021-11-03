@@ -1,4 +1,3 @@
-from workers.dataScraper.scraperTools.tools import *
 from workers.dataScraper.parser.seoul_woman_up import *
 from workers.dataServer.mongoServer import MongoServer
 from .seoul_woman_up_0 import Scraper as default_scraper
