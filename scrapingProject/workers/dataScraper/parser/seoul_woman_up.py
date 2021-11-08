@@ -4,7 +4,8 @@ from ..scraperTools.tools import *
 
 isMultiple = True
 
-def extract_post_list_from_response_text(text, dateRange, channelCode, postUrlFrame):
+def postListParsingProcess(response, dateRange, channelCode, postUrlFrame):
+    text = response.text
     keyList = ['postTitle', 'uploadedTime', 'uploader', 'viewCount', 'postUrl']
     postTitle = []
     uploadedTime = []
@@ -62,7 +63,7 @@ def extract_post_list_from_response_text(text, dateRange, channelCode, postUrlFr
     return result
 
 
-def extract_post_contents_from_response_text(text, channelMainUrl):
+def postContentParsingProcess(text, channelMainUrl):
     keyList = ['postText', 'postImageUrl']
     postText = ''
     postImageUrl = []

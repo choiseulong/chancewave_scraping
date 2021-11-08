@@ -67,4 +67,3 @@ class ScrapingManager:
         self.dateRange = [startDate, endDate]
         return self.dateRange
 
-            
