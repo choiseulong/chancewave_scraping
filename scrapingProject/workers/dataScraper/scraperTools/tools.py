@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 import datetime as DateTime
 from pytz import timezone
-from ..parserTools.tools import *
+from ..parserTools.newtools import *
 
 def set_headers(session, additionalKeyValue=None):
     headers = {
@@ -103,3 +103,8 @@ def check_date_range_availability(dateRange, date):
         return 'vaild'
     else :
         return 'not valid'
+
+def change_params_to_local_var(Local, params):
+    for key in params:
+        Local[key] = params[key]
+    return Local

@@ -1,5 +1,5 @@
 from workers.dataScraper.scraperTools.tools import *
-from workers.dataScraper.parserTools.tools import *
+from workers.dataScraper.parserTools.newtools import *
 from ..dataServer.mongoServer import MongoServer
 import requests as req
 from datetime import timedelta
@@ -46,20 +46,12 @@ class ScrapingManager:
     def scraping_worker_job_init(self):
         self.get_channel_url()
         for channelCode, channelUrl in self.channelUrlList:
-            print(channelCode)
             groupCode = extract_groupCode(channelCode)
-            # if groupCode in [
-            #     'seoul_city', 'job_seoul', 'seoul_woman_up', 
-            #     'seoul_real_estate_info', 'seoul_forever_educateion_portal'
-            # ]: continue
-            # if channelCode in ['seoul_welfare_portal_0', 'seoul_welfare_portal_1']:
-            #     continue
-
+            if not channelCode == 'seoul_woman_up_2':
+                continue
             session = self.get_requests_session()
             scraper = importlib.import_module(f'workers.dataScraper.scraper.{groupCode}.{channelCode}').Scraper(session)
             scraper.scraping_process(channelCode, channelUrl, self.dateRange)
-            if channelCode == 'seoul_city_0':
-                break
     
     def get_date_range(self, targetDate):
         startDate = convert_datetime_string_to_isoformat_datetime(targetDate['startDate'])

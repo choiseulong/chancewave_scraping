@@ -1,11 +1,6 @@
 from workers.dataScraper.parser.seoul_woman_up import *
 from workers.dataScraper.scraper.topLevelScrper import Scraper as ABCScraper
 
-'''
-    0,1,2 required
-    User-Agent = ''
-'''
-
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
@@ -31,3 +26,4 @@ class Scraper(ABCScraper):
 
     def target_contents_scraping(self):
         super().target_contents_scraping(postContentParsingProcess)
+    

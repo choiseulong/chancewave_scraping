@@ -34,10 +34,9 @@ class Scraper(metaclass=ABCMeta):
         self.dateRange = dateRange
         self.channelCode = channelCode
         self.channelUrl = channelUrl
-        self.channelUrlFrame = channelUrl
+        self.channelUrlFrame = channelUrl #pageCount 적용이 필요한 경우 사용
         # 추가 로직 작성 必
 
-    @abstractmethod
     def post_list_scraping(self, postListParsingProcess, method, data=''):
         '''
             채널 메인에서 게시글의 기본정보를 가져오기 위한 요청을 처리함
@@ -46,7 +45,12 @@ class Scraper(metaclass=ABCMeta):
             status, response = get_method_response(self.session, self.channelUrl)
         elif method == 'post':
             status, response = post_method_response(self.session, self.channelUrl, data)
-        self.scrapingTarget = postListParsingProcess(response, self.dateRange, self.channelCode, self.postUrl)
+        self.scrapingTarget = postListParsingProcess(
+            response = response, 
+            dateRange = self.dateRange, 
+            channelCode = self.channelCode, 
+            postUrl = self.postUrl
+        )
 
     def target_contents_scraping(self, postContentParsingProcess):
         '''
@@ -59,9 +63,13 @@ class Scraper(metaclass=ABCMeta):
             elif 'contentsReqParams' in target.keys():
                 data = target['contentsReqParams']
                 status, response = post_method_response(self.session, self.postUrl, data)
-            self.scrapingTargetContents.append(postContentParsingProcess(response))
+            self.scrapingTargetContents.append(
+                postContentParsingProcess(
+                    response = response, 
+                    channelUrl = self.channelUrl
+                )
+            )
 
-    @abstractmethod
     def collect_data(self):
         '''
             채널 메인에서 게시글의 기본 정보를 담고
