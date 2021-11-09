@@ -92,7 +92,7 @@ def postContentParsingProcess(**params):
 
 def postContentParsingProcess_second(**params):
     local_var = change_params_to_local_var(locals(), params)
-    keyList = ['postTitle', 'uploader', 'postSubject', 'extraInfoList', 'startDate2', 'endDate2', 'uploadedTime']
+    keyList = ['postTitle', 'uploader', 'postSubject', 'extraInfoList', 'startDate2', 'endDate2']
     local_var = add_empty_list(local_var, keyList)
     idxInfo = {0:"postSubject", 1:"postSubject", 2:"extraInfoList", 3:"startDate2", 4:"endDate2", 5:"extraInfoList", 6:"extraInfoList"}
 
@@ -145,41 +145,43 @@ def postContentParsingProcess_second(**params):
                     clean_text(extract_text(item_contents)
                     )
                 )
-    local_var['uploadedTime'] = [
-        check_event_date_range_availability(startDate, endDate) \
-            if check_event_date_range_availability(startDate, endDate) \
-            else False \
-        for startDate, endDate \
-        in zip(local_var['startDate2'], local_var['endDate2']) \
-    ]
-    local_var['uploadedTime'] = [
-        date if check_date_range_availability(local_var['dateRange'], date) == 'vaild' \
-        else False \
-        for date \
-        in local_var['uploadedTime']\
-    ]
+    # local_var['uploadedTime'] = [
+    #     check_event_date_range_availability(startDate, endDate) \
+    #         if check_event_date_range_availability(startDate, endDate) \
+    #         else '1900-01-01T00:00:00' \
+    #     for startDate, endDate \
+    #     in zip(local_var['startDate2'], local_var['endDate2']) \
+    # ]
+    # print(local_var['uploadedTime'], 'before')
+    # local_var['uploadedTime'] = [
+    #     date if check_date_range_availability(local_var['dateRange'], date) == 'vaild' \
+    #         else False \
+    #     for date \
+    #     in local_var['uploadedTime']\
+    # ]
+
     valueList = [
-        [i for idx, i in enumerate(local_var[key]) if local_var['uploadedTime'][idx]] \
+        local_var[key]
         for key \
         in keyList
     ]
     result = convert_same_length_merged_list_to_dict(keyList, valueList)
     return result
 
-def check_event_date_range_availability(recruitDateRange, studyDateRange): 
-    now = datetime.now(timezone('Asia/Seoul')).isoformat()
-    recruitDateStart = convert_datetime_string_to_isoformat_datetime(
-        recruitDateRange.split('~')[0].strip()
-    )
-    studyDateEnd = convert_datetime_string_to_isoformat_datetime(
-        studyDateRange.split('~')[1].strip()
-    )
-    if recruitDateStart <= now <= studyDateEnd:
-        return recruitDateStart
-    elif now <  recruitDateStart:
-        return now
-    elif studyDateEnd < now :
-        return 
+# def check_event_date_range_availability(recruitDateRange, studyDateRange): 
+#     now = datetime.now(timezone('Asia/Seoul')).isoformat()
+#     recruitDateStart = convert_datetime_string_to_isoformat_datetime(
+#         recruitDateRange.split('~')[0].strip()
+#     )
+#     studyDateEnd = convert_datetime_string_to_isoformat_datetime(
+#         studyDateRange.split('~')[1].strip()
+#     )
+#     if recruitDateStart <= now <= studyDateEnd:
+#         return recruitDateStart
+#     elif now <  recruitDateStart:
+#         return now
+#     elif studyDateEnd < now :
+#         return 
 
 def extract_post_number_from_bs4_tag(tag):
     aTag = extract_children_tag(tag, "a")

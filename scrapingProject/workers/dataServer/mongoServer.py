@@ -32,7 +32,6 @@ class MongoServer:
         self.collection.remove({'channelCode' : channelCode})
     
     def reflect_scraped_data(self, collectedDataList):
-        print(collectedDataList)
         bulkInsertDataList = []
         for newData in collectedDataList:
             postUrl = newData['postUrl']
