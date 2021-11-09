@@ -32,13 +32,14 @@ class MongoServer:
         self.collection.remove({'channelCode' : channelCode})
     
     def reflect_scraped_data(self, collectedDataList):
+        print(collectedDataList)
         bulkInsertDataList = []
         for newData in collectedDataList:
             postUrl = newData['postUrl']
             crc32 = make_crc(newData)
             newData['crc'] = crc32
             beforeData = self.fine_one({'postUrl' : postUrl})
-            if beforeData :
+            if beforeData and postUrl != None :
                 if beforeData['crc'] == newData['crc']:
                     if beforeData['isUpdate']:
                         postUrl = beforeData['postUrl']

@@ -47,7 +47,7 @@ class ScrapingManager:
         self.get_channel_url()
         for channelCode, channelUrl in self.channelUrlList:
             groupCode = extract_groupCode(channelCode)
-            if not groupCode == 'seoul_woman_up':
+            if not channelCode == 'seoul_woman_up_2':
                 continue
             print(channelCode)
             session = self.get_requests_session()

@@ -87,6 +87,8 @@ class Scraper(metaclass=ABCMeta):
             dataFrameWithTargetInfo = enter_data_into_dataFrame(dataFrame, targetInfo)
             dataFrameWithTargetContents = enter_data_into_dataFrame(dataFrameWithTargetInfo, targetContents)
             self.collectedDataList.append(dataFrameWithTargetContents)
+        self.scrapingTargetContents = []
+        self.scrapingTarget = []
 
 
     def set_headers_process(self):

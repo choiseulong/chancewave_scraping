@@ -6,7 +6,6 @@ class Scraper(ABCScraper):
         super().__init__(session)
 
     def scraping_process(self, channelCode, channelUrl, dateRange):
-        print(channelCode)
         super().scraping_process(channelCode, channelUrl, dateRange)
 
         if '0' in self.channelCode: 
@@ -15,7 +14,7 @@ class Scraper(ABCScraper):
             self.postUrl = 'https://www.seoulwomanup.or.kr/womanup/common/bbs/selectBBS.do?bbs_seq={}&bbs_code=centerall'
         elif '2' in self.channelCode: 
             self.mongo.remove_channel_data(channelCode)
-            
+
         self.session = set_headers(self.session)
         self.pageCount = 1
         while True :
@@ -26,6 +25,7 @@ class Scraper(ABCScraper):
                     self.target_contents_scraping()
                 self.collect_data()
                 self.mongo.reflect_scraped_data(self.collectedDataList)
+                self.collectedDataList = []
                 self.pageCount += 1
             else :
                 print(self.channelCode, "empty point")

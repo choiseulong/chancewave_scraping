@@ -13,7 +13,6 @@ childIsUnique = True
 
 def postListParsingProcess(**params):
     local_var = change_params_to_local_var(locals(), params)
-    print(local_var)
     # key 지역변수 선언
     keyList = ['postTitle', 'uploadedTime', 'uploader', 'viewCount', 'postUrl']
     local_var = add_empty_list(local_var, keyList)
@@ -57,7 +56,6 @@ def postListParsingProcess(**params):
         local_var['postUrlFrame'].format(extract_post_number_from_bs4_tag(tag))
         for tag in postInfoList
     ]
-    print(local_var['postUrlFrame'], '@')
     valueList = [
         [
             value \
@@ -94,9 +92,8 @@ def postContentParsingProcess(**params):
 
 def postContentParsingProcess_second(**params):
     local_var = change_params_to_local_var(locals(), params)
-    keyList = ['postTitle', 'uploader', 'postSubject', 'extraInfoList', 'startDate2', 'endDate2', 'uploadTime', 'postUrl']
+    keyList = ['postTitle', 'uploader', 'postSubject', 'extraInfoList', 'startDate2', 'endDate2', 'uploadedTime']
     local_var = add_empty_list(local_var, keyList)
-    local_var['postUrl'] = '미존재'
     idxInfo = {0:"postSubject", 1:"postSubject", 2:"extraInfoList", 3:"startDate2", 4:"endDate2", 5:"extraInfoList", 6:"extraInfoList"}
 
     soup = change_to_soup(local_var['response'].text)
@@ -148,21 +145,21 @@ def postContentParsingProcess_second(**params):
                     clean_text(extract_text(item_contents)
                     )
                 )
-    local_var['uploadTime'] = [
+    local_var['uploadedTime'] = [
         check_event_date_range_availability(startDate, endDate) \
             if check_event_date_range_availability(startDate, endDate) \
             else False \
         for startDate, endDate \
         in zip(local_var['startDate2'], local_var['endDate2']) \
     ]
-    local_var['uploadTime'] = [
+    local_var['uploadedTime'] = [
         date if check_date_range_availability(local_var['dateRange'], date) == 'vaild' \
         else False \
         for date \
-        in local_var['uploadTime']\
+        in local_var['uploadedTime']\
     ]
     valueList = [
-        [i for idx, i in enumerate(local_var[key]) if local_var['uploadTime'][idx]] \
+        [i for idx, i in enumerate(local_var[key]) if local_var['uploadedTime'][idx]] \
         for key \
         in keyList
     ]
