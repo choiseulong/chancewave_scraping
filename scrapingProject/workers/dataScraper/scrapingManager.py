@@ -47,10 +47,11 @@ class ScrapingManager:
         self.get_channel_url()
         for channelCode, channelUrl in self.channelUrlList:
             groupCode = extract_groupCode(channelCode)
-            if not channelCode == 'seoul_woman_up_2':
+            if not groupCode == 'seoul_woman_up':
                 continue
+            print(channelCode)
             session = self.get_requests_session()
-            scraper = importlib.import_module(f'workers.dataScraper.scraper.{groupCode}.{channelCode}').Scraper(session)
+            scraper = importlib.import_module(f'workers.dataScraper.scraper.{groupCode}.{groupCode}').Scraper(session)
             scraper.scraping_process(channelCode, channelUrl, self.dateRange)
     
     def get_date_range(self, targetDate):

@@ -49,7 +49,7 @@ class Scraper(metaclass=ABCMeta):
             response = response, 
             dateRange = self.dateRange, 
             channelCode = self.channelCode, 
-            postUrl = self.postUrl
+            postUrlFrame = self.postUrl
         )
 
     def target_contents_scraping(self, postContentParsingProcess):

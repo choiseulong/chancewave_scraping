@@ -16,7 +16,6 @@ class Scraper(ABCScraper):
             self.post_list_scraping()
             if self.scrapingTarget :
                 self.collect_data()
-                print(self.collectedDataList)
                 self.mongo.reflect_scraped_data(self.collectedDataList)
                 self.pageCount += 1
             else:

@@ -13,6 +13,7 @@ childIsUnique = True
 
 def postListParsingProcess(**params):
     local_var = change_params_to_local_var(locals(), params)
+    print(local_var)
     # key 지역변수 선언
     keyList = ['postTitle', 'uploadedTime', 'uploader', 'viewCount', 'postUrl']
     local_var = add_empty_list(local_var, keyList)
@@ -56,6 +57,7 @@ def postListParsingProcess(**params):
         local_var['postUrlFrame'].format(extract_post_number_from_bs4_tag(tag))
         for tag in postInfoList
     ]
+    print(local_var['postUrlFrame'], '@')
     valueList = [
         [
             value \
@@ -72,32 +74,29 @@ def postListParsingProcess(**params):
 def postContentParsingProcess(**params):
     local_var = change_params_to_local_var(locals(), params)
     keyList = ['postText', 'postImageUrl', 'contact']
-    postImageUrl = []
-
+    local_var['postImageUrl'] = []
     soup = change_to_soup(local_var['response'].text)
-
     div_viewContent = extract_tag_list(soup, 'div', {"class":"view_content"}, childIsUnique)
-        
-    postText = clean_text(
+    local_var['postText'] = clean_text(
         extract_text(div_viewContent)
     )
-    contact = ' & '.join(extract_contact_numbers_from_text(postText)) if extract_contact_numbers_from_text(postText) else ''
+    local_var['contact'] = ' & '.join(extract_contact_numbers_from_text(local_var['postText'])) if extract_contact_numbers_from_text(local_var['postText']) else ''
     if check_children_tag_existence(div_viewContent, 'figure', {'class':'image'}) == 'exists':
         figure_image = extract_children_tag(div_viewContent, 'figure', {'class':'image'}, childIsMultiple)
         for figure in figure_image:
             img_images = extract_children_tag(figure, 'img', dummpyAttrs, childIsMultiple)
             for img in img_images:
                 if check_has_attrs_in_tag(img, 'src'):
-                    postImageUrl.append(local_var['channelMainUrl'] + extract_attrs(img, 'src')) 
+                    local_var['postImageUrl'].append(local_var['channelUrl'] + extract_attrs(img, 'src')) 
     valueList = [local_var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     return result
 
 def postContentParsingProcess_second(**params):
     local_var = change_params_to_local_var(locals(), params)
-    keyList = ['postTitle', 'uploader', 'postSubject', 'extraInfoList', 'startDate2', 'endDate2', 'uploadTime']
+    keyList = ['postTitle', 'uploader', 'postSubject', 'extraInfoList', 'startDate2', 'endDate2', 'uploadTime', 'postUrl']
     local_var = add_empty_list(local_var, keyList)
-
+    local_var['postUrl'] = '미존재'
     idxInfo = {0:"postSubject", 1:"postSubject", 2:"extraInfoList", 3:"startDate2", 4:"endDate2", 5:"extraInfoList", 6:"extraInfoList"}
 
     soup = change_to_soup(local_var['response'].text)
@@ -156,7 +155,6 @@ def postContentParsingProcess_second(**params):
         for startDate, endDate \
         in zip(local_var['startDate2'], local_var['endDate2']) \
     ]
-    print(local_var['uploadTime'])
     local_var['uploadTime'] = [
         date if check_date_range_availability(local_var['dateRange'], date) == 'vaild' \
         else False \
@@ -169,7 +167,6 @@ def postContentParsingProcess_second(**params):
         in keyList
     ]
     result = convert_same_length_merged_list_to_dict(keyList, valueList)
-    print(result)
     return result
 
 def check_event_date_range_availability(recruitDateRange, studyDateRange): 
