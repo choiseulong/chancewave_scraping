@@ -1,7 +1,16 @@
 from celery import Celery
-import redis
+import time
 
-rd = redis.StrictRedis(host = 'localhost', port=6379, db=0)
-rd.set("test", "hello")
+import celery
 
-# app = Celery('task', broker='redis://localhost:6379//')
+BROKER_URL = "mongodb://admin:mysterico@k8s.mysterico.com:31489"
+
+celery = Celery('EOD_TASKS', broker=BROKER_URL)
+
+celery.config_from_object('celeryconfig')
+
+@celery.task
+def add(x,y):
+    time.sleep(5)
+    return x+y
+

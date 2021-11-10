@@ -62,3 +62,40 @@ posturl 없을 시 문구 not exists {channelCode} post url 으로 설정하게�
 ## fixed
 postUrl 특정이 불가할 시 해당 채널은 모든 데이터를 재수집 하는 방향으로 설정함.
 
+
+# celery
+
+#### backend  
+MONGO_URL = 'mongodb://admin:mysterico@k8s.mysterico.com:31489/celery?authSource=admin'  
+
+#### message broker  
+broker_url = 'pyamqp://choline:123123@localhost:8080//'  
+
+
+#### run celery
+celery -A tasks worker --loglevel=info --pool=solo --concurrency=24  
+
+#### run rabbitmq
+docker run -d --name rabbitmq -p 5672:5672 -p 8080:15672 --restart=unless-stopped -e RABBITMQ_DEFAULT_USER=username -e RABBITMQ_DEFAULT_PASS=password rabbitmq:management  
+
+
+task1 = taskFun.delay(인자)  
+task2 = taskFun.apply_async(args=[인자], kwargs={인자})  
+
+task1 = taskFun.s(인자) 혹은  taskFun.s()  
+task1 = taskFun.subtask(인자) 혹은  taskFun.subtask()  
+
+이후  
+
+delay 혹은 apply_async로 실행함  
+subtask에서 Arguments를 이미 정의했다면했기  
+
+delay 및 apply_async로 추가 전달할 경우 Append됨.  
+
+subtask를 처리할 때 **chain**을 사용하여 연속된 Task를 처리하고,  
+
+**chord**를 사용하여 일괄처리 할 수 있다.  
+
+task1.ready() → true : 완료, false : 진행중  
+
+참고 : https://heodolf.tistory.com/66?category=897877  
