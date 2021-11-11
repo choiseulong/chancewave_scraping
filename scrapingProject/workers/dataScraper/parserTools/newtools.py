@@ -7,9 +7,9 @@ import re
 def change_to_soup(reponseText):
     return bs(reponseText, 'html.parser')
 
-def extract_tag_list(soup, tag, attrs={}, childIsUnique=False):
+def extract_tag(soup, tag, attrs={}, tagIsUnique=False):
     return soup.findAll(tag, attrs=attrs) \
-        if not childIsUnique \
+        if not tagIsUnique \
         else soup.findAll(tag, attrs=attrs)[0]
 
 def extract_text(tag, isMultiple=False):
@@ -155,16 +155,6 @@ def extract_contact_numbers_from_text(in_str):
     contact_no_list = re.findall(r'(\d{2,3}[- .]?\d{3,4}[- .]?\d{4})', in_str)
     return contact_no_list
 
-
-def convert_same_length_merged_list_to_dict(keyList, valueList):
-    result = []
-    for idx in range(len(valueList[0])):
-        frame = {
-            key: valueList[key_idx][idx] for key_idx, key in enumerate(keyList)
-        }
-        result.append(frame)
-    return result
-
 def add_empty_list(local_var, keyList):
     for key in keyList:
         local_var[key] = []
@@ -176,5 +166,54 @@ def convert_merged_list_to_dict(keyList, valueList):
         result.update({key : valueList[idx]})
     return result
 
+def check_date_range_availability(dateRange, date):
+    try :
+        convertedDate = convert_datetime_string_to_isoformat_datetime(date)
+    except ValueError :
+        convertedDate = date
+    startDate = dateRange[0]
+    endDate = dateRange[1]
+    if endDate <= convertedDate <= startDate:
+        return 'vaild'
+    else :
+        return 'not valid'
+
+
+
+
+
+
+
+
+
+
+def merge_var_to_dict(keyList, valueList):
+    result = []
+    for idx in range(len(valueList[0])):
+        result.append(
+                {
+                key: valueList[key_idx][idx] for key_idx, key in enumerate(keyList)
+            }
+        )
+    return result
+
 def extract_groupCode(text):
     return '_'.join(text.split('_')[:-1])
+
+def reflect_params(var, params):
+    for key in params:
+        var[key] = params[key]
+    return var
+
+def reflect_key(var, targetKeyInfo):
+    for Type in targetKeyInfo.keys():
+        dummyType = None
+        if Type == 'listType':
+            dummyType = []
+        elif Type == 'strType':
+            dummyType = ''
+        elif Type == 'numType':
+            dummyType = 0
+        for key in targetKeyInfo[Type]:
+            var[key] = dummyType
+    return var

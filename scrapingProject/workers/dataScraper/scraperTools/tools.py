@@ -91,20 +91,3 @@ def enter_data_into_dataFrame(dataFrame, result):
         else :
             dataFrame[keyRoot][key] = result[key]
     return dataFrame
-
-def check_date_range_availability(dateRange, date):
-    try :
-        convertedDate = convert_datetime_string_to_isoformat_datetime(date)
-    except ValueError :
-        convertedDate = date
-    startDate = dateRange[0]
-    endDate = dateRange[1]
-    if endDate <= convertedDate <= startDate:
-        return 'vaild'
-    else :
-        return 'not valid'
-
-def change_params_to_local_var(Local, params):
-    for key in params:
-        Local[key] = params[key]
-    return Local
