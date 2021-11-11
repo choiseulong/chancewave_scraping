@@ -185,10 +185,13 @@ def postContentParsingProcess_second(**params):
 
 def extract_post_number_from_bs4_tag(tag):
     aTag = extract_children_tag(tag, "a")
-    num = extract_values_list_in_both_sides_bracket_text(
-        extract_attrs(aTag, "onclick")
-    )
-    return num
+    if aTag :
+        num = extract_values_list_in_both_sides_bracket_text(
+            extract_attrs(aTag, "onclick")
+        )
+        return num
+    else :
+        return None
 
 def extract_values_list_in_both_sides_bracket_text(text):
     startIdx = text.find('(')

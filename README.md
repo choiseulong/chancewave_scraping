@@ -99,3 +99,10 @@ subtask를 처리할 때 **chain**을 사용하여 연속된 Task를 처리하�
 task1.ready() → true : 완료, false : 진행중  
 
 참고 : https://heodolf.tistory.com/66?category=897877  
+스케쥴 예약 참고 : https://wangin9.tistory.com/entry/django-celery  
+
+
+## 추후처리
+celery -A scheduler beat  
+celery -A workers.scrapingScheduler.scheduler worker --loglevel=info -P gevent -c 24  
+app실행시 같이 시작되게끔  
