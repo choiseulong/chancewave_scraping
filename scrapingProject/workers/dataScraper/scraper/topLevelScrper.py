@@ -14,6 +14,7 @@ class Scraper(metaclass=ABCMeta):
         self.channelUrl = ''
         self.channelUrlFrame = ''
         self.pageCount = 0
+        self.additionalKeyValue = []
 
         # scraped data
         self.scrapingTarget = []
@@ -45,12 +46,15 @@ class Scraper(metaclass=ABCMeta):
             status, response = get_method_response(self.session, self.channelUrl)
         elif method == 'post':
             status, response = post_method_response(self.session, self.channelUrl, data)
-        self.scrapingTarget = postListParsingProcess(
-            response = response, 
-            dateRange = self.dateRange, 
-            channelCode = self.channelCode, 
-            postUrlFrame = self.postUrl
-        )
+
+        if status == 'ok':
+            self.scrapingTarget = postListParsingProcess(
+                response = response, 
+                dateRange = self.dateRange, 
+                channelCode = self.channelCode, 
+                postUrlFrame = self.postUrl,
+                pageCount = self.pageCount
+            )
 
     def target_contents_scraping(self, postContentParsingProcess):
         '''
@@ -63,12 +67,14 @@ class Scraper(metaclass=ABCMeta):
             elif 'contentsReqParams' in target.keys():
                 data = target['contentsReqParams']
                 status, response = post_method_response(self.session, self.postUrl, data)
-            self.scrapingTargetContents.append(
-                postContentParsingProcess(
-                    response = response, 
-                    channelUrl = self.channelUrl
+            if status == 'ok':
+                self.scrapingTargetContents.append(
+                    postContentParsingProcess(
+                        response = response, 
+                        channelUrl = self.channelUrl,
+                        postUrlFrame = self.postUrl
+                    )
                 )
-            )
 
     def collect_data(self):
         '''
@@ -89,11 +95,3 @@ class Scraper(metaclass=ABCMeta):
             self.collectedDataList.append(dataFrameWithTargetContents)
         self.scrapingTargetContents = []
         self.scrapingTarget = []
-
-
-    def set_headers_process(self):
-        '''
-            session headers 에 cookie, content-type 등 추가 params가 필요한 경우에 작성함
-        '''
-        pass
-

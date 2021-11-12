@@ -5,11 +5,11 @@ import datetime as DateTime
 from pytz import timezone
 from ..parserTools.newtools import *
 
-def set_headers(session, additionalKeyValue=None):
+def set_headers(session, additionalKeyValue=None, isUpdate=False):
     headers = {
         "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36"
     }
-    if additionalKeyValue :
+    if additionalKeyValue and isUpdate:
         for keyValue in additionalKeyValue:
             headers.update({keyValue[0]:keyValue[1]})
     session.headers = headers
@@ -56,6 +56,7 @@ def get_post_data_frame(channelCode='', channelUrl=''):
         'postTitle' : None,
         'postSubject' : None,
         'postText' : None,
+        'postTextType' : 'onlyPostText',
         'contact': None,
         'postImageUrl': None,
         'viewCount' : None,
@@ -68,7 +69,7 @@ def get_post_data_frame(channelCode='', channelUrl=''):
         'isUpdate' : False,
         'updatedTime' : None,
         'crc' : None,
-        'extraInfoList' : []
+        'extraInfo' : []
     }
 
 def find_key_root(keyName) : 
@@ -85,9 +86,14 @@ def find_key_root(keyName) :
 
 def enter_data_into_dataFrame(dataFrame, result):
     for key in result:
-        keyRoot = find_key_root(key)
-        if not keyRoot:
+        if key in dataFrame.keys():
             dataFrame[key] = result[key]
-        else :
-            dataFrame[keyRoot][key] = result[key]
     return dataFrame
+
+def find_request_params(data, paramsKey):
+    params = []
+    for key in paramsKey:
+        P = [k for k in data if key in k.keys()]
+        if P:
+            params.append((key,P[0][key]))
+    return params

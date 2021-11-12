@@ -138,12 +138,12 @@ def search_jsessionid(soup):
     return jsessionid
 
 def other_extract_post_contents_from_response_text(text):
-    keyList = ['postText', 'extraInfoList', 'postImageUrl'] 
+    keyList = ['postText', 'extraInfo', 'postImageUrl'] 
     soup = convert_response_text_to_BeautifulSoup(text)
     trTags = search_tags_in_soup(soup, 'tr', {}, parsingTypeNone)
     infoTags = search_tags_in_soup(soup, 'h2', {"class" : "tit1"}, parsingTypeText)
     infoTable = search_tags_in_soup(soup, 'table', {"class" : "tb_bbs view"}, parsingTypeNone)
-    extraInfoList = []
+    extraInfo = []
     postImageUrl = []
     postText = ''
     for title, table in zip(infoTags, infoTable):
@@ -167,7 +167,7 @@ def other_extract_post_contents_from_response_text(text):
                     else :
                         extraObjKeysLength = len(list(extraObj.keys()))
                         extraObj.update({f'info_{extraObjKeysLength}' : (thText, trText)})
-        extraInfoList.append(extraObj)
+        extraInfo.append(extraObj)
     local_var = locals()
     valueList = [local_var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)

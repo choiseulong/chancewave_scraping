@@ -1,9 +1,9 @@
 from workers.dataScraper.scraperTools.tools import *
 from workers.dataScraper.parserTools.newtools import *
 from workers.scrapingScheduler.scheduler import job
-from ..dataServer.mongoServer import MongoServer
+# from ..dataServer.mongoServer import MongoServer
 import requests as req
-# import importlib
+import importlib
 from configparser import ConfigParser
 
 class ScrapingManager:
@@ -18,17 +18,17 @@ class ScrapingManager:
                 value = item[1] 
                 globals()[f'{section}_{key}'] = value
     
-    # def get_requests_session(
-    #         self, 
-    #         proxies = {
-    #             "http": "http://127.0.0.1:8889", 
-    #             "https":"http:127.0.0.1:8889"
-    #         }
-    #     ):
-    #     session = req.Session()
-    #     session.verify = r'./workers/dataScraper/scraperTools/FiddlerRoot.pem'
-    #     session.proxies = proxies
-    #     return session
+    def get_requests_session(
+            self, 
+            proxies = {
+                "http": "http://127.0.0.1:8889", 
+                "https":"http:127.0.0.1:8889"
+            }
+        ):
+        session = req.Session()
+        session.verify = r'./workers/dataScraper/scraperTools/FiddlerRoot.pem'
+        session.proxies = proxies
+        return session
     
     def get_channel_url(self):
         config = ConfigParser()
@@ -47,14 +47,10 @@ class ScrapingManager:
         self.get_channel_url()
         for channelCode, channelUrl in self.channelUrlList:
             groupCode = extract_groupCode(channelCode)
-            if not groupCode == 'seoul_woman_up':
-                continue
-            print(channelCode)
-            result = job.delay(groupCode, channelCode, channelUrl, self.dateRange)
-
-            # session = self.get_requests_session()
-            # scraper = importlib.import_module(f'workers.dataScraper.scraper.{groupCode}.{groupCode}').Scraper(session)
-            # scraper.scraping_process(channelCode, channelUrl, self.dateRange)
+            # result = job.delay(groupCode, channelCode, channelUrl, self.dateRange)
+            session = self.get_requests_session()
+            scraper = importlib.import_module(f'workers.dataScraper.scraper.{groupCode}.{channelCode}').Scraper(session)
+            scraper.scraping_process(channelCode, channelUrl, self.dateRange)
     
     def get_date_range(self, targetDate):
         startDate = convert_datetime_string_to_isoformat_datetime(targetDate['startDate'])

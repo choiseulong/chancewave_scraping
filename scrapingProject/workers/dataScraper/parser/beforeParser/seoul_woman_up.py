@@ -92,9 +92,9 @@ def postContentParsingProcess(**params):
 
 def postContentParsingProcess_second(**params):
     local_var = change_params_to_local_var(locals(), params)
-    keyList = ['postTitle', 'uploader', 'postSubject', 'extraInfoList', 'startDate2', 'endDate2']
+    keyList = ['postTitle', 'uploader', 'postSubject', 'extraInfo', 'startDate2', 'endDate2']
     local_var = add_empty_list(local_var, keyList)
-    idxInfo = {0:"postSubject", 1:"postSubject", 2:"extraInfoList", 3:"startDate2", 4:"endDate2", 5:"extraInfoList", 6:"extraInfoList"}
+    idxInfo = {0:"postSubject", 1:"postSubject", 2:"extraInfo", 3:"startDate2", 4:"endDate2", 5:"extraInfo", 6:"extraInfo"}
 
     soup = change_to_soup(local_var['response'].text)
     div_lisBox = extract_tag_list(soup, 'div', {'class' : 'lis_box'}, childIsUnique)
@@ -131,7 +131,7 @@ def postContentParsingProcess_second(**params):
                 contentsCount = 0
                 for i,j in zip(span_text, em_text):
                     if contentsCount in idxInfo.keys():
-                        if idxInfo[contentsCount] == 'extraInfoList':
+                        if idxInfo[contentsCount] == 'extraInfo':
                             extraInfo.update({f'info_{len(extraInfo)}':[i,j]})
                         elif idxInfo[contentsCount] == 'postSubject':
                             subject.append(j)
@@ -139,7 +139,7 @@ def postContentParsingProcess_second(**params):
                             local_var[idxInfo[contentsCount]].append(j)
                     contentsCount += 1
                 local_var['postSubject'].append('-'.join(subject))
-                local_var['extraInfoList'].append(extraInfo)
+                local_var['extraInfo'].append(extraInfo)
             if item_idx == 3:
                 local_var['uploader'].append(
                     clean_text(extract_text(item_contents)

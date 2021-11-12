@@ -1,5 +1,6 @@
 from workers.dataScraper.scraper.topLevelScrper import Scraper as ABCScraper
 from workers.dataScraper.parser.youthcenter import *
+from workers.dataScraper.scraperTools.tools import *
 
 # HTTP Request
 '''
@@ -29,9 +30,13 @@ from workers.dataScraper.parser.youthcenter import *
             find <@post list> html tag attrs['content']
                 <meta name="_csrf" content="04baa83b-492c-415c-9820-94ab677331a9" />
         body_2 : dynamic 
-            find <@post list> html tag attrs['onclick'] and parsing
-                <a href="#" id="dtlLink_R2021021800010" onclick="f_Detail('R2021021800010');">	
+            find <@post list> html tag attrs['value'] and parsing
+                <span class="checkbox">
+						<input type="checkbox" class="checkbox" id="cmprCheckboxR2021021800010" name="cmprCheckbox" value="R2021021800010">
+						<label for="cmprCheckboxR2021021800010"><span class="blind"><em>국민취업지원제도</em>선택</span></label>
+                </span>	
 '''
+isUpdate = True
 
 class Scraper(ABCScraper):
     def __init__(self, session):
@@ -40,10 +45,35 @@ class Scraper(ABCScraper):
 
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
-
+        self.mongo.remove_channel_data(channelCode)
         self.pageCount = 1
         while True :
+            self.session = set_headers(self.session)
             self.channelUrl = self.channelUrlFrame.format(self.pageCount)
             self.post_list_scraping()
+            if self.scrapingTarget:
+                self.additionalKeyValue.extend(find_request_params(self.scrapingTarget, ['Cookie'])) 
+                for i in range(len(self.additionalKeyValue)):
+                    del self.scrapingTarget[-(i+1)]
+                self.additionalKeyValue.append(("Content-Type", "application/x-www-form-urlencoded "))
+                self.session = set_headers(self.session, self.additionalKeyValue, isUpdate)
+                self.target_contents_scraping()
+                self.collect_data()
+                self.mongo.reflect_scraped_data(self.collectedDataList)
+                self.pageCount += 1
+
+                #쿠키 초기화
+                self.session.cookies.clear()
+                self.additionalKeyValue = []
+            else :
+                break
+    
+    def post_list_scraping(self):
+        super().post_list_scraping(postListParsingProcess, 'get')
+    
+    def target_contents_scraping(self):
+        super().target_contents_scraping(postContentParsingProcess)
+    
+
 
 

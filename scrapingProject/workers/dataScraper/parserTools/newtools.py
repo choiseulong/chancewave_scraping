@@ -7,13 +7,16 @@ import re
 def change_to_soup(reponseText):
     return bs(reponseText, 'html.parser')
 
+def select_one(soup, tag):
+    return soup.select_one(tag)
+
 def extract_tag(soup, tag, attrs={}, tagIsUnique=False):
     return soup.findAll(tag, attrs=attrs) \
         if not tagIsUnique \
         else soup.findAll(tag, attrs=attrs)[0]
 
 def extract_text(tag, isMultiple=False):
-    return [_.text for _ in tag] if isMultiple else tag.text
+    return [clean_text(_.text) for _ in tag] if isMultiple else clean_text(tag.text)
 
 def extract_contents(tag, isMultiple=False):
     return [_.contents for _ in tag] if isMultiple else tag.contents
@@ -131,7 +134,7 @@ def clean_text(text):
         text = convert_multiple_empty_erea_to_one_erea(text)
         return text
     except :
-        print(text)
+        return ''
 
 def convert_response_contents_to_dict(contents):
     return xmltodict.parse(contents)
@@ -184,8 +187,9 @@ def check_date_range_availability(dateRange, date):
 
 
 
-
-
+def multiple_appends(valueList, *element):
+    valueList.extend(element)
+    return valueList
 
 def merge_var_to_dict(keyList, valueList):
     result = []
@@ -206,14 +210,14 @@ def reflect_params(var, params):
     return var
 
 def reflect_key(var, targetKeyInfo):
+    keyList = []
     for Type in targetKeyInfo.keys():
-        dummyType = None
-        if Type == 'listType':
-            dummyType = []
-        elif Type == 'strType':
-            dummyType = ''
-        elif Type == 'numType':
-            dummyType = 0
         for key in targetKeyInfo[Type]:
-            var[key] = dummyType
-    return var
+            keyList.append(key)
+            if Type == 'listType':
+                var[key] = []
+            elif Type == 'strType':
+                var[key] = ''
+            elif Type == 'numType':
+                var[key] = 0
+    return var, keyList
