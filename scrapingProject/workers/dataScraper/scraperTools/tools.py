@@ -20,7 +20,7 @@ def get_method_response(session, url):
     status = 'fail'
     if response.status_code == 200 :
         status = 'ok'
-    sleep(1)
+    sleep(2)
     return status, response
 
 def post_method_response(session, url, data={}, jsonize=False):
@@ -30,7 +30,7 @@ def post_method_response(session, url, data={}, jsonize=False):
     status = 'fail'
     if response.status_code == 200 :
         status = 'ok'
-    sleep(1)
+    sleep(2)
     return status, response
 
 def filtering_channel_path_in_globals(Globals):
@@ -52,10 +52,12 @@ def get_post_data_frame(channelCode='', channelUrl=''):
         'channelCode' : channelCode,
         'channelUrl' : channelUrl,
         'postUrl' : None,
+        'linkedPostUrl': None,
         'createdTime' : now.isoformat(),
         'postTitle' : None,
         'postSubject' : None,
         'postText' : None,
+        'postContentTarget' : None,
         'postTextType' : 'onlyPostText',
         'contact': None,
         'postImageUrl': None,

@@ -47,8 +47,8 @@ def postListParsingProcess(**params):
                 extract_children_tag(post, "div", {"class" : "badge"})
             )
         )
-    varList = [var[key] for key in targetKeyInfo['listType']]
-    result = merge_var_to_dict(targetKeyInfo['listType'], varList)
+    valueList = [var[key] for key in targetKeyInfo['listType']]
+    result = merge_var_to_dict(targetKeyInfo['listType'], valueList)
     var['Cookie'] = var['response'].cookies.get_dict()['YOUTHCENTERSESSIONID']
     result.append({'Cookie' : 'YOUTHCENTERSESSIONID=' + var['Cookie']})
     return result

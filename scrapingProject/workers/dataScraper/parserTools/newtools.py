@@ -125,7 +125,7 @@ def convert_multiple_empty_erea_to_one_erea(text):
 
 def clean_text(text):
     try :
-        eraseSpace = ['\r', '&lsquo;', '&rsquo;']
+        eraseSpace = ['\r', '&lsquo;', '&rsquo;', '\u200b']
         leaveSpace = ['\xa0', '\n', '\t', '&nbsp;']
         for _ in eraseSpace:
             text = text.replace(_, '')
@@ -185,7 +185,12 @@ def check_date_range_availability(dateRange, date):
 
 
 
-
+def extract_values_list_in_both_sides_bracket_text(text):
+    startIdx = text.find('(')
+    endIdx = text.rfind(')')
+    text = text[startIdx+1 : endIdx]
+    valueList = [i.replace("'", "") for i in text.split(',')]
+    return valueList
 
 def multiple_appends(valueList, *element):
     valueList.extend(element)

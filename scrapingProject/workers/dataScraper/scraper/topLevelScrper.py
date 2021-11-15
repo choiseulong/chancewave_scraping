@@ -53,7 +53,8 @@ class Scraper(metaclass=ABCMeta):
                 dateRange = self.dateRange, 
                 channelCode = self.channelCode, 
                 postUrlFrame = self.postUrl,
-                pageCount = self.pageCount
+                pageCount = self.pageCount,
+                channelMainUrl = self.channelMainUrl
             )
 
     def target_contents_scraping(self, postContentParsingProcess):
