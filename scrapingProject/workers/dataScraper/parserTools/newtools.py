@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup as bs
 from jsonpath_ng import parse as jsonpath_parse
 from datetime import datetime
+import json
 import xmltodict
 import re
 
@@ -226,3 +227,18 @@ def reflect_key(var, targetKeyInfo):
             elif Type == 'numType':
                 var[key] = 0
     return var, keyList
+
+
+def html_type_default_setting(params, targetKeyInfo):
+    var = reflect_params(locals(), params)
+    var, keyList = reflect_key(var, targetKeyInfo)
+    soup = change_to_soup(
+        var['response'].text
+    )
+    return var, soup, keyList
+
+def json_type_default_setting(params, targetKeyInfo):
+    var = reflect_params(locals(), params)
+    var, keyList = reflect_key(var, targetKeyInfo)
+    jsonData = json.loads(var['response'].text)
+    return var, jsonData, keyList

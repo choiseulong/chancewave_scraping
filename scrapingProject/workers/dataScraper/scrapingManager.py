@@ -49,8 +49,9 @@ class ScrapingManager:
             groupCode = extract_groupCode(channelCode)
             # result = job.delay(groupCode, channelCode, channelUrl, self.dateRange)
             session = self.get_requests_session()
-            if groupCode in ['youthcenter']:
+            if groupCode in ['youthcenter', 'jobaba']:
                 continue
+            print(groupCode)
             scraper = importlib.import_module(f'workers.dataScraper.scraper.{groupCode}.{channelCode}').Scraper(session)
             scraper.scraping_process(channelCode, channelUrl, self.dateRange)
     

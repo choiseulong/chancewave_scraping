@@ -73,7 +73,8 @@ class Scraper(metaclass=ABCMeta):
                     postContentParsingProcess(
                         response = response, 
                         channelUrl = self.channelUrl,
-                        postUrlFrame = self.postUrl
+                        postUrlFrame = self.postUrl,
+                        channelMainUrl = self.channelMainUrl
                     )
                 )
 

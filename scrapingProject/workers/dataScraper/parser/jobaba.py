@@ -1,16 +1,13 @@
 from ..parserTools.newtools import * 
-import json
 
 childIsNotMultiple = False
 childIsMultiple = True
 
 def postListParsingProcess(**params):
-    var = reflect_params(locals(), params)
     targetKeyInfo = {
         'listType' : ['postUrl', 'postTitle', 'postThumbnail', 'postContentTarget', 'startDate', 'endDate'],
     }
-    var, keyList = reflect_key(var, targetKeyInfo)
-    jsonData = json.loads(var['response'].text)
+    var, jsonData, keyList = json_type_default_setting(params, targetKeyInfo)
     var['postUrl'] = [
         var['postUrlFrame'].format(seq) \
         for seq \
@@ -38,14 +35,10 @@ def postListParsingProcess(**params):
     return result
 
 def postContentParsingProcess(**params):
-    var = reflect_params(locals(), params)
     targetKeyInfo = {
         'strType' : ['uploader', 'linkedPostUrl', 'postText', 'contact']
     }
-    var, keyList = reflect_key(var, targetKeyInfo)
-    soup = change_to_soup(
-        var['response'].text
-    )
+    var, soup, keyList = html_type_default_setting(params, targetKeyInfo)
     var['postText'] = clean_text(
             extract_text(
             extract_children_tag(soup, 'div', {'class' : 'con-wrap'}, childIsNotMultiple)

@@ -52,7 +52,7 @@ class Scraper(ABCScraper):
     
     def post_list_scraping(self):
         data = {
-            "srchRecordCountPerPage" : 20,
+            "srchRecordCountPerPage" : 10000,
             "currentPageNo" : 1
         }
         super().post_list_scraping(postListParsingProcess, 'post', data)
