@@ -41,14 +41,8 @@ def check_input_date_vaildation(inputDate):
     else :
         return
 
-def start_scraping(startDate, endDate):
-    print(startDate, endDate)
-    
-if __name__ == '__main__':
-    print("날짜 입력 형식 : 2021-11-01 혹은 21-11-01\n미입력 시 최근 2주로 설정")
-    startDate = input("시작 일자 :").strip()
-    endDate = input("마지막 일자 :").strip()
-    if not startDate or not endDate:
-        startDate = '2021-11-01'
-        endDate = '2021-10-15'
-    start_scraping(startDate, endDate)
+@app.get('/get/')
+def get_data(channelCode : str = ''):
+    manager = ProjectManager()
+    data = manager.get_data(channelCode)
+    return data

@@ -1,0 +1,17 @@
+version: '3.4'
+
+services:
+  mongo:
+    container_name: mongodb_container
+    image : mongo:5.0
+    volumes:
+      - C:\mysterico\mongodb:/data/db
+    command : mongo --port 27015
+    ports:
+      - "27015:27015"
+
+  scraping:
+    container_name: scraping_container
+    image: choline/scraping_container:latest
+    ports:
+      - "9200:9200"

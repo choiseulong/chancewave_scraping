@@ -5,10 +5,10 @@ from datetime import datetime
 
 class MongoServer:
     def __init__(self):
-        self.url = 'mongodb://admin:mysterico@k8s.mysterico.com:31489'
+        self.url = 'mongodb://localhost:27015'
         self.connection = MongoClient(self.url)
-        self.db = self.connection.get_database('chancewave_scraper')
-        self.collection = self.db.get_collection('scrapingData')
+        self.db = self.connection.get_database('scraping')
+        self.collection = self.db.get_collection('data')
     
     def fine_one(self, query):
         return self.collection.find_one(query)
@@ -66,6 +66,10 @@ class MongoServer:
         update_query= {'$set' : {'isUpdate' : False}}
         self.update_one(target_query, update_query)
 
+    def get_data(self, channelCode):
+        query = {"channelCode" : channelCode}
+        data = self.find(query)
+        return data
 
 
 

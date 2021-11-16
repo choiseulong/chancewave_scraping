@@ -11,11 +11,6 @@ def change_to_soup(reponseText):
 def select_one(soup, tag):
     return soup.select_one(tag)
 
-# def extract_tag(soup, tag, attrs={}, tagIsUnique=False):
-#     return soup.findAll(tag, attrs=attrs) \
-#         if not tagIsUnique \
-#         else soup.findAll(tag, attrs=attrs)[0]
-
 def extract_text(tag, isMultiple=False):
     return [clean_text(_.text) for _ in tag] if isMultiple else clean_text(tag.text)
 

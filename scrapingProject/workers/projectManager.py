@@ -1,5 +1,4 @@
 from workers.dataServer.mongoServer import MongoServer
-# from workers.scrapingScheduler.scheduler import Scheduler 
 from workers.dataScraper.scrapingManager import ScrapingManager 
 
 class ProjectManager:
@@ -10,6 +9,12 @@ class ProjectManager:
     def job_init_with_target_date(self, targetDate:dict):
         self.TargetDateRange = self.scrapingManager.get_date_range(targetDate)
         self.scrapingManager.scraping_worker_job_init()
+    
+    def get_data(self, channelCode):
+        mongo = MongoServer()
+        data = mongo.get_data(channelCode)
+        return data
+
 
 
 
