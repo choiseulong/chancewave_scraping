@@ -1,7 +1,6 @@
 from time import sleep
 import json
 from datetime import datetime
-import datetime as DateTime
 from pytz import timezone
 from ..parserTools.newtools import *
 

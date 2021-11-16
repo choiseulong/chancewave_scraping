@@ -3,6 +3,7 @@ from workers.dataScraper.scraperDormitory.parserTools.newtools import *
 attrsIsEmpty = {}
 tagIsUnique = True
 childIsMultiple = True
+childIsNotMultiple = False
 
 def postListParsingProcess(**params):
     var = reflect_params(locals(), params)
@@ -14,11 +15,12 @@ def postListParsingProcess(**params):
     soup = change_to_soup(
         var['response'].text
     )
-    post_list_box = extract_children_tag(soup, "div", {"class" : "result-list-box"}, tagIsUnique)
+    post_list_box = extract_children_tag(soup, "div", {"class" : "result-list-box"}, childIsNotMultiple)
+    print(post_list_box)
     post_list = extract_children_tag(post_list_box, "li", attrsIsEmpty, childIsMultiple)
     
     var['_csrf'] = extract_attrs(
-        extract_children_tag(soup, "meta", {"name" : "_csrf"}, tagIsUnique),
+        extract_children_tag(soup, "meta", {"name" : "_csrf"}, childIsNotMultiple),
         "content"
     )
     for post in post_list:

@@ -1,7 +1,9 @@
+from pymongo.errors import *
 from pymongo import MongoClient
-from bson.objectid import ObjectId
 from .tools import *
 from datetime import datetime
+from workers.errorChecker.checker import Checker
+import traceback
 
 class MongoServer:
     def __init__(self):
@@ -13,8 +15,8 @@ class MongoServer:
     def fine_one(self, query):
         return self.collection.find_one(query)
     
-    def find(self, query={}):
-        cursor = self.collection.find(query)
+    def find(self, query={}, projection={}):
+        cursor = self.collection.find(query, projection)
         return [i for i in cursor]
     
     def delete_and_insert(self, targetQuery, newData):
@@ -68,7 +70,8 @@ class MongoServer:
 
     def get_data(self, channelCode):
         query = {"channelCode" : channelCode}
-        data = self.find(query)
+        projection = {'_id': 0}
+        data = self.find(query, projection)
         return data
 
 

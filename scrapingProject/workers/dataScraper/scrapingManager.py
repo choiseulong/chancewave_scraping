@@ -8,13 +8,6 @@ class ScrapingManager:
     def __init__(self):
         self.channelUrlList = []
         self.dateRange = []
-        config = ConfigParser()
-        config.read('./scraperTools/url.ini')
-        for section in config.sections():
-            for item in list(config[section].items()):
-                key = item[0] 
-                value = item[1] 
-                globals()[f'{section}_{key}'] = value
     
     def get_requests_session(
             self, 
@@ -24,13 +17,13 @@ class ScrapingManager:
             }
         ):
         session = req.Session()
-        session.verify = r'./workers/dataScraper/scraperTools/FiddlerRoot.pem'
+        session.verify = r'./workers/dataScraper/scraperDormitory/scraperTools/FiddlerRoot.pem'
         session.proxies = proxies
         return session
-    
+
     def get_channel_url(self):
         config = ConfigParser()
-        config.read('./workers/dataScraper/scraperTools/url.ini', encoding='utf-8')
+        config.read('./workers/dataScraper/scraperDormitory/scraperTools/url.ini', encoding='utf-8')
         for section in config.sections():
             sectionName = section.lower()
             for item in list(config[section].items()):
@@ -44,17 +37,11 @@ class ScrapingManager:
     def scraping_worker_job_init(self):
         self.get_channel_url()
         for channelCode, channelUrl in self.channelUrlList:
-            groupCode = extract_groupCode(channelCode)
             # result = job.delay(groupCode, channelCode, channelUrl, self.dateRange)
             session = self.get_requests_session()
-            if groupCode in ['youthcenter', 'jobaba', 'seoul_in_my_hands']:
-                continue
-            
-            if not channelCode == 'seoul_city_0':
-                continue
-            
-            scraperRoomPath = f'workers.dataScraper.scraperDormitory.rooms.{groupCode}.scraper'
-            scraper = importlib.import_module(scraperRoomPath).Scraper(session)
+            roomName = extract_groupCode(channelCode)
+            scraperRoomAddress = f'workers.dataScraper.scraperDormitory.rooms.{roomName}.scraper'
+            scraper = importlib.import_module(scraperRoomAddress).Scraper(session)
             scraper.scraping_process(channelCode, channelUrl, self.dateRange)
     
     def get_date_range(self, targetDate):
