@@ -2,6 +2,9 @@ from workers.dataScraper.scraperDormitory.scraping_default_usage import Scraper 
 from workers.dataScraper.scraperDormitory.scraperTools.tools import *
 from .parser import *
 
+# SCRAPER
+# jobaba_0
+
 # HTTP Request
 '''
     @post list 

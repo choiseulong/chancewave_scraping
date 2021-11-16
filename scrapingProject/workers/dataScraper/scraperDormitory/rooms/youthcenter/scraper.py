@@ -2,6 +2,8 @@ from workers.dataScraper.scraperDormitory.scraping_default_usage import Scraper 
 from workers.dataScraper.scraperDormitory.scraperTools.tools import *
 from .parser import *
 
+# SCRAPER
+# youthcenter_0
 
 # HTTP Request
 '''

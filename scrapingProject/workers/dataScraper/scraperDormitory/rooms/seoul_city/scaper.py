@@ -2,6 +2,12 @@ from workers.dataScraper.scraperDormitory.scraping_default_usage import Scraper 
 from workers.dataScraper.scraperDormitory.scraperTools.tools import *
 from .parser import *
 
+
+# SCRAPER
+# seoul_city_0
+# seoul_city_1
+# seoul_city_2
+
 # HTTP Request
 '''
     @post list 
