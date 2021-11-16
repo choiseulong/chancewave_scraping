@@ -1,4 +1,4 @@
-from ..parserTools.newtools import * 
+from workers.dataScraper.scraperDormitory.parserTools.newtools import *
 
 
 dummpyAttrs = {}

@@ -1,5 +1,5 @@
+from workers.dataScraper.scraperDormitory.parserTools.newtools import *
 
-from ..parserTools.newtools import * 
 
 childIsMultiple = True
 childIsNotMultiple = False

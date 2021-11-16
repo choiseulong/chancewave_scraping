@@ -1,5 +1,5 @@
-from ..parserTools.newtools import *
-from ..scraperTools.tools import *
+from workers.dataScraper.scraperDormitory.parserTools.newtools import *
+
 
 childIsMultiple = True
 dummyAttrs = {}

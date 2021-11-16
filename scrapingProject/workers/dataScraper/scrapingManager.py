@@ -1,7 +1,5 @@
-from workers.dataScraper.scraperTools.tools import *
-from workers.dataScraper.parserTools.newtools import *
+from workers.dataScraper.scraperDormitory.parserTools.newtools import *
 from workers.scrapingScheduler.scheduler import job
-# from ..dataServer.mongoServer import MongoServer
 import requests as req
 import importlib
 from configparser import ConfigParser
@@ -54,9 +52,9 @@ class ScrapingManager:
             
             if not channelCode == 'seoul_city_0':
                 continue
-            print(channelCode)
             
-            scraper = importlib.import_module(f'workers.dataScraper.scraper.{groupCode}.{channelCode}').Scraper(session)
+            scraperRoomPath = f'workers.dataScraper.scraperDormitory.rooms.{groupCode}.scraper'
+            scraper = importlib.import_module(scraperRoomPath).Scraper(session)
             scraper.scraping_process(channelCode, channelUrl, self.dateRange)
     
     def get_date_range(self, targetDate):
