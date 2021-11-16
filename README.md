@@ -1,4 +1,5 @@
 # chancewave-scraper
+
 # 찬스웨이브 api 문서 url  
 https://docs.google.com/spreadsheets/d/1cETPlC2dAQtWtms3nNYsj_MgUnK1UhopVM-DtYTvQTI/edit#gid=0
 
@@ -7,7 +8,7 @@ https://docs.google.com/spreadsheets/d/1cETPlC2dAQtWtms3nNYsj_MgUnK1UhopVM-DtYTv
 https://docs.google.com/spreadsheets/d/1V6YVV1Wmsp_3gtM5rJSUyqw99qMSuBOyN16DnEUOTSQ/edit#gid=1537643233
 
 
-# HTTP REQUESTS
+# HTTP REQUESTSG
 
 url : scraping-start-with-date  
 method : post  
