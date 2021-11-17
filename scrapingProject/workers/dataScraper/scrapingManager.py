@@ -39,9 +39,10 @@ class ScrapingManager:
         for channelCode, channelUrl in self.channelUrlList:
             roomName = extract_groupCode(channelCode)
             # job.delay(roomName, channelCode, channelUrl, self.dateRange)
-            print(roomName)
-            if roomName != 'gyeonggi_integrated_competition':
+            print(channelCode)
+            if channelCode != 'youthcenter_0':
                 continue
+            
             session = self.get_requests_session()
             scraperRoomAddress = f'workers.dataScraper.scraperDormitory.rooms.{roomName}.scraper'
             scraper = importlib.import_module(scraperRoomAddress).Scraper(session)

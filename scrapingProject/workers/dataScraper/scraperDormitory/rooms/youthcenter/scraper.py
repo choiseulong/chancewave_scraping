@@ -3,7 +3,9 @@ from workers.dataScraper.scraperDormitory.scraperTools.tools import *
 from .parser import *
 
 # SCRAPER
-# youthcenter_0
+# youthcenter_0 : 청년정책 통합검색
+# 타겟 : 모든 포스트
+# 중단 시점 : 유효 포스트가 0개인 경우가 5번 연속 나올 경우
 
 # HTTP Request
 '''
@@ -64,12 +66,13 @@ class Scraper(ABCScraper):
                 self.collect_data()
                 self.mongo.reflect_scraped_data(self.collectedDataList)
                 self.pageCount += 1
+                self.emptyPageCount = 0
 
                 #쿠키 초기화
                 self.session.cookies.clear()
                 self.additionalKeyValue = []
-            else :
-                break
+            elif self.scrapingTarget == 'endpoint' : break
+                
     
     def post_list_scraping(self):
         super().post_list_scraping(postListParsingProcess, 'get')

@@ -2,14 +2,15 @@ from workers.dataScraper.scraperDormitory.scraping_default_usage import Scraper 
 from workers.dataScraper.scraperDormitory.scraperTools.tools import *
 from .parser import *
 
+# 채널 이름
+# seoul_city_0 : 분야별 새소식
+# seoul_city_1 : 이달의 행사 및 축제
+# seoul_city_2 : 이벤트 신청
 
-# SCRAPER
-# seoul_city_0
-# seoul_city_1
-# seoul_city_2
+# 타겟 : 유효 일자 내의 포스트
+# 중단 시점 : 데이터의 개수가 0개인 페이지에 도달할 경우
 
 #HTTP Request
-
 '''
     @post list
 

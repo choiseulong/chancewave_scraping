@@ -33,10 +33,11 @@ def postListParsingProcess(**params):
         in item_div
     ]
     valueList = [
-        [_ for idx, _ in enumerate(var[key]) if checkedDateRange[idx]] \
+        [_ for idx, _ in enumerate(var[key]) if checkedDateRange[idx] == 'vaild'] \
         for key \
         in keyList
     ]
+    print(valueList)
     result = merge_var_to_dict(keyList, valueList)
     return result
  

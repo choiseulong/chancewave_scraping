@@ -14,6 +14,7 @@ class Scraper(metaclass=ABCMeta):
         self.channelUrl = ''
         self.channelUrlFrame = ''
         self.pageCount = 0
+        self.emptyPageCount = 0
         self.additionalKeyValue = []
 
         # scraped data

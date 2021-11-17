@@ -15,6 +15,16 @@ def postListParsingProcess(**params):
     soup = change_to_soup(
         var['response'].text
     )
+
+    postCountBox = extract_children_tag(soup, 'div', {'class' : 'esult-list-top'}, childIsNotMultiple)
+    postCount = extract_numbers_in_text(
+            extract_text(
+            extract_children_tag(postCountBox, 'div', {'class' : 'l'}, childIsNotMultiple)
+        )
+    )
+    if postCount < var['pageCount'] * 12 :
+        return 'endpoint'
+
     post_list_box = extract_children_tag(soup, "div", {"class" : "result-list-box"}, childIsNotMultiple)
     post_list = extract_children_tag(post_list_box, "li", attrsIsEmpty, childIsMultiple)
     
@@ -22,6 +32,7 @@ def postListParsingProcess(**params):
         extract_children_tag(soup, "meta", {"name" : "_csrf"}, childIsNotMultiple),
         "content"
     )
+    labelColorList = []
     for post in post_list:
         var['contentsReqParams'].append(
             {
@@ -42,12 +53,21 @@ def postListParsingProcess(**params):
                 extract_children_tag(post, "span", {"class" : "srh-cate-data"}),
             ) 
         )
+        badge = extract_children_tag(post, "div", {"class" : "badge"})
         var['uploader'].append(
-            extract_text(
-                extract_children_tag(post, "div", {"class" : "badge"})
-            )
+            extract_text(badge)
         )
-    valueList = [var[key] for key in targetKeyInfo['listType']]
+        badgeLabelColor = extract_attrs(
+            extract_children_tag(badge, 'span'),
+            'class'
+        )
+        labelColorList.append(badgeLabelColor)
+    valueList = [
+        [_ for idx, _ in enumerate(var[key]) if 'red-label' in labelColorList[idx]] \
+       for key \
+        in targetKeyInfo['listType']
+    ]
+
     result = merge_var_to_dict(targetKeyInfo['listType'], valueList)
     var['Cookie'] = var['response'].cookies.get_dict()['YOUTHCENTERSESSIONID']
     result.append({'Cookie' : 'YOUTHCENTERSESSIONID=' + var['Cookie']})
