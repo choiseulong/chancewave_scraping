@@ -1,17 +1,49 @@
 version: '3.4'
 
 services:
-  mongo:
+  scraper_container:
+    container_name: scraper_container
+    image: chancewave/scraper:latest
+    ports:
+      - "9201:9201"
+    depends_on:
+      - mongodb_container
+
+  mongodb_container:
     container_name: mongodb_container
     image : mongo:5.0
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=CHANCEWAVE
+      - MONGO_INITDB_ROOT_PASSWORD=MYSTERICO
     volumes:
-      - C:\mysterico\mongodb:/data/db
-    command : mongo --port 27015
+      - C:\scraping_system_mysterico\mongodb:/data/db
     ports:
-      - "27015:27015"
+      - "9202:27017"
+    command: mongod --quiet
+    depends_on:
+      - message_broker_container
+  
+  message_broker_container:
+    container_name: message_broker_container
+    image: rabbitmq:3.9.9-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=CHANCEWAVE
+      - RABBITMQ_DEFAULT_PASS=MYSTERICO
+    volumes:
+        - C:\scraping_system_mysterico\rabbitmq\data\:/var/lib/rabbitmq/
+        - C:\scraping_system_mysterico\rabbitmq\log\:/var/log/rabbitmq
+    ports:
+      - "5672:5672"
+      - "9203:15672"
 
-  scraping:
-    container_name: scraping_container
-    image: choline/scraping_container:latest
-    ports:
-      - "9200:9200"
+  celery_container: 
+    container_name: celery_container
+    build:
+      context: .
+    command: celery -A workers.scrapingScheduler.scheduler worker --loglevel=info -P gevent
+    volumes:
+      - C:\scraping_system_mysterico\celery\:/app/
+    depends_on:
+      - container_name
+      - mongodb_container
+      - message_broker_container

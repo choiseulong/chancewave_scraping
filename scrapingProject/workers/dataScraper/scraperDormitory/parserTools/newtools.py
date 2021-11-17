@@ -93,7 +93,10 @@ def convert_datetime_string_to_isoformat_datetime(datetimeString):
     timeFormat = ['%Y{}%m{}%d ', '%H{}%M{}%S ']
     shortTimeFormat = ['%H{}%M ']
     strptimeFormat = ''
-    for idx, key in enumerate(specialWordCount):
+    for idx, key in enumerate(specialWordCount):      
+        if idx == 1 and '24' in datetimeString.split(' ')[1] :
+            cleanedDate = " 00" + ''.join([':00' for _ in range(specialWordCount[key])])
+            datetimeString = datetimeString.split(' ')[0] + cleanedDate
         if specialWordCount[key] == 2 :
             strptimeFormat += timeFormat[idx].format(key, key)
         elif idx == 1 and specialWordCount[key] == 1:

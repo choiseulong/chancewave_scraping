@@ -1,8 +1,8 @@
 from workers.dataScraper.scraperDormitory.parserTools.newtools import *
 from workers.scrapingScheduler.scheduler import job
+from configparser import ConfigParser
 import requests as req
 import importlib
-from configparser import ConfigParser
 
 class ScrapingManager:
     def __init__(self):
@@ -37,12 +37,16 @@ class ScrapingManager:
     def scraping_worker_job_init(self):
         self.get_channel_url()
         for channelCode, channelUrl in self.channelUrlList:
-            # result = job.delay(groupCode, channelCode, channelUrl, self.dateRange)
-            session = self.get_requests_session()
             roomName = extract_groupCode(channelCode)
+            # job.delay(roomName, channelCode, channelUrl, self.dateRange)
+            print(roomName)
+            if roomName != 'gyeonggi_integrated_competition':
+                continue
+            session = self.get_requests_session()
             scraperRoomAddress = f'workers.dataScraper.scraperDormitory.rooms.{roomName}.scraper'
             scraper = importlib.import_module(scraperRoomAddress).Scraper(session)
             scraper.scraping_process(channelCode, channelUrl, self.dateRange)
+
     
     def get_date_range(self, targetDate):
         startDate = convert_datetime_string_to_isoformat_datetime(targetDate['startDate'])

@@ -51,10 +51,10 @@ def postListParsingProcess(**params):
             )
         )
         var['startDate'].append(
-            startDate
+            convert_datetime_string_to_isoformat_datetime(startDate)
         )
         var['endDate'].append(
-            endDate
+            convert_datetime_string_to_isoformat_datetime(endDate)
         )
     valueList = [var[key] for key in keyList]
     result = merge_var_to_dict(keyList, valueList)

@@ -24,6 +24,7 @@ def postListParsingProcess(**params):
         for date \
         in em_date
     ]
+    checkedDateRange = [check_date_range_availability(var['dateRange'], date) for date in var["uploadedTime"]]
     var['postSubject'] = [
         extract_text(
             extract_children_tag(div, 'i')
@@ -31,7 +32,11 @@ def postListParsingProcess(**params):
         for div \
         in item_div
     ]
-    valueList = [var[key] for key in keyList]
+    valueList = [
+        [_ for idx, _ in enumerate(var[key]) if checkedDateRange[idx]] \
+        for key \
+        in keyList
+    ]
     result = merge_var_to_dict(keyList, valueList)
     return result
  

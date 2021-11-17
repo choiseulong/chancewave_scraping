@@ -16,7 +16,6 @@ def postListParsingProcess(**params):
         var['response'].text
     )
     post_list_box = extract_children_tag(soup, "div", {"class" : "result-list-box"}, childIsNotMultiple)
-    print(post_list_box)
     post_list = extract_children_tag(post_list_box, "li", attrsIsEmpty, childIsMultiple)
     
     var['_csrf'] = extract_attrs(

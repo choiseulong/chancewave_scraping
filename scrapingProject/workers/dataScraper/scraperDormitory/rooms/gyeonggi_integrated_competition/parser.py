@@ -57,7 +57,6 @@ def postContentParsingProcess(**params):
         for link in linkList:
             linkHref = extract_attrs(link, 'href')
             if linkHref :
-                print(linkHref)
                 var['linkedPostUrl'].append(linkHref)
     span_text = [extract_text(span) for span in extract_children_tag(equitable_box, 'span', dummpyAttrs, childIsMultiple)]
     p_text = [extract_text(p) for p in extract_children_tag(equitable_box, 'p', dummpyAttrs, childIsMultiple)]

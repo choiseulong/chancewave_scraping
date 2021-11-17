@@ -2,68 +2,73 @@ from workers.dataScraper.scraperDormitory.scraping_default_usage import Scraper 
 from workers.dataScraper.scraperDormitory.scraperTools.tools import *
 from .parser import *
 
-# HTTP Request
+
+# SCRAPER
+# seoul_city_0
+# seoul_city_1
+# seoul_city_2
+
+#HTTP Request
+
 '''
-    @post list 
+    @post list
 
     method : post
-    url : https://mediahub.seoul.go.kr/competition/competitionListAjax.do
-    header : 
+    url = https://www.seoul.go.kr/realmnews/in/list.do
+    header :
         1. User-Agent
-        2. Content-Type: application/x-www-form-urlencoded; charset=UTF-8
-    body : 
-        1. search_pageNo={pageCount}
-        2. search_contestStatus=all
+    body :
+        1. fetchStart = {pageCount}
     required data searching point :
         header_1 : fixed
-        header_2 : fixed
-        body_1 : Make pageCount loop
-        body_2 : fixed
+        body_1 : pageCount
 '''
 '''
     @post info
 
     method : get
-    url : https://mediahub.seoul.go.kr/gongmo/{postSeq}
-
-    header : 
-        1. User-Agent
-    body :
+    url : 'postUrl'
+    header :
         None
-    required data searching point :
-        header_1 : fixed 
 '''
-
-isUpdate = True
-
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.postUrl =  'https://mediahub.seoul.go.kr/gongmo/{}'
-        self.channelMainUrl = 'https://mediahub.seoul.go.kr'
+        print(self.channelCode)
 
+    def get_post_body_post_list_page(self, num=1):
+        data = {
+            "fetchStart" : num
+        }
+        return data
+    
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
-        self.additionalKeyValue.append(("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"))
-        self.session = set_headers(self.session, self.additionalKeyValue, isUpdate)
+        
         self.pageCount = 1
         while True :
             self.post_list_scraping()
-            if self.scrapingTarget:
+            if self.scrapingTarget :
                 self.target_contents_scraping()
                 self.collect_data()
                 self.mongo.reflect_scraped_data(self.collectedDataList)
                 self.pageCount += 1
-            else :
+            else:
                 break
-    
+
     def post_list_scraping(self):
         data = {
-            "search_pageNo" : self.pageCount,
-            "search_contestStatus" : "all"
+            "fetchStart" : self.pageCount
         }
         super().post_list_scraping(postListParsingProcess, 'post', data)
 
     def target_contents_scraping(self):
-        self.session = set_headers(self.session) # header 초기화
         super().target_contents_scraping(postContentParsingProcess)
+    
+
+
+
+            
+
+ 
+
