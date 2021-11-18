@@ -113,6 +113,13 @@ def convert_datetime_to_isoformat(date):
     return date.isoformat()
 
 def extract_numbers_in_text(text):
+    num = re.sub('[^0-9]', '', text)
+    try :
+        return int(num)
+    except Exception as e :
+        print(num)
+        return 0
+    
     return re.sub('[^0-9]', '', text)
 
 def extract_korean_in_text(text):
@@ -155,8 +162,12 @@ def search_value_in_json_data_using_path(jsonData, path, number_of_data='multipl
     return result
 
 def extract_emails(in_str):
-    mail_list = re.findall(r'([a-zA-Z0-9-\.]+@[a-zA-Z0-9-]+.+[a-zA-Z0-9-]{2,4})', in_str)
-    return mail_list
+    pattern = r"([\w\.-]+)@([\w\.-]+)(\.[\w\.]+)"
+    match = re.search(pattern, in_str)
+    if match:
+        return [match.group()]
+    else :
+        return []
 
 def extract_contact_numbers_from_text(in_str):
     contact_no_list = re.findall(r'(\d{2,3}[- .]?\d{3,4}[- .]?\d{4})', in_str)

@@ -37,7 +37,6 @@ def postListParsingProcess(**params):
         for key \
         in keyList
     ]
-    print(valueList)
     result = merge_var_to_dict(keyList, valueList)
     return result
  

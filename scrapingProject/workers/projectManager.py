@@ -10,9 +10,12 @@ class ProjectManager:
         self.TargetDateRange = self.scrapingManager.get_date_range(targetDate)
         self.scrapingManager.scraping_worker_job_init()
     
-    def get_data(self, channelCode):
+    def get_data(self, channelCode=''):
         mongo = MongoServer()
-        data = mongo.get_data(channelCode)
+        if channelCode:
+            data = mongo.get_data(channelCode)
+        else :
+            data = mongo.get_total_data()
         return data
 
 

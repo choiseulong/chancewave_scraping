@@ -56,7 +56,7 @@ class Scraper(ABCScraper):
             self.session = set_headers(self.session)
             self.channelUrl = self.channelUrlFrame.format(self.pageCount)
             self.post_list_scraping()
-            if self.scrapingTarget:
+            if isinstance(self.scrapingTarget, list):
                 self.additionalKeyValue.extend(find_request_params(self.scrapingTarget, ['Cookie'])) 
                 for i in range(len(self.additionalKeyValue)):
                     del self.scrapingTarget[-(i+1)]

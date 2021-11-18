@@ -2,13 +2,12 @@ from pymongo.errors import *
 from pymongo import MongoClient
 from .tools import *
 from datetime import datetime
-from workers.errorChecker.checker import Checker
 import traceback
 
 class MongoServer:
     def __init__(self):
-        self.url = 'mongodb://admin:mysterico@k8s.mysterico.com:31489'
-        # self.url = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/'
+        # self.url = 'mongodb://admin:mysterico@k8s.mysterico.com:31489'
+        self.url = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/'
         self.connection = MongoClient(self.url)
         self.db = self.connection.get_database('scraping')
         self.collection = self.db.get_collection('data')
@@ -74,6 +73,13 @@ class MongoServer:
         projection = {'_id': 0}
         data = self.find(query, projection)
         return data
+
+    def get_total_data(self):
+        query = {}
+        projection = {'_id': 0}
+        data = self.find(query, projection)
+        return data
+
 
 
 

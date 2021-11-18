@@ -13,7 +13,7 @@ class ERROR_CODE(Enum):
     DOCUMENT_TOO_LARGE = 0xE0102
     DUPLICATE_KEY_ERROR = 0xE0103
 
-class Checker:
+class ErrorChecker:
     def __init__(self, exceptionFullText, exceptionClass):
         self.exceptionFullText = exceptionFullText
         self.exceptionClass = exceptionClass
@@ -39,3 +39,7 @@ class DOCUMENT_TOO_LARGE(Enum):
 
 class DUPLICATE_KEY_ERROR(Enum):
     say = 'DB Duplicate Key Error : {}'
+
+class PARSINNG_ATTRIBUTE_ERROR(Enum):
+    say = 'Parser Attribute Error : {}'
+    

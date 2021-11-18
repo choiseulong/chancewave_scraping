@@ -14,22 +14,20 @@ def set_headers(session, additionalKeyValue=None, isUpdate=False):
     session.headers = headers
     return session
 
-def get_method_response(session, url):
+def get_method_response(session, url, sleepSec=2):
     response = session.get(url)
     status = 'fail'
     if response.status_code == 200 :
         status = 'ok'
-    sleep(2)
+    sleep(sleepSec)
     return status, response
 
-def post_method_response(session, url, data={}, jsonize=False):
-    if jsonize and data:
-        data = json.dumps(data)
+def post_method_response(session, url, data={}, sleepSec=2):
     response = session.post(url, data=data)
     status = 'fail'
     if response.status_code == 200 :
         status = 'ok'
-    sleep(2)
+    sleep(sleepSec)
     return status, response
 
 def filtering_channel_path_in_globals(Globals):

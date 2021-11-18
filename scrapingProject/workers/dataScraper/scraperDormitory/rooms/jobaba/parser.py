@@ -1,8 +1,8 @@
 from workers.dataScraper.scraperDormitory.parserTools.newtools import *
 
-
 childIsNotMultiple = False
 childIsMultiple = True
+dummyAttrs = {}
 
 def postListParsingProcess(**params):
     targetKeyInfo = {
@@ -40,12 +40,25 @@ def postContentParsingProcess(**params):
         'strType' : ['uploader', 'linkedPostUrl', 'postText', 'contact']
     }
     var, soup, keyList = html_type_default_setting(params, targetKeyInfo)
-    var['postText'] = clean_text(
-            extract_text(
-            extract_children_tag(soup, 'div', {'class' : 'con-wrap'}, childIsNotMultiple)
+    error_warp = extract_children_tag(soup, 'div', {"class" : "error-warp"}, childIsNotMultiple)
+    if error_warp :
+        # 페이지는 있으나 요청에 오류가 발생한 포스트
+        return 'retry'
+
+    scripts = extract_children_tag(soup, 'script', dummyAttrs, childIsMultiple)
+    if len(scripts) == 1 :
+        # 모집이 마감된 포스트
+        return
+
+    mainText = extract_children_tag(soup, 'div', {'class' : 'con-wrap'}, childIsNotMultiple)
+    if mainText :
+        var['postText'] = clean_text(
+                extract_text(
+                mainText
+            )
         )
-    )
-    if '일시적으로 오류가 발생하였습니다.' in var['postText'] :
+    else :
+        # 컨텐츠가 없는 포스트
         return 
 
     linkedPostUrlData = extract_attrs(
@@ -55,8 +68,6 @@ def postContentParsingProcess(**params):
     var['linkedPostUrl'] = extract_values_list_in_both_sides_bracket_text(linkedPostUrlData)[1] if linkedPostUrlData else None
     uploaderData = extract_children_tag(soup, 'p', {'class' : 'note'}, childIsMultiple)
     var['uploader'] = extract_text(uploaderData[1]) if uploaderData else None
-    
-
     var['contact'] = list(set(extract_contact_numbers_from_text(var['postText']) + extract_emails(var['postText'])))
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)

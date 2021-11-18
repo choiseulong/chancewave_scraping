@@ -41,8 +41,14 @@ def check_input_date_vaildation(inputDate):
     else :
         return
 
-@app.get('/get/')
-def get_data(channelCode : str = ''):
+@app.get('/getChannelData/')
+def get_channel_data(channelCode : str = ''):
     manager = ProjectManager()
     data = manager.get_data(channelCode)
+    return data
+
+@app.get('/getTotalData')
+def get_total_data(channelCode : str = ''):
+    manager = ProjectManager()
+    data = manager.get_data()
     return data

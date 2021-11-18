@@ -20,6 +20,8 @@ services:
     ports:
       - "9202:27017"
     command: mongod --quiet
+    logging: 
+      driver: "none"
     depends_on:
       - message_broker_container
   

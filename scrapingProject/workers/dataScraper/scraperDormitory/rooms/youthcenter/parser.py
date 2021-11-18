@@ -16,7 +16,7 @@ def postListParsingProcess(**params):
         var['response'].text
     )
 
-    postCountBox = extract_children_tag(soup, 'div', {'class' : 'esult-list-top'}, childIsNotMultiple)
+    postCountBox = extract_children_tag(soup, 'div', {'class' : ['sch-result-wrap compare-result-list']}, childIsNotMultiple)
     postCount = extract_numbers_in_text(
             extract_text(
             extract_children_tag(postCountBox, 'div', {'class' : 'l'}, childIsNotMultiple)
