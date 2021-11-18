@@ -6,8 +6,8 @@ import traceback
 
 class MongoServer:
     def __init__(self):
-        # self.url = 'mongodb://admin:mysterico@k8s.mysterico.com:31489'
-        self.url = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/'
+        self.url = 'mongodb://admin:mysterico@k8s.mysterico.com:31489'
+        # self.url = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/'
         self.connection = MongoClient(self.url)
         self.db = self.connection.get_database('scraping')
         self.collection = self.db.get_collection('data')
@@ -57,7 +57,7 @@ class MongoServer:
 
     def update_data_process(self, newData, beforeData):
         now = datetime.now(timezone('Asia/Seoul')).isoformat()
-        newData['isUpdate'] = not newData['isUpdate']
+        newData['isUpdate'] = True
         newData['updatedTime'] = now
         beforeDocId = beforeData['_id']
         targetQuery = {'_id' : beforeDocId}

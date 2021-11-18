@@ -19,9 +19,7 @@ services:
       - C:\scraping_system_mysterico\mongodb:/data/db
     ports:
       - "9202:27017"
-    command: mongod --quiet
-    logging: 
-      driver: "none"
+    command: mongod --quiet --logpath /dev/null 
     depends_on:
       - message_broker_container
   

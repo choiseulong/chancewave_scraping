@@ -87,7 +87,7 @@ class Scraper(metaclass=ABCMeta):
             )
             if postContent == 'retry' : 
                 sleep(60)
-                print(postContent, self.retryCount)
+                print(f'{self.channelCode} - retry : {self.retryCount}')
                 self.retryCount += 1
                 if self.retryCount == 3:
                     self.retryCount = 0

@@ -14,13 +14,14 @@ class ERROR_CODE(Enum):
     DUPLICATE_KEY_ERROR = 0xE0103
 
 class ErrorChecker:
-    def __init__(self, exceptionFullText, exceptionClass):
-        self.exceptionFullText = exceptionFullText
-        self.exceptionClass = exceptionClass
+    def __init__(self):
+        self.exceptionFullText = ''
     
-    def is_handling(self):
-        if self.exceptionClass in dir(ERROR_CODE):
-            something = globals()[self.exceptionClass].say.value
+    def is_handling(self, exceptionFullText, exceptionClass):
+        self.exceptionFullText = exceptionFullText
+
+        if exceptionClass in dir(ERROR_CODE):
+            something = globals()[exceptionClass].say.value
         else :
             something = globals()[UNCHECKED_ERROR].say.value
         return something

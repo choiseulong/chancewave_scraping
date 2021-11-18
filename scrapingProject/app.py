@@ -14,7 +14,7 @@ class TargetDate(BaseModel):
     startDate : str = todayString # 오늘 부터
     endDate : str = before2WeekString # 2주 전까지
 
-@app.post("/scraping-start-with-date")
+@app.post("/scraping-start")
 async def scraping_with_target_date(targetDate : TargetDate):
     inputDate = targetDate.dict()
     if check_input_date_vaildation(inputDate) == 'vaild':
@@ -48,7 +48,7 @@ def get_channel_data(channelCode : str = ''):
     return data
 
 @app.get('/getTotalData')
-def get_total_data(channelCode : str = ''):
+def get_total_data():
     manager = ProjectManager()
     data = manager.get_data()
     return data

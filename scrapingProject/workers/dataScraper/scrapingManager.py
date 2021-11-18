@@ -3,10 +3,8 @@ from workers.scrapingScheduler.scheduler import job
 from configparser import ConfigParser
 from workers.errorChecker.checker import ErrorChecker
 import requests as req
-import importlib
-import traceback
-
-
+# import importlib
+# import traceback
 
 checker = ErrorChecker()
 
@@ -47,9 +45,11 @@ class ScrapingManager:
             try :
                 job.delay(roomName, channelCode, channelUrl, self.dateRange)
             except Exception as e :
-                something = checker.is_handling(traceback.format_exc(), e.__class__)
-                print(something)
-            # print(channelCode)
+                print('error')
+                return
+                # something = checker.is_handling(traceback.format_exc(), e.__class__)
+                # print(something)
+            
             # if channelCode != 'youthcenter_0':
             #     continue
             
