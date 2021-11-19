@@ -8,7 +8,7 @@ childIsNotMultiple = False
 def postListParsingProcess(**params):
     var = reflect_params(locals(), params)
     targetKeyInfo = {
-        'listType' : ['postSubject', 'postTitle', 'uploader', 'contentsReqParams'],
+        'listType' : ['isGoingOn', 'postSubject', 'postTitle', 'uploader', 'contentsReqParams'],
         'strType' : ['Cookie','_csrf']
     }
     var, _ = reflect_key(var, targetKeyInfo)
@@ -61,9 +61,13 @@ def postListParsingProcess(**params):
             extract_children_tag(badge, 'span'),
             'class'
         )
-        labelColorList.append(badgeLabelColor)
+        if 'red-label' in badgeLabelColor:
+            var['isGoingOn'].append(True)
+        else :
+            var['isGoingOn'].append(False)
+            
     valueList = [
-        [_ for idx, _ in enumerate(var[key]) if 'red-label' in labelColorList[idx]] \
+        [_ for idx, _ in enumerate(var[key])] \
        for key \
         in targetKeyInfo['listType']
     ]

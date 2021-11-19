@@ -6,8 +6,8 @@ import traceback
 
 class MongoServer:
     def __init__(self):
-        self.url = 'mongodb://admin:mysterico@k8s.mysterico.com:31489'
-        # self.url = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/'
+        # self.url = 'mongodb://admin:mysterico@k8s.mysterico.com:31489'
+        self.url = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/'
         self.connection = MongoClient(self.url)
         self.db = self.connection.get_database('scraping')
         self.collection = self.db.get_collection('data')
@@ -37,18 +37,17 @@ class MongoServer:
         bulkInsertDataList = []
         for newData in collectedDataList:
             postUrl = newData['postUrl']
+            channelCode = newData['channelCode']
             crc32 = make_crc(newData)
             newData['crc'] = crc32
-            beforeData = self.fine_one({'postUrl' : postUrl})
+            beforeData = self.fine_one({'postUrl' : postUrl, "channelCode" : channelCode})
             if beforeData and postUrl != None :
                 if beforeData['crc'] == newData['crc']:
-                    if beforeData['isUpdate']:
-                        postUrl = beforeData['postUrl']
-                        self.update_isUpdate_to_False(postUrl)
+                    postUrl = beforeData['postUrl']
+                    self.update_checkTime(postUrl, beforeData)
                     continue
                 elif beforeData['crc'] - newData['crc']:
-                    print(beforeData['crc'], newData['crc'])
-                    print(f'{postUrl}\n@@ 문서 업데이트 @@')
+                    # print(f'{postUrl}\n@@ 문서 업데이트 @@')
                     self.update_data_process(newData, beforeData)
             else :
                 bulkInsertDataList.append(newData)
@@ -57,15 +56,22 @@ class MongoServer:
 
     def update_data_process(self, newData, beforeData):
         now = datetime.now(timezone('Asia/Seoul')).isoformat()
-        newData['isUpdate'] = True
-        newData['updatedTime'] = now
+        isUpdateCheck = beforeData['isUpdateCheckTime']
+        isUpdateCheck.append(True)
+        updatedTime = beforeData['updatedTime']
+        updatedTime.append(now)
+        newData['isUpdateCheckTime'] = isUpdateCheck
+        newData['updatedTime'] = updatedTime
         beforeDocId = beforeData['_id']
         targetQuery = {'_id' : beforeDocId}
         self.delete_and_insert(targetQuery, newData)
     
-    def update_isUpdate_to_False(self, postUrl):
+    def update_checkTime(self, postUrl, beforeData):
+        now = datetime.now(timezone('Asia/Seoul')).isoformat()
+        isUpdateCheck = beforeData['isUpdateCheckTime']
+        isUpdateCheck.append(now)
         target_query = {'postUrl' : postUrl}
-        update_query= {'$set' : {'isUpdate' : False}}
+        update_query= {'$set' : {'isUpdateCheckTime' : isUpdateCheck}}
         self.update_one(target_query, update_query)
 
     def get_data(self, channelCode):

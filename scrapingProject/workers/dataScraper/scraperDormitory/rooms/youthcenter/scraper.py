@@ -50,7 +50,7 @@ class Scraper(ABCScraper):
 
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
-        self.mongo.remove_channel_data(channelCode)
+        # self.mongo.remove_channel_data(channelCode)
         self.pageCount = 1
         while True :
             self.session = set_headers(self.session)

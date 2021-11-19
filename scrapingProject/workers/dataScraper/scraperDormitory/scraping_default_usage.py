@@ -86,7 +86,7 @@ class Scraper(metaclass=ABCMeta):
                 channelMainUrl = self.channelMainUrl
             )
             if postContent == 'retry' : 
-                sleep(60)
+                sleep(300)
                 print(f'{self.channelCode} - retry : {self.retryCount}')
                 self.retryCount += 1
                 if self.retryCount == 3:
@@ -116,7 +116,10 @@ class Scraper(metaclass=ABCMeta):
                 reqBody = targetInfo['contentsReqParams']
                 del targetInfo['contentsReqParams']
                 targetInfo.update({'postUrl': self.postUrl + json.dumps(reqBody)}) 
-            dataFrame = get_post_data_frame(self.channelCode, self.channelUrl)
+                postUrlCanUse = False
+            else :
+                postUrlCanUse = True
+            dataFrame = get_post_data_frame(self.channelCode, self.channelUrl, postUrlCanUse)
             dataFrameWithTargetInfo = enter_data_into_dataFrame(dataFrame, targetInfo)
             dataFrameWithTargetContents = enter_data_into_dataFrame(dataFrameWithTargetInfo, targetContents)
             self.collectedDataList.append(dataFrameWithTargetContents)

@@ -65,8 +65,8 @@ class Scraper(ABCScraper):
             "srchRecordCountPerPage" : 50,
             "currentPageNo" : self.pageCount
         }
-        super().post_list_scraping(postListParsingProcess, 'post', data, 4)
+        super().post_list_scraping(postListParsingProcess, 'post', data, 6)
 
     def target_contents_scraping(self):
         self.session = set_headers(self.session) # header 초기화
-        super().target_contents_scraping(postContentParsingProcess, 4)
+        super().target_contents_scraping(postContentParsingProcess, 6)

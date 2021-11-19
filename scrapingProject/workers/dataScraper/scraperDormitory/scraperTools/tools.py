@@ -43,12 +43,13 @@ def return_key_value(data):
     value = data[key]
     return key, value
 
-def get_post_data_frame(channelCode='', channelUrl=''):
+def get_post_data_frame(channelCode='', channelUrl='', postUrlCanUse=True):
     now = datetime.now(timezone('Asia/Seoul'))
     return {
         'channelCode' : channelCode,
         'channelUrl' : channelUrl,
         'postUrl' : None,
+        'postUrlCanUse' : postUrlCanUse,
         'linkedPostUrl': None,
         'createdTime' : now.isoformat(),
         'postTitle' : None,
@@ -65,8 +66,9 @@ def get_post_data_frame(channelCode='', channelUrl=''):
         'endDate' : None,
         'startDate2' : None,
         'endDate2' : None,
-        'isUpdate' : False,
-        'updatedTime' : None,
+        'isUpdateCheckTime' : [],
+        'updatedTime' : [],
+        'isGoingOn' : None,
         'crc' : None,
         'extraInfo' : []
     }

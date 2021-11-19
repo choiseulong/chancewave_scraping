@@ -52,8 +52,9 @@ def postContentParsingProcess(**params):
     )
     div_postText = extract_children_tag(soup, "div", {"id" : "post_content"})
     pTagList = extract_children_tag(div_postText, 'p', {"class" : ['indent20', 'mt20']}, childIsMultiple)
+    
     if not pTagList:
-        pTagList = extract_children_tag(div_postText, 'p', dummyAttrs, childIsMultiple)
+        pTagList = [p for p in extract_children_tag(div_postText, 'p', dummyAttrs, childIsMultiple)]
     postTextList = [
         clean_text(
             extract_text(p)
@@ -62,10 +63,20 @@ def postContentParsingProcess(**params):
         in pTagList
     ]
     var['postText'] = ' '.join(postTextList) if postTextList else ''
-    imgs = extract_children_tag(div_postText, 'img', dummyAttrs, childIsMultiple)
-    if imgs :
-        for img in imgs:
-            var['postImageUrl'].append(extract_attrs(img, 'src'))
+
+    for ptag in pTagList:
+        if 'class' in ptag.attrs:
+            classAttrs = extract_attrs(ptag, 'class')
+            if classAttrs in ['txt-1', 'txt-2', 'btn']:
+                continue
+        else :
+            img = extract_children_tag(ptag, 'img', dummyAttrs, childIsMultiple)
+            if img :
+                for i in img :
+                    src = extract_attrs(i, 'src')
+                    var['postImageUrl'].append(
+                        src 
+                    )
 
     contact = extract_children_tag(soup, "dl", {"class" : "top-row row2"})
     uploader = extract_children_tag(extract_children_tag(soup, "dd", {"class" : "dept"}), 'span', dummyAttrs, childIsMultiple)

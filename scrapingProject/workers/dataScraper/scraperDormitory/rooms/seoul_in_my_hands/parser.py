@@ -8,12 +8,18 @@ dummpyAttrs = {}
 
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['postTitle', 'postUrl', 'postThumbnail', 'uploader', 'startDate', 'endDate', 'postSubject']
+        'listType' : ['isGoingOn', 'postTitle', 'postUrl', 'postThumbnail', 'uploader', 'startDate', 'endDate', 'postSubject']
     }
     var, soup, keyList = html_type_default_setting(params, targetKeyInfo)
     dataList = extract_children_tag(soup, 'div', {"class" : "multi_cont"}, childIsNotMultiple) # tag
     competitionList = extract_children_tag(dataList, 'a', {"class" : "goCompetitionDetail"}, childIsMultiple) # list
     for data in competitionList :
+        status = extract_text(extract_children_tag(data, 'span', {"class" : "flag_md"}))
+        if status == '진행중': 
+            var['isGoingOn'].append(True)
+        else :
+            var['isGoingOn'].append(False)
+
         var['postUrl'].append(
             var['channelMainUrl'] + \
             extract_attrs(
@@ -56,6 +62,7 @@ def postListParsingProcess(**params):
         var['endDate'].append(
             convert_datetime_string_to_isoformat_datetime(endDate)
         )
+
     valueList = [var[key] for key in keyList]
     result = merge_var_to_dict(keyList, valueList)
     return result
