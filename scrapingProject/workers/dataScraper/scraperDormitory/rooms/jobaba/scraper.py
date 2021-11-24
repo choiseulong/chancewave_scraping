@@ -38,6 +38,7 @@ from .parser import *
 '''
 
 isUpdate = True
+sleepSec = 6
 
 class Scraper(ABCScraper):
     def __init__(self, session):
@@ -47,7 +48,7 @@ class Scraper(ABCScraper):
     
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
-        self.additionalKeyValue.append(("Content-Type", "application/x-www-form-urlencoded "))
+        self.additionalKeyValue.append(("Content-Type", "application/x-www-form-urlencoded"))
         self.session = set_headers(self.session, self.additionalKeyValue, isUpdate)
         self.pageCount = 1 
         while True:
@@ -65,8 +66,8 @@ class Scraper(ABCScraper):
             "srchRecordCountPerPage" : 50,
             "currentPageNo" : self.pageCount
         }
-        super().post_list_scraping(postListParsingProcess, 'post', data, 6)
+        super().post_list_scraping(postListParsingProcess, 'post', data, sleepSec)
 
     def target_contents_scraping(self):
         self.session = set_headers(self.session) # header 초기화
-        super().target_contents_scraping(postContentParsingProcess, 6)
+        super().target_contents_scraping(postContentParsingProcess, sleepSec)

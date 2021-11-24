@@ -2,7 +2,7 @@ from time import sleep
 import json
 from datetime import datetime
 from pytz import timezone
-from ..parserTools.newtools import *
+from ..parserTools.tools import *
 
 def set_headers(session, additionalKeyValue=None, isUpdate=False):
     headers = {

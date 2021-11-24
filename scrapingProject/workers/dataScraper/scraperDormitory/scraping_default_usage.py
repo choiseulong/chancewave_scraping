@@ -1,6 +1,6 @@
 from workers.dataServer.mongoServer import MongoServer
 from .scraperTools.tools import *
-from .parserTools.newtools import * 
+from .parserTools.tools import * 
 import json
 from abc import *
 

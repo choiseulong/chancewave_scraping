@@ -1,4 +1,4 @@
-from workers.dataScraper.scraperDormitory.parserTools.newtools import *
+from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
 childIsNotMultiple = False
 childIsMultiple = True
@@ -39,7 +39,7 @@ def postContentParsingProcess(**params):
     targetKeyInfo = {
         'strType' : ['uploader', 'linkedPostUrl', 'postText', 'contact']
     }
-    var, soup, keyList = html_type_default_setting(params, targetKeyInfo)
+    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     error_warp = extract_children_tag(soup, 'div', {"class" : "error-warp"}, childIsNotMultiple)
     if error_warp :
         # 페이지는 있으나 요청에 오류가 발생한 포스트

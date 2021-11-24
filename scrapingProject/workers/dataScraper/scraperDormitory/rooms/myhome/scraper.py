@@ -2,27 +2,27 @@ from workers.dataScraper.scraperDormitory.scraping_default_usage import Scraper 
 from workers.dataScraper.scraperDormitory.scraperTools.tools import *
 from .parser import *
 
-# 채널 이름
-# seoul_city_0 : 분야별 새소식
-# seoul_city_1 : 이달의 행사 및 축제
-# seoul_city_2 : 이벤트 신청
+# 채널 이름 : 마이홈
+
 
 # 타겟 : 유효 일자 내의 포스트
-# 중단 시점 : 데이터의 개수가 0개인 페이지에 도달할 경우
+# 중단 시점 : 모든 공고가 모집 완료인 시점에서 종료
 
 #HTTP Request
 '''
     @post list
 
-    method : post
-    url = https://www.seoul.go.kr/realmnews/in/list.do
+    method : POST
+    url = https://www.myhome.go.kr/hws/portal/sch/selectRsdtRcritNtcList.do
     header :
-        1. User-Agent
+        1. Content-Type : application/x-www-form-urlencoded; charset=UTF-8
     body :
-        1. fetchStart = {pageCount}
+        1. pageIndex={pageCount}
+        2. srchSuplyTy=
     required data searching point :
         header_1 : fixed
         body_1 : pageCount
+        body_2 : fixed
 '''
 '''
     @post info
@@ -32,19 +32,20 @@ from .parser import *
     header :
         None
 '''
+
+isUpdate = True
+sleepSec = 4
+
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-
-    def get_post_body_post_list_page(self, num=1):
-        data = {
-            "fetchStart" : num
-        }
-        return data
+        self.postUrl = "https://www.myhome.go.kr/hws/portal/sch/selectRsdtRcritNtcDetailView.do?pblancId={}"
     
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
-        
+        # post list 
+        self.additionalKeyValue.append(("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"))
+        self.session = set_headers(self.session, self.additionalKeyValue, isUpdate)
         self.pageCount = 1
         while True :
             self.post_list_scraping()
@@ -58,12 +59,13 @@ class Scraper(ABCScraper):
 
     def post_list_scraping(self):
         data = {
-            "fetchStart" : self.pageCount
+            "pageIndex" : self.pageCount,
+            "srchSuplyTy" : ""
         }
-        super().post_list_scraping(postListParsingProcess, 'post', data)
+        super().post_list_scraping(postListParsingProcess, 'post', data, sleepSec)
 
     def target_contents_scraping(self):
-        super().target_contents_scraping(postContentParsingProcess)
+        super().target_contents_scraping(postContentParsingProcess, sleepSec)
     
 
 

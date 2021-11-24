@@ -91,7 +91,6 @@ def convert_datetime_string_to_isoformat_datetime(datetimeString):
     specialWord = re.sub(r'[^\.|\-|\:]', '', datetimeString)
     specialWordCount = {word:specialWord.count(word) for word in specialWord}
     timeFormat = ['%Y{}%m{}%d ', '%H{}%M{}%S ']
-    shortTimeFormat = ['%H{}%M ']
     strptimeFormat = ''
     for idx, key in enumerate(specialWordCount):      
         if idx == 1 and len(datetimeString.split(' ')) == 2:
@@ -246,10 +245,11 @@ def reflect_key(var, targetKeyInfo):
 def html_type_default_setting(params, targetKeyInfo):
     var = reflect_params(locals(), params)
     var, keyList = reflect_key(var, targetKeyInfo)
+    text = var['response'].text
     soup = change_to_soup(
-        var['response'].text
+        text
     )
-    return var, soup, keyList
+    return var, soup, keyList, text
 
 def json_type_default_setting(params, targetKeyInfo):
     var = reflect_params(locals(), params)

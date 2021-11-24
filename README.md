@@ -1,14 +1,14 @@
-# chancewave-scraper
+# CHANCEWAVE-SCRAPER
 
-# 찬스웨이브 api 문서 url  
+# 찬스웨이브 API 문서  
 https://docs.google.com/spreadsheets/d/1cETPlC2dAQtWtms3nNYsj_MgUnK1UhopVM-DtYTvQTI/edit#gid=0
 
 
-# 미스테리코 작성중 api 문서  
+# 미스테리코 작성중 API 문서  
 https://docs.google.com/spreadsheets/d/1V6YVV1Wmsp_3gtM5rJSUyqw99qMSuBOyN16DnEUOTSQ/edit#gid=1537643233
 
 
-# HTTP REQUESTSG
+# HTTP Requests
 
 url : scraping-start-with-date  
 method : post  
@@ -21,17 +21,17 @@ body : {
 
 #  
 
-# celery env
+# Celery env
 #### backend  
 MONGO_URL = 'mongodb://admin:mysterico@k8s.mysterico.com:31489/celery?authSource=admin'  
 
-#### message broker  
+#### Message Broker  
 broker_url = 'pyamqp://choline:123123@localhost:8080//'  
 
-#### run celery
+#### Run Celery
 celery -A tasks worker --loglevel=info --pool=solo --concurrency=24  
 
-#### run rabbitmq
+#### Run RabbitMQ
 docker run -d --name rabbitmq -p 5672:5672 -p 8080:15672 --restart=unless-stopped -e RABBITMQ_DEFAULT_USER=username -e RABBITMQ_DEFAULT_PASS=password rabbitmq:management  
 
 #

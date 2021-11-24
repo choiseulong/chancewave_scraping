@@ -25,8 +25,8 @@ from .parser import *
 '''
     @post info
 
-    method : get
-    url : https://www.gg.go.kr/bbs/boardView.do?bIdx={postSeq}&bsIdx=731&menuId=2916
+    method : GET
+    url : https://www.myhome.go.kr/hws/portal/sch/selectRsdtRcritNtcDetailView.do?pblancId={pblancId} 
     header : 
         None
     body :

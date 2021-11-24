@@ -1,4 +1,4 @@
-from workers.dataScraper.scraperDormitory.parserTools.newtools import *
+from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
 
 dummpyAttrs = {}
@@ -42,7 +42,7 @@ def postContentParsingProcess(**params):
         'listType' : ['extraInfo', 'postImageUrl', 'linkedPostUrl'],
         'strType' : ['postContentTarget', 'contact', 'postTextType']
     }
-    var, soup, keyList = html_type_default_setting(params, targetKeyInfo)
+    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     item_box = extract_children_tag(soup, 'div', {"class" : "item"})
     var['postImageUrl'] = [
         var['channelMainUrl'] + \

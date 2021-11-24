@@ -1,4 +1,4 @@
-from workers.dataScraper.scraperDormitory.parserTools.newtools import *
+from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
 attrsIsEmpty = {}
 tagIsUnique = True

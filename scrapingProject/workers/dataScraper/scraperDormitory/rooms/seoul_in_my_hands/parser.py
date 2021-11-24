@@ -1,4 +1,4 @@
-from workers.dataScraper.scraperDormitory.parserTools.newtools import *
+from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
 
 childIsMultiple = True
@@ -10,7 +10,7 @@ def postListParsingProcess(**params):
     targetKeyInfo = {
         'listType' : ['isGoingOn', 'postTitle', 'postUrl', 'postThumbnail', 'uploader', 'startDate', 'endDate', 'postSubject']
     }
-    var, soup, keyList = html_type_default_setting(params, targetKeyInfo)
+    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     dataList = extract_children_tag(soup, 'div', {"class" : "multi_cont"}, childIsNotMultiple) # tag
     competitionList = extract_children_tag(dataList, 'a', {"class" : "goCompetitionDetail"}, childIsMultiple) # list
     for data in competitionList :
@@ -76,7 +76,7 @@ def postContentParsingProcess(**params):
         'strType' : ['viewCount', 'linkedPostUrl', 'contact', 'postContentTarget', 'postText'],
         'listType' : ['postImageUrl']
     } 
-    var, soup, keyList = html_type_default_setting(params, targetKeyInfo)
+    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     table = extract_children_tag(soup, 'tbody', dummpyAttrs) # return default -> tag
     trList = extract_children_tag(table, 'tr', dummpyAttrs, childIsMultiple) # list
     for tr in trList :
