@@ -66,7 +66,7 @@ def postListParsingProcess(**params):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'strType' : ['postText', 'contact', 'postContentTarget'],
+        'strType' : ['postText', 'contact', 'postContentTarget', 'postTextType'],
         'listType' : ['extraInfo']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
@@ -95,7 +95,7 @@ def postContentParsingProcess(**params):
             extraInfo = [infoName, infoValue]
             extraDict.update({f'info_{len(extraDict)}' : extraInfo})
     var['extraInfo'].append(extraDict)
-
+    var['postTextType'] = 'both'
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     return result 
