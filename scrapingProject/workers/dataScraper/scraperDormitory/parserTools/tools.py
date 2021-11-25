@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup as bs
 from jsonpath_ng import parse as jsonpath_parse
 from datetime import datetime
+import ast
 import json
 import xmltodict
 import re
@@ -90,17 +91,24 @@ def split_value_list_based_on_key(keyList, valueList):
 def convert_datetime_string_to_isoformat_datetime(datetimeString):
     specialWord = re.sub(r'[^\.|\-|\:]', '', datetimeString)
     specialWordCount = {word:specialWord.count(word) for word in specialWord}
-    timeFormat = ['%Y{}%m{}%d ', '%H{}%M{}%S ']
-    strptimeFormat = ''
-    for idx, key in enumerate(specialWordCount):      
-        if idx == 1 and len(datetimeString.split(' ')) == 2:
-            if '24' in datetimeString.split(' ')[1] :
-                cleanedDate = " 00" + ''.join([':00' for _ in range(specialWordCount[key])])
-                datetimeString = datetimeString.split(' ')[0] + cleanedDate
-        if specialWordCount[key] == 2 :
-            strptimeFormat += timeFormat[idx].format(key, key)
-        elif idx == 1 and specialWordCount[key] == 1:
-            strptimeFormat += '%H{}%M '.format(key)
+    if not specialWordCount and len(datetimeString) == 8:
+        # 20210101처럼 구분 특수문자가 없는 형식일 경우
+        year, month, days = datetimeString[:4], datetimeString[4:6], datetimeString[6:]
+        datetimeString = year + "-" + month + "-" + days
+        strptimeFormat = "%Y-%m-%d"
+    else :
+        # 2021-02-14 와 같이 구분자로 특수문자가 사용된 경우
+        timeFormat = ['%Y{}%m{}%d ', '%H{}%M{}%S ']
+        strptimeFormat = ''
+        for idx, key in enumerate(specialWordCount):      
+            if idx == 1 and len(datetimeString.split(' ')) == 2:
+                if '24' in datetimeString.split(' ')[1] :
+                    cleanedDate = " 00" + ''.join([':00' for _ in range(specialWordCount[key])])
+                    datetimeString = datetimeString.split(' ')[0] + cleanedDate
+            if specialWordCount[key] == 2 :
+                strptimeFormat += timeFormat[idx].format(key, key)
+            elif idx == 1 and specialWordCount[key] == 1:
+                strptimeFormat += '%H{}%M '.format(key)
     try :
         time = datetime.strptime(datetimeString, strptimeFormat.strip()).isoformat()
     except ValueError:
@@ -197,7 +205,8 @@ def check_date_range_availability(dateRange, date):
 
 
 
-
+def convert_text_to_tuple(text):
+    return ast.literal_eval(str(text))
 
 def extract_values_list_in_both_sides_bracket_text(text):
     startIdx = text.find('(')
@@ -256,3 +265,6 @@ def json_type_default_setting(params, targetKeyInfo):
     var, keyList = reflect_key(var, targetKeyInfo)
     jsonData = json.loads(var['response'].text)
     return var, jsonData, keyList
+
+def convert_multiple_line_break_to_once(text):
+    return re.sub('\n+','\n',text)

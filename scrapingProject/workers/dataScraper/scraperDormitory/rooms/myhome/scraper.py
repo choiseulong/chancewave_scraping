@@ -5,7 +5,7 @@ from .parser import *
 # 채널 이름 : 마이홈
 
 
-# 타겟 : 유효 일자 내의 포스트
+# 타겟 : 모집중인 공고
 # 중단 시점 : 모든 공고가 모집 완료인 시점에서 종료
 
 #HTTP Request
@@ -43,7 +43,6 @@ class Scraper(ABCScraper):
     
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
-        # post list 
         self.additionalKeyValue.append(("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"))
         self.session = set_headers(self.session, self.additionalKeyValue, isUpdate)
         self.pageCount = 1

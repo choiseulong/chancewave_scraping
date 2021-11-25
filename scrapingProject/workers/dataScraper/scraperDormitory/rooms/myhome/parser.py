@@ -1,5 +1,4 @@
 from workers.dataScraper.scraperDormitory.parserTools.tools import *
-import json
 
 childIsMultiple = True
 childIsNotMultiple = False

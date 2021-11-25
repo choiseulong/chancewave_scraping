@@ -22,7 +22,9 @@ def get_method_response(session, url, sleepSec=2):
     sleep(sleepSec)
     return status, response
 
-def post_method_response(session, url, data={}, sleepSec=2):
+def post_method_response(session, url, data={}, sleepSec=2, jsonize=False):
+    if jsonize :
+        data = json.dumps(data)
     response = session.post(url, data=data)
     status = 'fail'
     if response.status_code == 200 :

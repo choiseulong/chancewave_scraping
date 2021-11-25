@@ -1,6 +1,6 @@
 from workers.dataServer.mongoServer import MongoServer
 from .scraperTools.tools import *
-from .parserTools.tools import * 
+from .parserTools.tools import *
 import json
 from abc import *
 
@@ -17,6 +17,7 @@ class Scraper(metaclass=ABCMeta):
         self.emptyPageCount = 0
         self.additionalKeyValue = []
         self.retryCount = 0
+        self.CSRF_TOKEN = ''
 
         # scraped data
         self.scrapingTarget = []
@@ -40,14 +41,15 @@ class Scraper(metaclass=ABCMeta):
         self.channelUrlFrame = channelUrl #pageCount 적용이 필요한 경우 사용
         # 추가 로직 작성 必
 
-    def post_list_scraping(self, postListParsingProcess, method, data='', sleepSec=2):
+    def post_list_scraping(self, postListParsingProcess, method, data='', sleepSec=2, jsonize = False):
         '''
             채널 메인에서 게시글의 기본정보를 가져오기 위한 요청을 처리함
         '''
+        self.collectedDataList = []
         if method == 'get':
             status, response = get_method_response(self.session, self.channelUrl, sleepSec)
         elif method == 'post':
-            status, response = post_method_response(self.session, self.channelUrl, data, sleepSec)
+            status, response = post_method_response(self.session, self.channelUrl, data, sleepSec, jsonize)
 
         if status == 'ok':
             self.scrapingTarget = postListParsingProcess(
@@ -63,8 +65,6 @@ class Scraper(metaclass=ABCMeta):
         '''
             채널 상세정보 수집을 위해 추가 요청이 필요한 경우 작성함
         '''
-        data = {}
-        postUrl = ''
         for target in self.scrapingTarget :
             postContent = self.target_try(postContentParsingProcess, target, sleepSec)
             if postContent:
