@@ -59,7 +59,6 @@ class Scraper(ABCScraper):
                     self.target_contents_scraping()
                     self.collect_data()
                     self.mongo.reflect_scraped_data(self.collectedDataList)
-                    break
                 else:
                     break
 

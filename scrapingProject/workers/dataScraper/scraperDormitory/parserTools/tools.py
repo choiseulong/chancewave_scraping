@@ -25,43 +25,9 @@ def extract_children_tag(parentsTag, childrenTag, childrenTagAttrs={}, childIsMu
     return parentsTag.find_all(childrenTag, attrs=childrenTagAttrs) \
         if childIsMultiple \
         else parentsTag.find(childrenTag, attrs=childrenTagAttrs)
-
-def extract_children_tag_text(parentsTag, childrenTag, childrenTagAttrs={}, ParentsIsMultiple=False, childIsMultiple=False):
-    return [
-                extract_text(
-                    extract_children_tag(parents, childrenTag, childIsMultiple),
-                    childIsMultiple
-                )
-                for parents \
-                in parentsTag
-            ] \
-            if ParentsIsMultiple \
-            else [
-                extract_text(kids, childIsMultiple) \
-                for kids \
-                in extract_children_tag(parentsTag, childrenTag, childrenTagAttrs, childIsMultiple)
-            ] 
-
-def extract_children_tag_contents(parentsTag, childrenTag, childrenTagAttrs={}, ParentsIsMultiple=False):
-    return [extract_contents(kid) for kid in extract_children_tag(parentsTag, childrenTag, childrenTagAttrs)] \
-        if ParentsIsMultiple \
-        else extract_contents(parentsTag.find(childrenTag, attrs=childrenTagAttrs))
-
-def extract_children_tag_attrs(parentsTag, childrenTag, targetAttrs, childrenTagAttrs={}, ParentsIsMultiple=False, childIsMultiple=False):
-        return [
-                extract_attrs(
-                    extract_children_tag(parents, childrenTag),
-                    targetAttrs
-                )
-                for parents \
-                in parentsTag
-            ] \
-            if ParentsIsMultiple \
-            else [
-                extract_attrs(kids, targetAttrs) \
-                for kids \
-                in extract_children_tag(parentsTag, childrenTag, childrenTagAttrs)
-            ] 
+        
+def find_next_tag(tag):
+    return tag.find_next_siblings()[0]
 
 def check_has_attrs_in_tag(tag, attrs):
     return tag.has_attr(attrs)
@@ -265,6 +231,3 @@ def json_type_default_setting(params, targetKeyInfo):
     var, keyList = reflect_key(var, targetKeyInfo)
     jsonData = json.loads(var['response'].text)
     return var, jsonData, keyList
-
-def convert_multiple_line_break_to_once(text):
-    return re.sub('\n+','\n',text)
