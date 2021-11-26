@@ -58,11 +58,11 @@ def extract_params(text):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'strType' : ['postSubject'],
+        'strType' : ['postSubject', 'postTextType'],
         'listType' : ['extraInfo']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-
+    var['postTextType'] = 'onlyExtraInfo'
     tbody_list = extract_children_tag(soup, 'tbody', dummpyAttrs, childIsMultiple)
     tr = extract_children_tag(tbody_list[0], 'tr', dummpyAttrs, childIsNotMultiple) 
     td_list = extract_children_tag(tr, 'td', dummpyAttrs, childIsMultiple) 

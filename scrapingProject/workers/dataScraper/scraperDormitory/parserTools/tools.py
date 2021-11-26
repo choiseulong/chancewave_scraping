@@ -25,7 +25,7 @@ def extract_children_tag(parentsTag, childrenTag, childrenTagAttrs={}, childIsMu
     return parentsTag.find_all(childrenTag, attrs=childrenTagAttrs) \
         if childIsMultiple \
         else parentsTag.find(childrenTag, attrs=childrenTagAttrs)
-        
+
 def find_next_tag(tag):
     return tag.find_next_siblings()[0]
 
@@ -92,8 +92,6 @@ def extract_numbers_in_text(text):
     except Exception as e :
         print(num)
         return 0
-    
-    return re.sub('[^0-9]', '', text)
 
 def extract_korean_in_text(text):
     return ' '.join(re.compile('[가-힣]+').findall(text))
