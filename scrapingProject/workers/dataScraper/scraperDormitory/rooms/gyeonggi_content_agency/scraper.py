@@ -57,6 +57,8 @@ class Scraper(ABCScraper):
         super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
 
     def target_contents_scraping(self):
+        if self.channelCode == 'gyeonggi_content_agency_1':
+            postContentParsingProcess = postContentParsingProcess_other
         super().target_contents_scraping(postContentParsingProcess, sleepSec)
     
 

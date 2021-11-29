@@ -14,11 +14,14 @@ def postListParsingProcess(**params):
 
     for contents in contentsList:
         ongoingCheck = extract_children_tag(contents, 'span', {"class": ['tag color01']}, childIsNotMultiple)
-        if not ongoingCheck :
-            var['isGoingOn'].append(False)
-            # continue
+        if var['channelCode'] == 'gyeonggi_content_agency_0':
+            if not ongoingCheck :
+                var['isGoingOn'].append(False)
+                # continue
+            else :
+                var['isGoingOn'].append(True)
         else :
-            var['isGoingOn'].append(True)
+            var['isGoingOn'].append(None)
         viewCount = extract_children_tag(contents, 'td', {"class": "hit"}, childIsNotMultiple)
         var['viewCount'].append(extract_numbers_in_text(extract_text(viewCount)))
         uploadedTime = extract_children_tag(contents, 'td', {"class": "date"}, childIsNotMultiple)
@@ -38,6 +41,7 @@ def postListParsingProcess(**params):
         var['uploader'].append(extract_text(uploader))
     valueList = [var[key] for key in keyList]
     result = merge_var_to_dict(keyList, valueList)
+    print(result)
     return result
 
 def postContentParsingProcess(**params):
@@ -71,3 +75,27 @@ def postContentParsingProcess(**params):
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     return result
+
+
+def postContentParsingProcess_other(**params):
+    targetKeyInfo = {
+        'strType' : ['postText', 'linkedPostUrl'],
+        'listType' : ['postImageUrl']
+    }
+    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
+
+    view_content = extract_children_tag(soup, 'div', {"class" : "view-content"}, childIsNotMultiple)
+    var['postText'] = clean_text(extract_text(view_content))
+    aTagList = extract_children_tag(view_content, 'a', {'target' : True}, childIsNotMultiple)
+    for aTag in aTagList:
+        href = extract_attrs(aTag, 'href')
+        if href :
+            var['linkedPostUrl'] += href
+    imgList = extract_children_tag(view_content, 'img', {'target' : True}, childIsNotMultiple)
+    for img in imgList:
+        var['postImageUrl'].append(var['channelMainUrl'] + extract_attrs(img, 'src')) 
+
+    valueList = [var[key] for key in keyList]
+    result = convert_merged_list_to_dict(keyList, valueList)
+    return result
+    # 들어오는거 확인해야함ㄴ
