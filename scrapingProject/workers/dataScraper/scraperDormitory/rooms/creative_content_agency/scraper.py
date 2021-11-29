@@ -31,6 +31,7 @@ sleepSec = 2
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelMainUrl = 'https://www.kocca.kr/'
     
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
