@@ -11,10 +11,11 @@ def postListParsingProcess(**params):
         'listType' : ['isGoingOn', 'postSubject', 'postTitle', 'uploader', 'contentsReqParams'],
         'strType' : ['Cookie','_csrf']
     }
-    var, _ = reflect_key(var, targetKeyInfo)
-    soup = change_to_soup(
-        var['response'].text
-    )
+    var, soup, _, _ = html_type_default_setting(params, targetKeyInfo)
+    # var, _ = reflect_key(var, targetKeyInfo)
+    # soup = change_to_soup(
+    #     var['response'].text
+    # )
 
     postCountBox = extract_children_tag(soup, 'div', {'class' : ['sch-result-wrap compare-result-list']}, childIsNotMultiple)
     postCount = extract_numbers_in_text(

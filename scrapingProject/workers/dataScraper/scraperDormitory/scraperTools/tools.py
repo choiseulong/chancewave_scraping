@@ -53,6 +53,7 @@ def get_post_data_frame(channelCode='', channelUrl='', postUrlCanUse=True):
         'postUrl' : None,
         'postUrlCanUse' : postUrlCanUse,
         'linkedPostUrl': None,
+        'postThumbnail' : '',
         'createdTime' : now.isoformat(),
         'postTitle' : None,
         'postSubject' : None,
