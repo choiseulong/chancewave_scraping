@@ -42,15 +42,16 @@ class Scraper(ABCScraper):
 
         self.pageCount = 1
         while True :
-            self.channelUrl = self.channelUrl.format(self.pageCount)
+            self.channelUrl = self.channelUrlFrame.format(self.pageCount)
             self.post_list_scraping()
             if self.scrapingTarget :
                 self.target_contents_scraping()
                 self.collect_data()
                 self.mongo.reflect_scraped_data(self.collectedDataList)
                 self.pageCount += 1
-                break
             else :
+                break
+            if self.pageCount == 5 :
                 break
 
     def post_list_scraping(self):

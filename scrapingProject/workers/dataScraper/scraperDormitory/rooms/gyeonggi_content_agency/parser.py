@@ -41,7 +41,6 @@ def postListParsingProcess(**params):
         var['uploader'].append(extract_text(uploader))
     valueList = [var[key] for key in keyList]
     result = merge_var_to_dict(keyList, valueList)
-    print(result)
     return result
 
 def postContentParsingProcess(**params):
@@ -86,16 +85,18 @@ def postContentParsingProcess_other(**params):
 
     view_content = extract_children_tag(soup, 'div', {"class" : "view-content"}, childIsNotMultiple)
     var['postText'] = clean_text(extract_text(view_content))
-    aTagList = extract_children_tag(view_content, 'a', {'target' : True}, childIsNotMultiple)
-    for aTag in aTagList:
-        href = extract_attrs(aTag, 'href')
-        if href :
-            var['linkedPostUrl'] += href
-    imgList = extract_children_tag(view_content, 'img', {'target' : True}, childIsNotMultiple)
-    for img in imgList:
-        var['postImageUrl'].append(var['channelMainUrl'] + extract_attrs(img, 'src')) 
+    aTagList = extract_children_tag(view_content, 'a', {'target' : True}, childIsMultiple)
+    if aTagList:
+        for aTag in aTagList:
+            print(aTag)
+            href = extract_attrs(aTag, 'href')
+            if href :
+                var['linkedPostUrl'] += href
+    imgList = extract_children_tag(view_content, 'img', dummpyAttrs, childIsMultiple)
+    if imgList:
+        for img in imgList:
+            var['postImageUrl'].append(var['channelMainUrl'] + extract_attrs(img, 'src')) 
 
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     return result
-    # 들어오는거 확인해야함ㄴ
