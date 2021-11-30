@@ -96,13 +96,6 @@ class Scraper(metaclass=ABCMeta):
                     postContent = self.target_try(postContentParsingProcess, target, sleepSec)
             return postContent
 
-
-
-
-        
-
-
-
     def collect_data(self):
         '''
             채널 메인에서 게시글의 기본 정보를 담고
