@@ -46,9 +46,7 @@ from .parser import *
 
 '''
 
-isUpdate = True
 sleepSec = 2
-jsonize = True
 
 class Scraper(ABCScraper):
     def __init__(self, session):

@@ -37,7 +37,7 @@ class Scraper(ABCScraper):
     
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
-        self.pageCount = 4
+        self.pageCount = 1
         status = self.login_process()
         if status :
             while True :
@@ -50,8 +50,6 @@ class Scraper(ABCScraper):
                     self.mongo.reflect_scraped_data(self.collectedDataList)
                     self.pageCount += 1
                 else :
-                    break
-                if self.pageCount == 5:
                     break
  
     def post_list_scraping(self):
@@ -68,7 +66,8 @@ class Scraper(ABCScraper):
             "pageReferer" : 'https://www.dreamspon.com/',
             "userpw" : "mysterico"
         }
-        self.session = set_headers(self.session, ['Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8'], isUpdate)
+        self.additionalKeyValue.append(['Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8'])
+        self.session = set_headers(self.session, self.additionalKeyValue, isUpdate)
         _, response = post_method_response(self.session, url, data)
         if response.json()['checkyn'] == 'Y' :
             return True
