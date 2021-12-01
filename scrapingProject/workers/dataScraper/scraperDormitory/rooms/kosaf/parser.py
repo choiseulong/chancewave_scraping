@@ -109,10 +109,3 @@ def parse_date(text):
         in text.split(' ~ ')
     ]
     return date[0], date[1]
-
-        
-
-
-
-# <div class="infoTable basic-info"> 
-# <div id="t_content"> 

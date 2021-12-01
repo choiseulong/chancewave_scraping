@@ -2,18 +2,17 @@ from workers.dataScraper.scraperDormitory.scraping_default_usage import Scraper 
 from workers.dataScraper.scraperDormitory.scraperTools.tools import *
 from .parser import *
 
-# 채널 이름 : 제주
+# 채널 이름 : 서귀포시
 
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
-
 
 #HTTP Request
 '''
     @post list
 
     method : GET
-    url = https://www.jeju.go.kr/news/news/news.htm?page={pageCount}
+    url = https://www.seogwipo.go.kr/info/news/notice.htm?page={pageCount}
     header :
         User-Agent
     required data searching point :
@@ -33,7 +32,7 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelMainUrl = 'https://www.jeju.go.kr'
+        self.channelMainUrl = 'https://www.seogwipo.go.kr'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
@@ -49,11 +48,7 @@ class Scraper(ABCScraper):
                 self.pageCount += 1
             else :
                 break
-            
-            if self.pageCount == 4 :
-                break
-            
- 
+
     def post_list_scraping(self):
         super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
 
