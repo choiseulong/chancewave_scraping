@@ -4,7 +4,7 @@ from pytz import timezone
 
 def make_crc(data):
     text = ''
-    keyList = ['channelCode', 'channelUrl', 'postUrl', 'postTitle', 'postText', 'postSubject', 'contact', 'extraInfo', 'isGoingOn']
+    keyList = ['channelCode', 'channelUrl', 'postUrl', 'postTitle', 'postText', 'postSubject', 'contact', 'extraInfo', 'isGoingOn', 'postImageUrl']
     for key in keyList:
         if isinstance(data[key], str):
             text += data[key]

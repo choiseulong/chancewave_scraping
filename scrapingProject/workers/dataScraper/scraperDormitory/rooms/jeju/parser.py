@@ -49,10 +49,10 @@ def postContentParsingProcess(**params):
     imgList = extract_children_tag(article, 'img', dummpyAttrs, childIsMultiple)
     if imgList:
         for img in imgList:
+            src = extract_attrs(img, 'src')
             var['postImageUrl'].append(
-                extract_attrs(
-                    img, 'src'
-                )
+                src if 'html' in src \
+                else var['channelMainUrl'] + src
             )
     var['postText'] = clean_text(
         extract_text(article)
