@@ -51,6 +51,9 @@ class Scraper(ABCScraper):
                 self.pageCount += 1
             else :
                 break
+            
+            if self.pageCount == 5 :
+                break
  
     def post_list_scraping(self):
         data = {

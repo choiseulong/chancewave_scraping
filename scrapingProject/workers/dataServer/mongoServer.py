@@ -57,7 +57,7 @@ class MongoServer:
     def update_data_process(self, newData, beforeData):
         now = datetime.now(timezone('Asia/Seoul')).isoformat()
         isUpdateCheck = beforeData['isUpdateCheckTime']
-        isUpdateCheck.append(True)
+        isUpdateCheck.append(now)
         updatedTime = beforeData['updatedTime']
         updatedTime.append(now)
         newData['isUpdateCheckTime'] = isUpdateCheck

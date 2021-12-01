@@ -42,7 +42,27 @@ def postListParsingProcess(**params):
     result = merge_var_to_dict(keyList, valueList)
     return result
 
-            
 
 def postContentParsingProcess(**params):
-    pass
+    targetKeyInfo = {
+        'listType' : ['postImageUrl'],
+        'strType' : ['postText', 'contact']
+    }
+    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
+    contentsBox = extract_children_tag(soup, 'div', {"class" : "bbs--view--cont"}, childIsNotMultiple)
+    var['postText'] = clean_text(
+            extract_text(
+            extract_children_tag(contentsBox, 'div', {'class' : 'bbs--view--content'}, childIsNotMultiple)
+        )
+    )
+    var['contact'] = extract_contact_numbers_from_text(var['postText'])
+    imgList = extract_children_tag(contentsBox, 'img', dummpyAttrs, childIsMultiple)
+    if imgList:
+        for img in imgList:
+            var['postImageUrl'].append(
+                var['channelMainUrl'] + extract_attrs(img, 'src')
+            )
+
+    valueList = [var[key] for key in keyList]
+    result = convert_merged_list_to_dict(keyList, valueList)
+    return result
