@@ -68,6 +68,7 @@ def postContentParsingProcess(**params):
             if len(var['contact']) == 1 :
                 var['contact'] = var['contact'][0]
             break
+
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     return result
