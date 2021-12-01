@@ -52,7 +52,7 @@ class ScrapingManager:
                 # something = checker.is_handling(traceback.format_exc(), e.__class__)
                 # print(something)
             
-            if channelCode != 'jeju_5':
+            if channelCode != 'jeju_6':
                 print(channelCode, 'pass')
                 continue
             session = self.get_requests_session()

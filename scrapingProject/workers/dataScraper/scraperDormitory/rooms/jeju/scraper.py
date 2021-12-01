@@ -34,9 +34,13 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channelMainUrl = 'https://www.jeju.go.kr'
+        
     
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
+        if self.channelCode == 'jeju_6':
+            self.channelMainUrl = 'https://www.jejusi.go.kr'
+            self.postUrl = 'https://www.jejusi.go.kr/information/intro/news.do?mode=detail&notice_id={}'
         self.session = set_headers(self.session)
         self.pageCount = 1
         while True :
@@ -55,9 +59,13 @@ class Scraper(ABCScraper):
             
  
     def post_list_scraping(self):
+        if self.channelCode == 'jeju_6':
+            postListParsingProcess = postListParsingProcess_other
         super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
 
     def target_contents_scraping(self):
+        if self.channelCode == 'jeju_6':
+            postContentParsingProcess = postContentParsingProcess_other
         super().target_contents_scraping(postContentParsingProcess, sleepSec)
 
 
