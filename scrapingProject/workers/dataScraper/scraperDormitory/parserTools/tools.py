@@ -6,6 +6,13 @@ import json
 import xmltodict
 import re
 
+childIsNotMultiple = False
+childIsMultiple = True
+dataIsUnique = 'solo'
+isNotRecursive = False
+isMultiple = True
+dummyAttrs = {}
+
 def change_to_soup(reponseText):
     return bs(reponseText, 'html.parser')
 
@@ -21,10 +28,10 @@ def extract_contents(tag, isMultiple=False):
 def extract_attrs(tag, attrsName, isMultiple=False):
     return [_[attrsName] for _ in tag] if isMultiple else tag[attrsName]
 
-def extract_children_tag(parentsTag, childrenTag, childrenTagAttrs={}, childIsMultiple=False):
-    return parentsTag.find_all(childrenTag, attrs=childrenTagAttrs) \
+def extract_children_tag(parentsTag, childrenTag, childrenTagAttrs={}, childIsMultiple=False, Recursive=True):
+    return parentsTag.find_all(childrenTag, attrs=childrenTagAttrs, recursive=Recursive) \
         if childIsMultiple \
-        else parentsTag.find(childrenTag, attrs=childrenTagAttrs)
+        else parentsTag.find(childrenTag, attrs=childrenTagAttrs, recursive=Recursive)
 
 def find_next_tag(tag):
     return tag.find_next_siblings()[0]
@@ -206,12 +213,10 @@ def reflect_key(var, targetKeyInfo):
     for Type in targetKeyInfo.keys():
         for key in targetKeyInfo[Type]:
             keyList.append(key)
-            if Type == 'listType':
+            if Type == 'multipleType':
                 var[key] = []
-            elif Type == 'strType':
+            elif Type == 'singleType':
                 var[key] = ''
-            elif Type == 'numType':
-                var[key] = 0
     return var, keyList
 
 

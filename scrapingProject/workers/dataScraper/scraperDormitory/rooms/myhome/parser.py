@@ -1,12 +1,8 @@
 from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
-childIsMultiple = True
-childIsNotMultiple = False
-dummpyAttrs = {}
-
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['isGoingOn', 'postUrl', 'postTitle', 'contact', 'postSubject', 
+        'multipleType' : ['isGoingOn', 'postUrl', 'postTitle', 'contact', 'postSubject', 
             'linkedPostUrl', 'startDate', 'endDate', 'uploadedTime',]
     }
     var, jsonData, keyList = json_type_default_setting(params, targetKeyInfo)
@@ -80,8 +76,8 @@ def parse_frstRegistDt(textDate):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'strType' : ['postContentTarget', 'postTextType'],
-        'listType' : ['extraInfo']
+        'singleType' : ['postContentTarget', 'postTextType'],
+        'multipleType' : ['extraInfo']
     }
     var, soup, keyList, text = html_type_default_setting(params, targetKeyInfo)
 
@@ -92,8 +88,8 @@ def postContentParsingProcess(**params):
     extraDict = {'infoTitle' : '공고 개요'}
     div_info = extract_children_tag(soup, 'div', {'class' : 'info'}, childIsNotMultiple)
     for title, value in zip(
-        extract_children_tag(div_info, 'dt', dummpyAttrs, childIsMultiple), 
-        extract_children_tag(div_info, 'dd', dummpyAttrs, childIsMultiple), 
+        extract_children_tag(div_info, 'dt', dummyAttrs, childIsMultiple), 
+        extract_children_tag(div_info, 'dd', dummyAttrs, childIsMultiple), 
     ):
         title = extract_text(title)
         value = extract_text(value)

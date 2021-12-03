@@ -1,16 +1,12 @@
 from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
-childIsNotMultiple = False
-childIsMultiple = True
-dummpyAttrs = {}
-
 def postListParsingProcess(**params): 
     targetKeyInfo = {
-        'listType' : ['uploader', 'postTitle', 'viewCount', 'postUrl', 'uploadedTime']
+        'multipleType' : ['uploader', 'postTitle', 'viewCount', 'postUrl', 'uploadedTime']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     table = extract_children_tag(soup, 'table', {"class" : "board_list"}, childIsNotMultiple)
-    trList = extract_children_tag(table, 'tr', dummpyAttrs, childIsMultiple)
+    trList = extract_children_tag(table, 'tr', dummyAttrs, childIsMultiple)
     for tr in trList[1:] :
         tdList = extract_children_tag(tr, 'td', {"data-cell-header" : True}, childIsMultiple)
         for td in tdList:
@@ -45,8 +41,8 @@ def postListParsingProcess(**params):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['postImageUrl'],
-        'strType' : ['postText', 'contact']
+        'multipleType' : ['postImageUrl'],
+        'singleType' : ['postText', 'contact']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     contentsBox = extract_children_tag(soup, 'div', {"class" : "bbs--view--cont"}, childIsNotMultiple)
@@ -56,7 +52,7 @@ def postContentParsingProcess(**params):
         )
     )
     var['contact'] = extract_contact_numbers_from_text(var['postText'])
-    imgList = extract_children_tag(contentsBox, 'img', dummpyAttrs, childIsMultiple)
+    imgList = extract_children_tag(contentsBox, 'img', dummyAttrs, childIsMultiple)
     if imgList:
         for img in imgList:
             var['postImageUrl'].append(

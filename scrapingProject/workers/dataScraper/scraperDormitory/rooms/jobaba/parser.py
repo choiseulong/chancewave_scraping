@@ -1,12 +1,8 @@
 from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
-childIsNotMultiple = False
-childIsMultiple = True
-dummyAttrs = {}
-
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['postUrl', 'postTitle', 'postThumbnail', 'postContentTarget', 'startDate', 'endDate'],
+        'multipleType' : ['postUrl', 'postTitle', 'postThumbnail', 'postContentTarget', 'startDate', 'endDate'],
     }
     var, jsonData, keyList = json_type_default_setting(params, targetKeyInfo)
     var['postUrl'] = [
@@ -37,7 +33,7 @@ def postListParsingProcess(**params):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'strType' : ['uploader', 'linkedPostUrl', 'postText', 'contact']
+        'singleType' : ['uploader', 'linkedPostUrl', 'postText', 'contact']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     error_warp = extract_children_tag(soup, 'div', {"class" : "error-warp"}, childIsNotMultiple)

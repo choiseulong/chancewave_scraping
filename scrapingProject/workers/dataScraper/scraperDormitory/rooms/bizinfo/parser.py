@@ -1,18 +1,14 @@
 from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
-childIsNotMultiple = False
-childIsMultiple = True
-dummpyAttrs = {}
-
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['postUrl', 'postTitle', 'startDate', 'endDate', 'uploader', 'uploadedTime', 'viewCount']
+        'multipleType' : ['postUrl', 'postTitle', 'startDate', 'endDate', 'uploader', 'uploadedTime', 'viewCount']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    tbody = extract_children_tag(soup, 'tbody', dummpyAttrs, childIsNotMultiple)
-    contents_tr = extract_children_tag(tbody, 'tr', dummpyAttrs, childIsMultiple)
+    tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
+    contents_tr = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
     for tr in contents_tr :
-        anchor = extract_children_tag(tr, 'a', dummpyAttrs, childIsNotMultiple)
+        anchor = extract_children_tag(tr, 'a', dummyAttrs, childIsNotMultiple)
         var['postUrl'].append(
             var['postUrlFrame'].format(
                     extract_params(
@@ -23,7 +19,7 @@ def postListParsingProcess(**params):
         var['postTitle'].append(
             extract_text(anchor)
         )
-        contents_td = extract_children_tag(tr, 'td', dummpyAttrs, childIsMultiple)
+        contents_td = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple)
         for idx, td in enumerate(contents_td):
             td_text = extract_text(td)
             if idx == 2:
@@ -58,14 +54,14 @@ def extract_params(text):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'strType' : ['postSubject', 'postTextType'],
-        'listType' : ['extraInfo']
+        'singleType' : ['postSubject', 'postTextType'],
+        'multipleType' : ['extraInfo']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     var['postTextType'] = 'onlyExtraInfo'
-    tbody_list = extract_children_tag(soup, 'tbody', dummpyAttrs, childIsMultiple)
-    tr = extract_children_tag(tbody_list[0], 'tr', dummpyAttrs, childIsNotMultiple) 
-    td_list = extract_children_tag(tr, 'td', dummpyAttrs, childIsMultiple) 
+    tbody_list = extract_children_tag(soup, 'tbody', dummyAttrs, childIsMultiple)
+    tr = extract_children_tag(tbody_list[0], 'tr', dummyAttrs, childIsNotMultiple) 
+    td_list = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple) 
     var['postSubject'] = extract_text(td_list[0])
 
     boardBusiness = extract_children_tag(soup, 'div', {"class" : "boardBusiness"}, childIsNotMultiple)

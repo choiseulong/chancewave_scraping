@@ -1,16 +1,12 @@
 from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
-dummpyAttrs = {}
-childIsNotMultiple = False
-childIsMultiple = True
-
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['viewCount', 'postTitle', 'uploader', 'postUrl', 'postSubject', 'isGoingOn']
+        'multipleType' : ['viewCount', 'postTitle', 'uploader', 'postUrl', 'postSubject', 'isGoingOn']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    tbody = extract_children_tag(soup, 'tbody', dummpyAttrs, childIsNotMultiple)
-    contentsList = extract_children_tag(tbody, 'tr', dummpyAttrs, childIsMultiple)
+    tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
+    contentsList = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
     for contents in contentsList:
         var['viewCount'].append(
             extract_numbers_in_text(
@@ -31,7 +27,7 @@ def postListParsingProcess(**params):
         )
         var['uploader'].append(
             extract_text(
-                extract_children_tag(contents, 'td', dummpyAttrs, childIsMultiple)[1]
+                extract_children_tag(contents, 'td', dummyAttrs, childIsMultiple)[1]
             )
         )
         var['postUrl'].append(
@@ -53,17 +49,17 @@ def postListParsingProcess(**params):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'strType' : ['postSubject', 'linkedPostUrl', 'startDate', 'endDate', 'postTextType'],
-        'listType' : ['extraInfo']
+        'singleType' : ['postSubject', 'linkedPostUrl', 'startDate', 'endDate', 'postTextType'],
+        'multipleType' : ['extraInfo']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     extraDict = {'infoTitle':'장학 개요'}
     var['postTextType'] = 'onlyExtraInfo'
     
     infoTable = extract_children_tag(soup, 'div', {'class' : 'infoTable'}, childIsNotMultiple)
-    info_ul = extract_children_tag(infoTable, 'ul', dummpyAttrs, childIsMultiple)
+    info_ul = extract_children_tag(infoTable, 'ul', dummyAttrs, childIsMultiple)
     for ul in info_ul:
-        ulData = extract_children_tag(ul, 'li', dummpyAttrs, childIsMultiple)
+        ulData = extract_children_tag(ul, 'li', dummyAttrs, childIsMultiple)
         ulText = [clean_text(extract_text(i)) for i in ulData]
         if ulText[0] == '장학종류' :
             var['postSubject'] = ulText[1]
@@ -81,7 +77,7 @@ def postContentParsingProcess(**params):
             extraDict.update({f'info_{lenExtraDict}' : ulText})
 
     main_content = extract_children_tag(soup, 'div', {"id" : "t_content"}) 
-    pTagList = extract_children_tag(main_content, 'p', dummpyAttrs, childIsMultiple)
+    pTagList = extract_children_tag(main_content, 'p', dummyAttrs, childIsMultiple)
     pTagTextList = [extract_text(p) for p in pTagList]
     valueList = parse_ptag_info(pTagTextList)
     for value in valueList:

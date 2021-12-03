@@ -2,29 +2,26 @@ from workers.dataScraper.scraperDormitory.scraping_default_usage import Scraper 
 from workers.dataScraper.scraperDormitory.scraperTools.tools import *
 from .parser import *
 
-# 채널 이름 : 경기콘텐츠진흥원
+# 채널 이름 : 식품의약품안전처
 
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
-
 
 #HTTP Request
 '''
     @post list
 
     method : GET
-    url = https://www.gcon.or.kr/busiNotice?pageNum={pageCount}&rowCnt={포스트 숫자}&menuId=MENU02369
+    url = https://www.mfds.go.kr/brd/m_74/list.do?page={pageCount}
     header :
-        User-Agent
-    required data searching point :
-        header_1 : fixed
+        None
 '''
 '''
     @post info
     method : GET
-    url : https://www.gcon.or.kr/busiNotice/view?pageNum=1&rowCnt=10&linkId={linkId}&menuId=MENU02369
+    url : https://www.mpva.go.kr/mpva/selectBbsNttView.do?key=76&bbsNo=15&nttNo={postNumber}
     header :
-        User-Agent
+        None
     required data searching point :
         header_1 : fixed
 '''
@@ -34,12 +31,12 @@ sleepSec = 2
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelMainUrl = "https://www.gcon.or.kr"
-    
+        self.channelMainUrl = 'https://www.mfds.go.kr'
+        self.postUrl = 'https://www.mfds.go.kr/brd/m_74/view.do?seq={}'
+        
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
         self.session = set_headers(self.session)
-
         self.pageCount = 1
         while True :
             self.channelUrl = self.channelUrlFrame.format(self.pageCount)
@@ -51,11 +48,20 @@ class Scraper(ABCScraper):
                 self.pageCount += 1
             else :
                 break
+                
+            if self.pageCount == 5 :
+                break
 
     def post_list_scraping(self):
         super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
 
     def target_contents_scraping(self):
-        if self.channelCode == 'gyeonggi_content_agency_1':
-            postContentParsingProcess = postContentParsingProcess_other
         super().target_contents_scraping(postContentParsingProcess, sleepSec)
+
+
+            
+
+ 
+
+
+

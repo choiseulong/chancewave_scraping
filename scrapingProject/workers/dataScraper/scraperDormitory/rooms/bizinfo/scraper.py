@@ -62,11 +62,3 @@ class Scraper(ABCScraper):
 
     def target_contents_scraping(self):
         super().target_contents_scraping(postContentParsingProcess, sleepSec)
-    
-
-
-
-            
-
- 
-

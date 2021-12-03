@@ -1,26 +1,22 @@
 from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
-dummpyAttrs = {}
-childIsNotMultiple = False
-childIsMultiple = True
-
 # jeju_1 ~ jeju_5
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['postUrl', 'postTitle', 'uploader', 'uploadedTime', 'viewCount']
+        'multipleType' : ['postUrl', 'postTitle', 'uploader', 'uploadedTime', 'viewCount']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    tbody = extract_children_tag(soup, 'tbody', dummpyAttrs, childIsNotMultiple)
+    tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
     trList = extract_children_tag(tbody, 'tr', {"class" : True}, childIsMultiple)
     for tr in trList:
-        tdList = extract_children_tag(tr, 'td', dummpyAttrs, childIsMultiple)
+        tdList = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple)
         for tdIdx, td in enumerate(tdList):
             if tdIdx == 1 :
                 var['postTitle'].append(extract_text(td))
                 var['postUrl'].append(
                     var['channelMainUrl'] + \
                         extract_attrs(
-                            extract_children_tag(td, 'a', dummpyAttrs, childIsNotMultiple),
+                            extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple),
                             'href'
                         )
                 )
@@ -42,12 +38,12 @@ def postListParsingProcess(**params):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'strType' : ['postText', 'contact'],
-        'listType' : ['postImageUrl']
+        'singleType' : ['postText', 'contact'],
+        'multipleType' : ['postImageUrl']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     article = extract_children_tag(soup, 'td', {"class" : "article-contents"}, childIsNotMultiple)
-    imgList = extract_children_tag(article, 'img', dummpyAttrs, childIsMultiple)
+    imgList = extract_children_tag(article, 'img', dummyAttrs, childIsMultiple)
     if imgList:
         for img in imgList:
             src = extract_attrs(img, 'src')
@@ -58,7 +54,7 @@ def postContentParsingProcess(**params):
     var['postText'] = clean_text(
         extract_text(article)
     )
-    thList = extract_children_tag(soup, 'th', dummpyAttrs, childIsMultiple)
+    thList = extract_children_tag(soup, 'th', dummyAttrs, childIsMultiple)
     for th in thList :
         if extract_text(th) == '연락처':
             var['contact'] = extract_contact_numbers_from_text(
@@ -77,14 +73,14 @@ def postContentParsingProcess(**params):
 # jeju_6
 def postListParsingProcess_other(**params):
     targetKeyInfo = {
-        'listType' : ['postUrl', 'postTitle', 'uploader', 'uploadedTime', 'viewCount']
+        'multipleType' : ['postUrl', 'postTitle', 'uploader', 'uploadedTime', 'viewCount']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    tbody = extract_children_tag(soup, 'tbody', dummpyAttrs, childIsNotMultiple)
-    trList = extract_children_tag(tbody, 'tr', dummpyAttrs, childIsMultiple)
+    tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
+    trList = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
     for tr in trList:
         Continue = False
-        imgList = extract_children_tag(tr, 'img', dummpyAttrs, childIsMultiple)
+        imgList = extract_children_tag(tr, 'img', dummyAttrs, childIsMultiple)
         for img in imgList:
             alt = extract_attrs(img, 'alt')
             if alt == '공지':
@@ -96,7 +92,7 @@ def postListParsingProcess_other(**params):
             var['postUrlFrame'].format(
                 parse_href(
                     extract_attrs(
-                        extract_children_tag(tr, 'a', dummpyAttrs, childIsNotMultiple), 'href')
+                        extract_children_tag(tr, 'a', dummyAttrs, childIsNotMultiple), 'href')
                 )
             )
         )
@@ -130,11 +126,11 @@ def postListParsingProcess_other(**params):
 
 def postContentParsingProcess_other(**params):
     targetKeyInfo = {
-        'strType' : ['contact', 'postText'],
-        'listType' : ['postImageUrl']
+        'singleType' : ['contact', 'postText'],
+        'multipleType' : ['postImageUrl']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    dtList = extract_children_tag(soup, 'dt', dummpyAttrs, childIsMultiple)
+    dtList = extract_children_tag(soup, 'dt', dummyAttrs, childIsMultiple)
     for dt in dtList :
         if extract_text(dt) == '연락처':
             print(extract_text(find_next_tag(dt)))
@@ -142,7 +138,7 @@ def postContentParsingProcess_other(**params):
     
     viewContent = extract_children_tag(soup, 'div', {'class' : 'view-content'}, childIsNotMultiple)
     var['postText'] = extract_text(viewContent)
-    imgList = extract_children_tag(viewContent, 'img', dummpyAttrs, childIsMultiple)
+    imgList = extract_children_tag(viewContent, 'img', dummyAttrs, childIsMultiple)
     if imgList:
         var['postImageUrl'] = [var['channelMainUrl'] + extract_attrs(img, 'src') for img in imgList]
 

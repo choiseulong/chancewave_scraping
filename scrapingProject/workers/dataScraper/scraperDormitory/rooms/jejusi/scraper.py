@@ -7,7 +7,6 @@ from .parser import *
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
 
-
 #HTTP Request
 '''
     @post list
@@ -52,20 +51,8 @@ class Scraper(ABCScraper):
             else :
                 break
             
-            if self.pageCount == 4 :
-                break
-            
- 
     def post_list_scraping(self):
         super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
 
     def target_contents_scraping(self):
         super().target_contents_scraping(postContentParsingProcess, sleepSec)
-
-
-            
-
- 
-
-
-

@@ -1,12 +1,9 @@
 from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
 
-dummpyAttrs = {}
-childIsMultiple = True
-
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['postUrl', 'postThumbnail', 'uploadedTime', 'startDate', 'endDate', 'uploader', 'postTitle']
+        'multipleType' : ['postUrl', 'postThumbnail', 'uploadedTime', 'startDate', 'endDate', 'uploader', 'postTitle']
     }
     var, jsonData, keyList = json_type_default_setting(params, targetKeyInfo)
     var['postUrl'] =  [
@@ -39,8 +36,8 @@ def postListParsingProcess(**params):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['extraInfo', 'postImageUrl', 'linkedPostUrl'],
-        'strType' : ['postContentTarget', 'contact', 'postTextType']
+        'multipleType' : ['extraInfo', 'postImageUrl', 'linkedPostUrl'],
+        'singleType' : ['postContentTarget', 'contact', 'postTextType']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     item_box = extract_children_tag(soup, 'div', {"class" : "item"})
@@ -48,18 +45,18 @@ def postContentParsingProcess(**params):
         var['channelMainUrl'] + \
         extract_attrs(img, 'src') \
         for img \
-        in extract_children_tag(item_box, 'img', dummpyAttrs, childIsMultiple)
+        in extract_children_tag(item_box, 'img', dummyAttrs, childIsMultiple)
     ] 
 
     equitable_box = extract_children_tag(soup, 'div', {"class" : "equitable_box"})
-    linkList = extract_children_tag(equitable_box, 'a', dummpyAttrs, childIsMultiple)
+    linkList = extract_children_tag(equitable_box, 'a', dummyAttrs, childIsMultiple)
     if linkList:
         for link in linkList:
             linkHref = extract_attrs(link, 'href')
             if linkHref :
                 var['linkedPostUrl'].append(linkHref)
-    span_text = [extract_text(span) for span in extract_children_tag(equitable_box, 'span', dummpyAttrs, childIsMultiple)]
-    p_text = [extract_text(p) for p in extract_children_tag(equitable_box, 'p', dummpyAttrs, childIsMultiple)]
+    span_text = [extract_text(span) for span in extract_children_tag(equitable_box, 'span', dummyAttrs, childIsMultiple)]
+    p_text = [extract_text(p) for p in extract_children_tag(equitable_box, 'p', dummyAttrs, childIsMultiple)]
 
 
     info = {'응모대상' : 'postContentTarget', '문의' : 'contact'}

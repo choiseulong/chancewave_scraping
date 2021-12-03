@@ -1,13 +1,9 @@
 from workers.dataScraper.scraperDormitory.parserTools.tools import *
 import json
 
-childIsMultiple = True
-dummpyAttrs = {}
-dataIsUnique = 'solo'
-
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['contact', 'uploader', 'postUrl', 'postTitle', 'postText', 
+        'multipleType' : ['contact', 'uploader', 'postUrl', 'postTitle', 'postText', 
             'startDate', 'endDate', 'extraInfo']
     }
     var, jsonData, keyList = json_type_default_setting(params, targetKeyInfo)
@@ -65,10 +61,10 @@ def postListParsingProcess(**params):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'strType' : ['postSubject', 'postTextType', 'postText', 'linkedPostUrl']
+        'singleType' : ['postSubject', 'postTextType', 'postText', 'linkedPostUrl']
     }
     var, soup, keyList, text = html_type_default_setting(params, targetKeyInfo)
-    textList = [ _.text for _ in extract_children_tag(soup, 'script', dummpyAttrs, childIsMultiple) if _.text]
+    textList = [ _.text for _ in extract_children_tag(soup, 'script', dummyAttrs, childIsMultiple) if _.text]
     jsonData = extract_text_list_from_json_data(textList)
     var['postTextType'] = 'both'
     var['postSubject'] = search_value_in_json_data_using_path(jsonData, '$..wlfareInfoReldBztpCdNm', dataIsUnique)
@@ -87,7 +83,7 @@ def postContentParsingProcess(**params):
 
         if "</div>" in var[candidate]:
             soupData = change_to_soup(var[candidate])
-            childDiv = extract_children_tag(soupData, 'div', dummpyAttrs, childIsMultiple)
+            childDiv = extract_children_tag(soupData, 'div', dummyAttrs, childIsMultiple)
             for div in childDiv :
                 text = clean_text(extract_text(div))
                 if text not in textList :

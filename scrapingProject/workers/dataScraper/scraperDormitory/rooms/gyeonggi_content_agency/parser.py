@@ -1,16 +1,12 @@
 from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
-dummpyAttrs = {}
-childIsNotMultiple = False
-childIsMultiple = True
-
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['isGoingOn', 'viewCount', 'uploadedTime', 'postTitle', 'postUrl', 'uploader']
+        'multipleType' : ['isGoingOn', 'viewCount', 'uploadedTime', 'postTitle', 'postUrl', 'uploader']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    tbody = extract_children_tag(soup, 'tbody', dummpyAttrs, childIsNotMultiple)
-    contentsList = extract_children_tag(tbody, 'tr', dummpyAttrs, childIsMultiple)
+    tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
+    contentsList = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
 
     for contents in contentsList:
         ongoingCheck = extract_children_tag(contents, 'span', {"class": ['tag color01']}, childIsNotMultiple)
@@ -45,15 +41,15 @@ def postListParsingProcess(**params):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['extraInfo'],
-        'strType' : ['postTextType', 'postThumbnail']
+        'multipleType' : ['extraInfo'],
+        'singleType' : ['postTextType', 'postThumbnail']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     var['postTextType'] = 'onlyExtraInfo'
     commBoxList = extract_children_tag(soup, 'div', {"class" : "commBox"}, childIsMultiple)
     extraDict = {'infoTitle' : '사업 상세'}
     for commBox in commBoxList:
-        ul = extract_children_tag(commBox, 'ul', dummpyAttrs, childIsNotMultiple)
+        ul = extract_children_tag(commBox, 'ul', dummyAttrs, childIsNotMultiple)
         if type(ul) == type(None):
             continue
         sTlt = extract_children_tag(ul, 'div', {"class" : "sTlt"}, childIsNotMultiple)
@@ -65,7 +61,7 @@ def postContentParsingProcess(**params):
     imgDiv = extract_children_tag(soup, 'div', {"class" : "img"}, childIsNotMultiple)
     if imgDiv:
         var['postThumbnail'] = var['channelMainUrl'] + extract_attrs(
-            extract_children_tag(imgDiv, 'img', dummpyAttrs, childIsNotMultiple),
+            extract_children_tag(imgDiv, 'img', dummyAttrs, childIsNotMultiple),
             'src'
         )
     else :
@@ -78,8 +74,8 @@ def postContentParsingProcess(**params):
 
 def postContentParsingProcess_other(**params):
     targetKeyInfo = {
-        'strType' : ['postText', 'linkedPostUrl'],
-        'listType' : ['postImageUrl']
+        'singleType' : ['postText', 'linkedPostUrl'],
+        'multipleType' : ['postImageUrl']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
 
@@ -92,7 +88,7 @@ def postContentParsingProcess_other(**params):
             href = extract_attrs(aTag, 'href')
             if href :
                 var['linkedPostUrl'] += href
-    imgList = extract_children_tag(view_content, 'img', dummpyAttrs, childIsMultiple)
+    imgList = extract_children_tag(view_content, 'img', dummyAttrs, childIsMultiple)
     if imgList:
         for img in imgList:
             var['postImageUrl'].append(var['channelMainUrl'] + extract_attrs(img, 'src')) 

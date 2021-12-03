@@ -1,27 +1,23 @@
 from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
-dummpyAttrs = {}
-childIsNotMultiple = False
-childIsMultiple = True
-
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['viewCount', 'postTitle', 'uploader', 'postUrl', 'uploadedTime']
+        'multipleType' : ['viewCount', 'postTitle', 'uploader', 'postUrl', 'uploadedTime']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     tbody = extract_children_tag(soup, 'tbody', {}, childIsNotMultiple)
-    trList_all = extract_children_tag(tbody, 'tr', dummpyAttrs, childIsMultiple)
+    trList_all = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
     trList_info = extract_children_tag(tbody, 'tr', {'class' : 'info'}, childIsMultiple)
     validTrList = list(set(trList_all) - set(trList_info))
     for tr in validTrList :
-        tdList = extract_children_tag(tr, 'td', dummpyAttrs, childIsMultiple)
+        tdList = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple)
         for tdIdx, td in enumerate(tdList):
             tdText = extract_text(td)
             if tdIdx == 1 :
                 var['postUrl'].append(
                     var['channelMainUrl'] + \
                     extract_attrs(
-                        extract_children_tag(td, 'a', dummpyAttrs, childIsNotMultiple), 'href'
+                        extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple), 'href'
                     )
                 )
                 var['postTitle'].append(
@@ -44,13 +40,13 @@ def postListParsingProcess(**params):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'strType' : ['postText'],
-        'listType' : ['postImageUrl']
+        'singleType' : ['postText'],
+        'multipleType' : ['postImageUrl']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     viewContent = extract_children_tag(soup, 'div', {'class':'view-contents'}, childIsNotMultiple)
     var['postText'] = clean_text(extract_text(viewContent))
-    imgList = extract_children_tag(viewContent, 'img', dummpyAttrs, childIsMultiple)
+    imgList = extract_children_tag(viewContent, 'img', dummyAttrs, childIsMultiple)
     if imgList:
         for img in imgList:
             src = extract_attrs(img, 'src')

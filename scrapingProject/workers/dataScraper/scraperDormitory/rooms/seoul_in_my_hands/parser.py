@@ -1,14 +1,8 @@
 from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
-
-childIsMultiple = True
-childIsNotMultiple = False
-isMultiple = True
-dummpyAttrs = {}
-
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['isGoingOn', 'postTitle', 'postUrl', 'postThumbnail', 'uploader', 'startDate', 'endDate', 'postSubject']
+        'multipleType' : ['isGoingOn', 'postTitle', 'postUrl', 'postThumbnail', 'uploader', 'startDate', 'endDate', 'postSubject']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     dataList = extract_children_tag(soup, 'div', {"class" : "multi_cont"}, childIsNotMultiple) # tag
@@ -73,15 +67,15 @@ def parsing_date(text):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'strType' : ['viewCount', 'linkedPostUrl', 'contact', 'postContentTarget', 'postText'],
-        'listType' : ['postImageUrl']
+        'singleType' : ['viewCount', 'linkedPostUrl', 'contact', 'postContentTarget', 'postText'],
+        'multipleType' : ['postImageUrl']
     } 
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    table = extract_children_tag(soup, 'tbody', dummpyAttrs) # return default -> tag
-    trList = extract_children_tag(table, 'tr', dummpyAttrs, childIsMultiple) # list
+    table = extract_children_tag(soup, 'tbody', dummyAttrs) # return default -> tag
+    trList = extract_children_tag(table, 'tr', dummyAttrs, childIsMultiple) # list
     for tr in trList :
-        th = extract_children_tag(tr, 'th', dummpyAttrs, childIsMultiple) # list
-        td = extract_children_tag(tr, 'td', dummpyAttrs, childIsMultiple) # list
+        th = extract_children_tag(tr, 'th', dummyAttrs, childIsMultiple) # list
+        td = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple) # list
         th_text = extract_text(th, isMultiple)
         td_text = extract_text(td, isMultiple)
 
@@ -92,7 +86,7 @@ def postContentParsingProcess(**params):
                 var[info[key]] = td_text[th_idx]
 
     detail_content = extract_children_tag(soup, 'div', {'class' : 'detail'}) # return default -> tag
-    detail_img = extract_children_tag(detail_content, 'img', dummpyAttrs, childIsMultiple)
+    detail_img = extract_children_tag(detail_content, 'img', dummyAttrs, childIsMultiple)
     if detail_img :
         for img in detail_img :
             var['postImageUrl'].append(

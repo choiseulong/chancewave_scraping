@@ -1,12 +1,8 @@
 from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
-
-childIsMultiple = True
-dummyAttrs = {}
-
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['postUrl', 'uploadedTime', 'postSubject'],
+        'multipleType' : ['postUrl', 'uploadedTime', 'postSubject'],
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     item_div = extract_children_tag(soup, "div", {"class" : "item"}, childIsMultiple)
@@ -42,8 +38,8 @@ def postListParsingProcess(**params):
  
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'strType' : ['postText', 'contact', 'uploader', 'postTitle'],
-        'listType' : ['postImageUrl']
+        'singleType' : ['postText', 'contact', 'uploader', 'postTitle'],
+        'multipleType' : ['postImageUrl']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     div_viewTop = extract_children_tag(soup, "div", {"id" : "view_top"})

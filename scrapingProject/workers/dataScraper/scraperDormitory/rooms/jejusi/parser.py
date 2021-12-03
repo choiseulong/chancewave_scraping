@@ -1,19 +1,15 @@
 from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
-dummpyAttrs = {}
-childIsNotMultiple = False
-childIsMultiple = True
-
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['postUrl', 'postTitle', 'uploader', 'uploadedTime', 'viewCount']
+        'multipleType' : ['postUrl', 'postTitle', 'uploader', 'uploadedTime', 'viewCount']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    tbody = extract_children_tag(soup, 'tbody', dummpyAttrs, childIsNotMultiple)
-    trList = extract_children_tag(tbody, 'tr', dummpyAttrs, childIsMultiple)
+    tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
+    trList = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
     for tr in trList:
         Continue = False
-        imgList = extract_children_tag(tr, 'img', dummpyAttrs, childIsMultiple)
+        imgList = extract_children_tag(tr, 'img', dummyAttrs, childIsMultiple)
         for img in imgList:
             alt = extract_attrs(img, 'alt')
             if alt == '공지':
@@ -25,7 +21,7 @@ def postListParsingProcess(**params):
             var['postUrlFrame'].format(
                 parse_href(
                     extract_attrs(
-                        extract_children_tag(tr, 'a', dummpyAttrs, childIsNotMultiple), 'href')
+                        extract_children_tag(tr, 'a', dummyAttrs, childIsNotMultiple), 'href')
                 )
             )
         )
@@ -59,11 +55,11 @@ def postListParsingProcess(**params):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'strType' : ['contact', 'postText'],
-        'listType' : ['postImageUrl']
+        'singleType' : ['contact', 'postText'],
+        'multipleType' : ['postImageUrl']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    dtList = extract_children_tag(soup, 'dt', dummpyAttrs, childIsMultiple)
+    dtList = extract_children_tag(soup, 'dt', dummyAttrs, childIsMultiple)
     for dt in dtList :
         if extract_text(dt) == '연락처':
             print(extract_text(find_next_tag(dt)))
@@ -71,7 +67,7 @@ def postContentParsingProcess(**params):
     
     viewContent = extract_children_tag(soup, 'div', {'class' : 'view-content'}, childIsNotMultiple)
     var['postText'] = extract_text(viewContent)
-    imgList = extract_children_tag(viewContent, 'img', dummpyAttrs, childIsMultiple)
+    imgList = extract_children_tag(viewContent, 'img', dummyAttrs, childIsMultiple)
     if imgList:
         var['postImageUrl'] = [var['channelMainUrl'] + extract_attrs(img, 'src') for img in imgList]
 

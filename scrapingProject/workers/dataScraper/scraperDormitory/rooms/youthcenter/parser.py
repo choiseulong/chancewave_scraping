@@ -1,15 +1,10 @@
 from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
-attrsIsEmpty = {}
-tagIsUnique = True
-childIsMultiple = True
-childIsNotMultiple = False
-
 def postListParsingProcess(**params):
     var = reflect_params(locals(), params)
     targetKeyInfo = {
-        'listType' : ['isGoingOn', 'postSubject', 'postTitle', 'uploader', 'contentsReqParams'],
-        'strType' : ['Cookie','_csrf']
+        'multipleType' : ['isGoingOn', 'postSubject', 'postTitle', 'uploader', 'contentsReqParams'],
+        'singleType' : ['Cookie','_csrf']
     }
     var, soup, _, _ = html_type_default_setting(params, targetKeyInfo)
     # var, _ = reflect_key(var, targetKeyInfo)
@@ -27,7 +22,7 @@ def postListParsingProcess(**params):
         return 'endpoint'
 
     post_list_box = extract_children_tag(soup, "div", {"class" : "result-list-box"}, childIsNotMultiple)
-    post_list = extract_children_tag(post_list_box, "li", attrsIsEmpty, childIsMultiple)
+    post_list = extract_children_tag(post_list_box, "li", dummyAttrs, childIsMultiple)
     
     var['_csrf'] = extract_attrs(
         extract_children_tag(soup, "meta", {"name" : "_csrf"}, childIsNotMultiple),
@@ -70,10 +65,10 @@ def postListParsingProcess(**params):
     valueList = [
         [_ for idx, _ in enumerate(var[key])] \
        for key \
-        in targetKeyInfo['listType']
+        in targetKeyInfo['multipleType']
     ]
 
-    result = merge_var_to_dict(targetKeyInfo['listType'], valueList)
+    result = merge_var_to_dict(targetKeyInfo['multipleType'], valueList)
     var['Cookie'] = var['response'].cookies.get_dict()['YOUTHCENTERSESSIONID']
     result.append({'Cookie' : 'YOUTHCENTERSESSIONID=' + var['Cookie']})
     return result
@@ -81,8 +76,8 @@ def postListParsingProcess(**params):
 def postContentParsingProcess(**params):
     var = reflect_params(locals(), params)
     targetKeyInfo = {
-        'listType' : ['extraInfo'],
-        'strType' : ['postTextType']
+        'multipleType' : ['extraInfo'],
+        'singleType' : ['postTextType']
     }
     var, keyList = reflect_key(var, targetKeyInfo)
     soup = change_to_soup(

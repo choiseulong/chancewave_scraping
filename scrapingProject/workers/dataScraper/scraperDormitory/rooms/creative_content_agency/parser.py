@@ -1,12 +1,8 @@
 from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
-childIsMultiple = True
-childIsNotMultiple = False
-dummpyAttrs = {}
-
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['postSubject', 'postTitle', 'uploadedTime', 'startDate', 
+        'multipleType' : ['postSubject', 'postTitle', 'uploadedTime', 'startDate', 
         'endDate', 'viewCount', 'postUrl'],
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
@@ -20,7 +16,7 @@ def postListParsingProcess(**params):
         )
         var['postTitle'].append(
             extract_text(
-                extract_children_tag(board_body, 'a', dummpyAttrs, childIsNotMultiple)
+                extract_children_tag(board_body, 'a', dummyAttrs, childIsNotMultiple)
             )
         )
         dateList = extract_children_tag(board_body, 'div', {"class" : "date"}, childIsMultiple)
@@ -44,7 +40,7 @@ def postListParsingProcess(**params):
             )
         )
         url = extract_attrs(
-            extract_children_tag(board_body, 'a', dummpyAttrs, childIsNotMultiple),
+            extract_children_tag(board_body, 'a', dummyAttrs, childIsNotMultiple),
             'href'
         ) 
         var['postUrl'].append(
@@ -59,8 +55,8 @@ def postListParsingProcess(**params):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['extraInfo'],
-        'strType' : ['postTextType', 'postText', 'contact']
+        'multipleType' : ['extraInfo'],
+        'singleType' : ['postTextType', 'postText', 'contact']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     var['postTextType'] = 'both'
@@ -68,9 +64,9 @@ def postContentParsingProcess(**params):
     extraDict = {'infoTitle' : '지원사업 상세'}
     tender_con_list = extract_children_tag(soup, 'div', {"class" : "tender_con"}, childIsMultiple)
     for tender_con in tender_con_list :
-        title = extract_text(extract_children_tag(tender_con, 'h4', dummpyAttrs, childIsNotMultiple))
+        title = extract_text(extract_children_tag(tender_con, 'h4', dummyAttrs, childIsNotMultiple))
         tableData = clean_text(
-            extract_text(extract_children_tag(tender_con, 'td', dummpyAttrs, childIsNotMultiple))
+            extract_text(extract_children_tag(tender_con, 'td', dummyAttrs, childIsNotMultiple))
         )
         if title in ['사업개요', '지원내용']:
             var['postText'] += tableData + '\n'

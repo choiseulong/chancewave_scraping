@@ -1,12 +1,8 @@
 from workers.dataScraper.scraperDormitory.parserTools.tools import *
 
-childIsMultiple = True
-childIsNotMultiple = False
-dummpyAttrs = {}
-
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'listType' : ['postSubject', 'postTitle', 'contentsReqParams', 'viewCount', 'uploader', 'endDate']
+        'multipleType' : ['postSubject', 'postTitle', 'contentsReqParams', 'viewCount', 'uploader', 'endDate']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     CSRF_NONCE = extract_attrs(
@@ -48,7 +44,7 @@ def postListParsingProcess(**params):
     infoIdxRoot = {1:'uploader', 2:'endDate', 3:'viewCount'}
     for tag in tagList:
         ann_list_info = extract_children_tag(tag, 'ul', {"class" : "ann_list_info"})
-        ann_list_info_li = extract_children_tag(ann_list_info, 'li', dummpyAttrs, childIsMultiple)
+        ann_list_info_li = extract_children_tag(ann_list_info, 'li', dummyAttrs, childIsMultiple)
 
         for infoIdx in range(len(ann_list_info_li)) :
             if infoIdx in infoIdxRoot.keys():
@@ -66,8 +62,8 @@ def postListParsingProcess(**params):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'strType' : ['postText', 'contact', 'postContentTarget', 'postTextType'],
-        'listType' : ['extraInfo']
+        'singleType' : ['postText', 'contact', 'postContentTarget', 'postTextType'],
+        'multipleType' : ['extraInfo']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     var['postText'] = clean_text(
@@ -79,8 +75,8 @@ def postContentParsingProcess(**params):
     extraDict = {"infoTitle" : "공고 개요"}
     table = extract_children_tag(soup, 'table', {"class" : ["tbl_gray", "mgb_10"]}, childIsNotMultiple)
     
-    th = extract_children_tag(table, 'th', dummpyAttrs, childIsMultiple)
-    td = extract_children_tag(table, 'td', dummpyAttrs, childIsMultiple)
+    th = extract_children_tag(table, 'th', dummyAttrs, childIsMultiple)
+    td = extract_children_tag(table, 'td', dummyAttrs, childIsMultiple)
     for infoName, infoValue in zip(th, td):
         infoName = extract_text(infoName)
         infoValue = extract_text(infoValue)
