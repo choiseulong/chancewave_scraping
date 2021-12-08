@@ -26,6 +26,7 @@ class Scraper(metaclass=ABCMeta):
 
         # additional urls
         self.postUrl = ''
+        self.postUrlFrame = ''
         self.postListUrl = ''
         self.channelMainUrl = ''
 
@@ -39,6 +40,7 @@ class Scraper(metaclass=ABCMeta):
         self.channelCode = channelCode
         self.channelUrl = channelUrl
         self.channelUrlFrame = channelUrl #pageCount 적용이 필요한 경우 사용
+        self.postUrlFrame = self.postUrl
         # 추가 로직 작성 必
 
     def post_list_scraping(self, postListParsingProcess, method, data='', sleepSec=2, jsonize = False):
@@ -56,7 +58,7 @@ class Scraper(metaclass=ABCMeta):
                 response = response, 
                 dateRange = self.dateRange, 
                 channelCode = self.channelCode, 
-                postUrlFrame = self.postUrl,
+                postUrlFrame = self.postUrlFrame,
                 pageCount = self.pageCount,
                 channelMainUrl = self.channelMainUrl,
             )
@@ -71,18 +73,18 @@ class Scraper(metaclass=ABCMeta):
                 self.scrapingTargetContents.append(postContent)
 
     def target_try(self, postContentParsingProcess, target, sleepSec):
-        if 'postUrl' in target.keys():
-            postUrl = target['postUrl']
-            status, response = get_method_response(self.session, postUrl, sleepSec)
-        elif 'contentsReqParams' in target.keys():
+        if 'contentsReqParams' in target.keys():
             data = target['contentsReqParams']
             status, response = post_method_response(self.session, self.postUrl, data, sleepSec)
+        elif 'postUrl' in target.keys():
+            postUrl = target['postUrl']
+            status, response = get_method_response(self.session, postUrl, sleepSec)
 
         if status == 'ok':
             postContent = postContentParsingProcess(
                 response = response, 
                 channelUrl = self.channelUrl,
-                postUrlFrame = self.postUrl,
+                postUrlFrame = self.postUrlFrame,
                 channelMainUrl = self.channelMainUrl
             )
             if postContent == 'retry' : 
@@ -108,8 +110,11 @@ class Scraper(metaclass=ABCMeta):
             if 'contentsReqParams' in targetInfo.keys():
                 reqBody = targetInfo['contentsReqParams']
                 del targetInfo['contentsReqParams']
-                targetInfo.update({'postUrl': self.postUrl + json.dumps(reqBody)}) 
-                postUrlCanUse = False
+                if 'postUrl' not in targetInfo.keys():
+                    targetInfo.update({'postUrl': self.postUrl + json.dumps(reqBody)}) 
+                    postUrlCanUse = False
+                else :
+                    postUrlCanUse = True
             else :
                 postUrlCanUse = True
             dataFrame = get_post_data_frame(self.channelCode, self.channelUrl, postUrlCanUse)
