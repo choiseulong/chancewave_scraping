@@ -53,6 +53,10 @@ class Scraper(ABCScraper):
                 break
 
     def post_list_scraping(self):
+        if self.channelCode == 'mfds_1':
+            # postListParsingProcess = postListParsingProcess_other
+            self.postUrl = 'https://www.mfds.go.kr/brd/m_689/view.do?seq={}'
+
         super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
 
     def target_contents_scraping(self):

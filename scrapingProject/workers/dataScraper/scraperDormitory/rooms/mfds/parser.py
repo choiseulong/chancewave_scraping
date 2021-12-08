@@ -6,10 +6,13 @@ def postListParsingProcess(**params):
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     mainDiv = extract_children_tag(soup, 'div', {'class' : 'bbs_list01'}, childIsNotMultiple)
-    ulList = extract_children_tag(mainDiv, 'ul', dummyAttrs, childIsMultiple, isNotRecursive)
-    if len(ulList):
-        ulList = ulList[1]
-    
+    if '0' in var['channelCode']:
+        ulList = extract_children_tag(mainDiv, 'ul', dummyAttrs, childIsMultiple, isNotRecursive)
+        if len(ulList):
+            ulList = ulList[1]
+    else :
+        ulList = extract_children_tag(mainDiv, 'ul', dummyAttrs, childIsNotMultiple)
+
     var['uploadedTime'] = [
         convert_datetime_string_to_isoformat_datetime(
             extract_text(i)
@@ -48,7 +51,6 @@ def parse_href(text):
     prefix = 'seq='
     suffix = '&amp'
     return text[text.find(prefix) + len(prefix) : text.find(suffix)]
-
     
 def postContentParsingProcess(**params):
     targetKeyInfo = {
@@ -74,4 +76,6 @@ def postContentParsingProcess(**params):
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     return result
-    
+
+def postContentParsingProcess_other(**params):
+    pass
