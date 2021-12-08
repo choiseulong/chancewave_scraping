@@ -2,7 +2,7 @@ from workers.dataScraper.scraperDormitory.scraping_default_usage import Scraper 
 from workers.dataScraper.scraperDormitory.scraperTools.tools import *
 from .parser import *
 
-# 채널 이름 : 공정거래위원회
+# 채널 이름 : 금융위원회
 
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
@@ -11,38 +11,20 @@ from .parser import *
 '''
     @post list
 
-    method : POST
-    url = https://www.ftc.go.kr/www/cop/bbs/selectBoardList.do?key=13
+    method : GET
+    url = https://www.fsc.go.kr/no010104?curPage={PageCount}
     header :
-        1. Content-Type: application/x-www-form-urlencoded
-    body : 
-        1. bbsId=BBSMSTR_000000002424
-        2. bbsTyCode=BBST01
-        3. pageIndex=1
-
-    required data searching point :
-        header_1 : fixed
-        body_1 : fixed
-        body_2 : fixed
-        body_3 : pageCount
+        None
 
 '''
 '''
     @post info
-    method : POST
-    url : https://www.ftc.go.kr/www/cop/bbs/selectBoardArticle.do?key=13
+    method : GET
+    url : https://www.mpva.go.kr/mpva/selectBbsNttView.do?key=76&bbsNo=15&nttNo={postNumber}
     header :
         None
-    body : 
-        data = {
-            "bbsId" : "BBSMSTR_000000002424",
-            "bbsTyCode" : "BBST01",
-            "nttId" : {nttId},
-            "pageIndex" : self.pageCount
-        }
     required data searching point :
         header_1 : fixed
-        body_1 = {nttId}
 '''
 
 sleepSec = 2
@@ -51,8 +33,7 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelMainUrl = 'https://www.ftc.go.kr'
-        self.postUrl = 'https://www.ftc.go.kr/www/cop/bbs/selectBoardArticle.do?key=13'
+        self.channelMainUrl = 'https://www.fsc.go.kr'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
@@ -69,6 +50,9 @@ class Scraper(ABCScraper):
                 self.mongo.reflect_scraped_data(self.collectedDataList)
                 self.pageCount += 1
             else :
+                break
+
+            if self.pageCount == 3 :
                 break
 
     def post_list_scraping(self):

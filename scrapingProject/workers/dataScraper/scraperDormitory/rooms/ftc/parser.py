@@ -59,14 +59,14 @@ def parse_href(text):
 def postContentParsingProcess(**params):
     targetKeyInfo = {
         'singleType' : ['postText'],
-        'multipleType' : ['postImageUrl']
+        'multipleType' : ['postImageUrl', 'contact']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     contents = extract_children_tag(soup, 'td', {'class' : 'bbs_content'}, childIsNotMultiple)
     postText = extract_text(contents)
     if postText:
-
         var['postText'] = clean_text(postText)
+        var['contact'] = extract_contact_numbers_from_text(postText)
     imgList = extract_children_tag(contents, 'img', dummyAttrs, childIsMultiple)
     if imgList :
         for img in imgList:
