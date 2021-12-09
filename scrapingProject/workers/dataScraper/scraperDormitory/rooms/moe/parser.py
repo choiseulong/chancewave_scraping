@@ -36,7 +36,6 @@ def postListParsingProcess(**params):
 
     valueList = [var[key] for key in keyList]
     result = merge_var_to_dict(keyList, valueList)
-    # print(result)
     return result
 
 def parse_onclick(text):
