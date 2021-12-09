@@ -234,3 +234,6 @@ def json_type_default_setting(params, targetKeyInfo):
     var, keyList = reflect_key(var, targetKeyInfo)
     jsonData = json.loads(var['response'].text)
     return var, jsonData, keyList
+
+def extract_text_between_prefix_and_suffix(prefix, suffix, text):
+    return text[text.find(prefix)+len(prefix):text.find(suffix)]
