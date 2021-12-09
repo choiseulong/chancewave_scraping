@@ -2,7 +2,7 @@ from workers.dataScraper.scraperDormitory.scraping_default_usage import Scraper 
 from workers.dataScraper.scraperDormitory.scraperTools.tools import *
 from .parser import *
 
-# 채널 이름 : 통계청
+# 채널 이름 : 교육부
 
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
@@ -12,17 +12,14 @@ from .parser import *
     @post list
 
     method : GET
-    url = https://kostat.go.kr/portal/korea/kor_nw/6/1/index.board?bmode=list&pageNo={}&rowNum=50
+    url = https://www.moe.go.kr/boardCnts/list.do?type=default&page=1&m=0501&s=moe&boardID=333
     header :
         None
-    required data searching point :
-        header_1 : fixed
-
 '''
 '''
     @post info
     method : GET
-    url : https://kostat.go.kr/portal/korea/kor_nw/6/1/index.board?bmode=read&aSeq={postId}
+    url : https://www.moe.go.kr/boardCnts/view.do?boardID=333&boardSeq={postId}&lev=0
     header :
         None
 
@@ -34,14 +31,12 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelMainUrl = 'https://kostat.go.kr'
-        self.postUrl = 'https://kostat.go.kr/portal/korea/kor_nw/6/1/index.board?bmode=read&aSeq={}'
+        self.channelMainUrl = 'https://www.moe.go.kr'
+        self.postUrl = 'https://www.moe.go.kr/boardCnts/view.do?boardID=333&boardSeq={}&lev=0'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
-        self.additionalKeyValue.append(("Content-Type", "application/x-www-form-urlencoded"))
-        self.session = set_headers(self.session, self.additionalKeyValue, isUpdate)
-
+        self.session = set_headers(self.session)
         self.pageCount = 1
         while True :
             self.channelUrl = self.channelUrlFrame.format(self.pageCount)
