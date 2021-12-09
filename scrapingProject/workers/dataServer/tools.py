@@ -4,10 +4,12 @@ from pytz import timezone
 
 def make_crc(data):
     text = ''
-    keyList = ['channelCode', 'channelUrl', 'postUrl', 'postTitle', 'postText', 'postSubject', 'contact', 'extraInfo', 'isGoingOn', 'postImageUrl']
+    keyList = ['channelCode', 'channelUrl', 'postUrl', 'postTitle', 'postText', 'postSubject', 'contact', 'extraInfo', 'isGoingOn', 'postImageUrl', 'viewCount']
     for key in keyList:
         if isinstance(data[key], str):
             text += data[key]
+        elif isinstance(data[key], int):
+            text += str(data[key])
         elif isinstance(data[key], list):
             for infoElement in data[key]:
                 text += ', '.join(infoElement)
