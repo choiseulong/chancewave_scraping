@@ -25,7 +25,7 @@ from .parser import *
 
 '''
 
-sleepSec = 2
+sleepSec = 3
 
 class Scraper(ABCScraper):
     def __init__(self, session):

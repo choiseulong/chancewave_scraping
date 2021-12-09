@@ -2,7 +2,7 @@ from workers.dataScraper.scraperDormitory.scraping_default_usage import Scraper 
 from workers.dataScraper.scraperDormitory.scraperTools.tools import *
 from .parser import *
 
-# 채널 이름 : 국세청
+# 채널 이름 : 통일부
 
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
@@ -10,33 +10,31 @@ from .parser import *
 #HTTP Request
 '''
     @post list
-    method : POST
-    url = https://www.nts.go.kr/nts/na/ntt/selectNttList.do
+
+    method : GET
+    url =  https://www.unikorea.go.kr/unikorea/news/notice/?mode=list&boardId=bbs_0000000000000001&pageIdx={pageCount}
     header :
         None
-
 '''
 '''
     @post info
     method : GET
-    url : https://www.moef.go.kr/nw/nes/detailNesDtaView.do?searchBbsId1={MOSFBBS}&searchNttId1={MOSF}
+    url : https://www.mofa.go.kr/www/brd/m_4075/view.do?seq={postId}
     header :
         None
-'''
 
-sleepSec = 3
-isUpdate = True
+'''
+sleepSec = 2
 
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelMainUrl = 'https://www.nts.go.kr'
-        self.postUrl = 'https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do'
+        self.channelMainUrl = 'https://www.unikorea.go.kr'
+        self.postUrl = 'https://www.unikorea.go.kr/unikorea/news/notice/?boardId=bbs_0000000000000001&mode=view&cntId={}'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
-        self.additionalKeyValue.append(("Content-Type", "application/x-www-form-urlencoded"))
-        self.session = set_headers(self.session, self.additionalKeyValue, isUpdate)
+        self.session = set_headers(self.session)
         self.pageCount = 1
         while True :
             self.channelUrl = self.channelUrlFrame.format(self.pageCount)
@@ -50,19 +48,7 @@ class Scraper(ABCScraper):
                 break
 
     def post_list_scraping(self):
-        data = {
-            "currPage" : self.pageCount,
-            "bbsId" : 1011
-        }
-        super().post_list_scraping(postListParsingProcess, 'post', data, sleepSec)
+        super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
 
     def target_contents_scraping(self):
         super().target_contents_scraping(postContentParsingProcess, sleepSec)
-
-
-            
-
- 
-
-
-
