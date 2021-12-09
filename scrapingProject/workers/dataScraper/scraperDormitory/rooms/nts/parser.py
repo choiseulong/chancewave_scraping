@@ -10,15 +10,15 @@ def postListParsingProcess(**params):
     for tr in trList:
         bbs_tit = extract_children_tag(tr, 'td', {'class' : 'bbs_tit'}, childIsNotMultiple)
         atag = extract_children_tag(bbs_tit, 'a', {'class' : 'nttInfoBtn'}, childIsNotMultiple)
-        href = extract_numbers_in_text(
+        dataId = extract_numbers_in_text(
             extract_attrs(
                 atag, 
-                'href'
+                'data-id'
             )
         )
         data = {
             "bbsId" : 1011,
-            "nttSn" : href
+            "nttSn" : dataId
         }
         var['postTitle'].append(
             extract_text(atag).replace('N', '')
@@ -42,8 +42,7 @@ def postListParsingProcess(**params):
         
     valueList = [var[key] for key in keyList]
     result = merge_var_to_dict(keyList, valueList)
-    print(result)
-    # return result
+    return result
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
@@ -52,6 +51,19 @@ def postContentParsingProcess(**params):
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     
+    contents = extract_children_tag(soup, 'div', {'class' : 'bbsV_cont'}, childIsNotMultiple)
+    imgList = extract_children_tag(contents, 'img', {'src' : True}, childIsMultiple)
+    if imgList:
+        for img in imgList:
+            src = extract_attrs(img, 'src')
+            if 'http' not in src :
+                src = var['channelMainUrl'] + src
+            var['postImageUrl'].append(src)
+    postText = extract_text(contents)
+    if postText:
+        var['postText'] = clean_text(postText)
+        var['contact'] = extract_contact_numbers_from_text(postText)
+
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     return result
