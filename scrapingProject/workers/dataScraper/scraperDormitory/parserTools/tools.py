@@ -5,6 +5,7 @@ import ast
 import json
 import xmltodict
 import re
+from w3lib.html import remove_tags
 
 childIsNotMultiple = False
 childIsMultiple = True
@@ -14,7 +15,11 @@ isMultiple = True
 dummyAttrs = {}
 
 def change_to_soup(reponseText):
-    return bs(reponseText, 'html.parser')
+    try :
+        return bs(reponseText, 'html.parser')
+    except UnboundLocalError as e :
+        print(e)
+        return remove_tags(reponseText)
 
 def select_one(soup, tag):
     return soup.select_one(tag)
