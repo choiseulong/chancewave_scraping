@@ -52,6 +52,7 @@ def postContentParsingProcess(**params):
         # ERROR 예외 : [local variable 'match' referenced before assignment] 
         fullText = parse_fullText(fullText)
         post_content = change_to_soup(fullText)
+        print(post_content)
         postText = clean_text(extract_text(post_content))
         var['postText'] = clean_text(postText)
         var['contact'] = extract_contact_numbers_from_text(postText)

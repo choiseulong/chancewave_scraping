@@ -18,7 +18,6 @@ def change_to_soup(reponseText):
     try :
         return bs(reponseText, 'html.parser')
     except UnboundLocalError as e :
-        print(e)
         return remove_tags(reponseText)
 
 def select_one(soup, tag):
