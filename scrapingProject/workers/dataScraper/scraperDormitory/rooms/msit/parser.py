@@ -44,11 +44,12 @@ def postContentParsingProcess(**params):
     contBox = extract_children_tag(soup, 'div', {'id' : 'cont-wrap'}, childIsNotMultiple)
     var['postText'] = clean_text(extract_text(contBox))
     imgList = extract_children_tag(contBox, 'img', {'src' : True}, childIsMultiple)
-    for img in imgList:
-        src = extract_attrs(img, 'src')
-        if 'http' not in src:
-            src = var['channelMainUrl'] + src
-        var['postImageUrl'].append(src)
+    if imgList:
+        for img in imgList:
+            src = extract_attrs(img, 'src')
+            if 'http' not in src:
+                src = var['channelMainUrl'] + src
+            var['postImageUrl'].append(src)
 
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)

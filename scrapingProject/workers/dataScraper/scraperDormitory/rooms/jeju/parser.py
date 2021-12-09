@@ -81,11 +81,12 @@ def postListParsingProcess_other(**params):
     for tr in trList:
         Continue = False
         imgList = extract_children_tag(tr, 'img', dummyAttrs, childIsMultiple)
-        for img in imgList:
-            alt = extract_attrs(img, 'alt')
-            if alt == '공지':
-                Continue = True
-                break
+        if imgList:
+            for img in imgList:
+                alt = extract_attrs(img, 'alt')
+                if alt == '공지':
+                    Continue = True
+                    break
         if Continue:
             continue
         var['postUrl'].append(
