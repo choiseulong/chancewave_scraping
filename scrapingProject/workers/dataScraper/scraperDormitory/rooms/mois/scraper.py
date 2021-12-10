@@ -2,7 +2,7 @@ from workers.dataScraper.scraperDormitory.scraping_default_usage import Scraper 
 from workers.dataScraper.scraperDormitory.scraperTools.tools import *
 from .parser import *
 
-# 채널 이름 : 방위사업청
+# 채널 이름 : 행정안전부
 
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
@@ -11,22 +11,17 @@ from .parser import *
 '''
     @post list
 
-    method : POST
-    url =  http://www.dapa.go.kr/dapa/na/ntt/selectNttList.do
+    method : GET
+    url =  https://www.mois.go.kr/frt/bbs/type013/commonSelectBoardList.do?bbsId=BBSMSTR_000000000006&pageIndex={pageCount}
     header :
         1.Content-Type: application/x-www-form-urlencoded
-    body :
-        1. currPage = {pageCount}
-        2. bbsId = 443
     required data searching point :
         header_1 : fixed
-        body_1 = pageCount
-        body_2 = fixed
 '''
 '''
     @post info
     method : GET
-    url : http://www.dapa.go.kr/dapa/na/ntt/selectNttInfo.do?bbsId=443&nttSn={postId}&menuId=356
+    url : https://www.mois.go.kr/frt/bbs/type013/commonSelectBoardArticle.do?bbsId={}&nttId={}
     header :
         None
 
@@ -37,8 +32,8 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelMainUrl = 'http://www.dapa.go.kr'
-        self.postUrl = 'http://www.dapa.go.kr/dapa/na/ntt/selectNttInfo.do?bbsId=443&nttSn={}&menuId=356'
+        self.channelMainUrl = 'https://www.mois.go.kr'
+        self.postUrl = 'https://www.mois.go.kr/frt/bbs/type013/commonSelectBoardArticle.do?bbsId={}&nttId={}'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
@@ -57,11 +52,7 @@ class Scraper(ABCScraper):
                 break
 
     def post_list_scraping(self):
-        data = {
-            "currPage" : self.pageCount,
-            "bbsId" : 443
-        }
-        super().post_list_scraping(postListParsingProcess, 'post', data, sleepSec)
+        super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
 
     def target_contents_scraping(self):
         super().target_contents_scraping(postContentParsingProcess, sleepSec)

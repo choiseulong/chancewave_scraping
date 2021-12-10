@@ -194,7 +194,14 @@ def multiple_appends(valueList, *element):
     valueList.extend(element)
     return valueList
 
-def merge_var_to_dict(keyList, valueList):
+def merge_var_to_dict(keyList, valueList, channelCode=''):
+    lenthList = [len(_) for _ in valueList]
+    if len(list(set(lenthList))) == 1:
+        pass
+    else :
+        ##
+        print(f'{channelCode} 채널 데이터 수집 에러')
+        return []
     result = []
     for idx in range(len(valueList[0])):
         result.append(
