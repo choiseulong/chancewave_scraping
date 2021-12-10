@@ -8,27 +8,28 @@ def postListParsingProcess(**params):
     tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
     trList = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
     for tr in trList:
-        tdList = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple)
+        tdList = extract_children_tag(tr, 'td', dummyAttrs ,childIsMultiple)
         for tdIdx, td in enumerate(tdList):
             tdText = extract_text(td)
-            if tdIdx == 1:
+            if tdIdx == 0 and '공지' in tdText:
+                break
+            if tdIdx == 1 :
                 aTag = extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple)
-                postId = parse_onclick(extract_attrs(aTag, 'onclick'))
+                postId = extract_text_between_prefix_and_suffix("cntId=", "&amp", extract_attrs(aTag, 'href'))
                 var['postUrl'].append(
                     var['postUrlFrame'].format(postId)
                 )
                 var['postTitle'].append(tdText)
-            elif tdIdx == 3:
+            elif tdIdx == 2:
                 var['uploader'].append(tdText)
-            elif tdIdx == 4:
+            elif tdIdx == 3:
                 var['uploadedTime'].append(
                     convert_datetime_string_to_isoformat_datetime(tdText)
                 )
-            elif tdIdx == 5:
+            elif tdIdx == 4:
                 var['viewCount'].append(
                     extract_numbers_in_text(tdText)
                 )
-
     valueList = [var[key] for key in keyList]
     result = merge_var_to_dict(keyList, valueList)
     # print(result)
@@ -39,29 +40,15 @@ def parse_onclick(text):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'singleType' : ['contact', 'postText', 'startDate', 'endDate', 'startDate2', 'endDate2'],
+        'singleType' : ['contact', 'postText'],
         'multipleType' : ['postImageUrl']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
-    thList = extract_children_tag(tbody, 'th', dummyAttrs, childIsMultiple)
-    dateCount = 0
-    dateInfo = {'startDate' : '공지시작일', 'endDate' : '공지종료일', 'startDate2' : '게시시작일시', 'endDate2' : '게시종료일시'}
-    for th in thList:
-        thText = extract_text(th)
-        for key in dateInfo:
-            if dateInfo[key] in thText:
-                dateString = extract_text(find_next_tag(th))
-                if dateString:
-                    var[key] = convert_datetime_string_to_isoformat_datetime(dateString)
-                dateCount += 1
-        if dateCount == 4:
-            break
-    board_contents = extract_children_tag(tbody, 'div', {'class' : 'board-contents'}, childIsNotMultiple)
-    postText = extract_text(board_contents)
+    board_content = extract_children_tag(soup, 'div', {'class' : 'board_content'}, childIsNotMultiple)
+    postText = extract_text(board_content)
     var['postText'] = clean_text(postText)
     var['contact'] = extract_contact_numbers_from_text(postText)
-    imgList = extract_children_tag(board_contents, 'img', {'src' : True}, childIsMultiple)
+    imgList = extract_children_tag(board_content, 'img', {'src' : True}, childIsMultiple)
     if imgList:
         for img in imgList:
             src = extract_attrs(img, 'src')
@@ -72,7 +59,6 @@ def postContentParsingProcess(**params):
                 src = var['channelMainUrl'] + src
                 var['postImageUrl'].append(src)
                 continue
-
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     # print(result)
