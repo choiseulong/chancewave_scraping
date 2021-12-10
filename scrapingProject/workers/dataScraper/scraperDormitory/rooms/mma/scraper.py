@@ -2,7 +2,7 @@ from workers.dataScraper.scraperDormitory.scraping_default_usage import Scraper 
 from workers.dataScraper.scraperDormitory.scraperTools.tools import *
 from .parser import *
 
-# 채널 이름 : 국방부
+# 채널 이름 : 병무청
 
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
@@ -11,10 +11,19 @@ from .parser import *
 '''
     @post list
 
-    method : GET
-    url =  https://www.mnd.go.kr/user/boardList.action?boardId=I_11066&page={pageCount}&id=mnd_020401000000
+    method : POST
+    url =  https://www.mma.go.kr/board/boardList.do
     header :
-        None
+        1.Content-Type: application/x-www-form-urlencoded
+    body :
+        1. pageUnit = 50
+        2. pageIndex = {pageCount}
+        3. gesipan_id = 2
+    required data searching point :
+        header_1 : fixed
+        body_1 = fixed
+        body_2 = pageCount
+        body_3 = fixed
 '''
 '''
     @post info
@@ -30,8 +39,8 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelMainUrl = 'https://www.mnd.go.kr'
-        self.postUrl = 'https://www.mnd.go.kr/user/boardList.action?command=view&boardId=I_11066&boardSeq={}'
+        self.channelMainUrl = 'https://www.mma.go.kr'
+        self.postUrl = 'https://www.mma.go.kr/board/boardView.do?gesipan_id=2&gsgeul_no={}'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
@@ -49,7 +58,12 @@ class Scraper(ABCScraper):
                 break
 
     def post_list_scraping(self):
-        super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
+        data = {
+            "pageUnit" : 50,
+            "pageIndex" : self.pageCount,
+            "gesipan_id" : 2
+        }
+        super().post_list_scraping(postListParsingProcess, 'post', data, sleepSec)
 
     def target_contents_scraping(self):
         super().target_contents_scraping(postContentParsingProcess, sleepSec)

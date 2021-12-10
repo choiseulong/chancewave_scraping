@@ -51,7 +51,6 @@ def postContentParsingProcess(**params):
     var['postText'] = clean_text(extract_text(seedbbsContentWrap))
     imgList = extract_children_tag(seedbbsContentWrap, 'img', {'src' : True}, childIsMultiple)
     if imgList:
-
         for img in imgList:
             src = extract_attrs(img, 'src')
             if 'http' not in src :
