@@ -36,7 +36,7 @@ class Scraper(ABCScraper):
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
         self.session = set_headers(self.session)
-        self.pageCount = 3
+        self.pageCount = 4
         while True :
             self.channelUrl = self.channelUrlFrame.format(self.pageCount)
             self.post_list_scraping()

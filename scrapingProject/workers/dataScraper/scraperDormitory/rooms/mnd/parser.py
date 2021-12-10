@@ -49,18 +49,16 @@ def postContentParsingProcess(**params):
     }
     var, soup, keyList, fullText = html_type_default_setting(params, targetKeyInfo)
     if type(soup) == str :
-        # ERROR 예외 : [local variable 'match' referenced before assignment] 
-        fullText = parse_fullText(fullText)
-        post_content = change_to_soup(fullText)
-        print(post_content)
-        postText = clean_text(extract_text(post_content))
-        var['postText'] = clean_text(postText)
-        var['contact'] = extract_contact_numbers_from_text(postText)
-    else :
-        post_content = extract_children_tag(soup, 'div', {'class' : 'post_content'}, childIsNotMultiple)
-        postText = extract_text(post_content)
-        var['contact'] = extract_contact_numbers_from_text(postText)
-        var['postText'] = clean_text(postText)
+        # ERROR 예외 : [local variable 'match' referenced before assignment] bug
+        # UserWarning: unknown status keyword 'data-hwpjson' in marked section warnings.warn(msg)
+        fullText = fullText.replace('[data-hwpjson]', '')
+        soup = change_to_soup(fullText)
+
+    post_content = extract_children_tag(soup, 'div', {'class' : 'post_content'}, childIsNotMultiple)
+    postText = extract_text(post_content)
+    var['contact'] = extract_contact_numbers_from_text(postText)
+    var['postText'] = clean_text(postText)
+    notExistsPostText = False
     imgList = extract_children_tag(post_content, 'img', {'src' : True}, childIsMultiple)
     if imgList:
         for img in imgList:
@@ -68,12 +66,11 @@ def postContentParsingProcess(**params):
             if 'http' not in src:
                 src = var['channelMainUrl'] + src
             var['postImageUrl'].append(src)
+            if not var['postText']:
+                notExistsPostText = True
+            if notExistsPostText:
+                var['postText'] += extract_attrs(img, 'alt')
     
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     return result
-
-def parse_fullText(text):
-    prefix = '<div class="post_content">'
-    suffix = '<div class="hwp_editor_board_content"'
-    return text[text.find(prefix) : text.find(suffix)] + '</div>'
