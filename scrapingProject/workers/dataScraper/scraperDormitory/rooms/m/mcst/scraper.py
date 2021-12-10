@@ -12,14 +12,14 @@ from .parser import *
     @post list
 
     method : GET
-    url =  https://www.nfa.go.kr/nfa/news/notice/?mode=list&boardId=bbs_0000000000000009&pageIdx={pageCount}
+    url =  https://www.mcst.go.kr/kor/s_notice/notice/noticeList.jsp?pCurrentPage={pageCount}
     header :
         None
 '''
 '''
     @post info
     method : GET
-    url : https://www.nfa.go.kr/nfa/news/notice/?boardId=bbs_0000000000000009&mode=view&cntId={postId}
+    url : https://www.mcst.go.kr/kor/s_notice/notice/ + {href}
     header :
         None
 
@@ -30,8 +30,8 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelMainUrl = 'https://www.nfa.go.kr'
-        self.postUrl = 'https://www.nfa.go.kr/nfa/news/notice/?boardId=bbs_0000000000000009&mode=view&cntId={}'
+        self.channelMainUrl = 'https://www.mcst.go.kr'
+        self.postUrl = 'https://www.mcst.go.kr/kor/s_notice/notice/'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)

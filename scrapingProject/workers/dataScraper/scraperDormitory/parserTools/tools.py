@@ -199,8 +199,8 @@ def merge_var_to_dict(keyList, valueList, channelCode=''):
     if len(list(set(lenthList))) == 1:
         pass
     else :
-        ##
         print(f'{channelCode} 채널 데이터 수집 에러')
+        print({i : len(k) for i, k in zip(keyList, valueList)})
         return []
     result = []
     for idx in range(len(valueList[0])):
