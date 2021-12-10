@@ -2,7 +2,7 @@ from workers.dataScraper.scraperDormitory.scraping_default_usage import Scraper 
 from workers.dataScraper.scraperDormitory.scraperTools.tools import *
 from .parser import *
 
-# 채널 이름 : 병무청
+# 채널 이름 : 방위사업청
 
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
@@ -12,18 +12,16 @@ from .parser import *
     @post list
 
     method : POST
-    url =  https://www.mma.go.kr/board/boardList.do
+    url =  http://www.dapa.go.kr/dapa/na/ntt/selectNttList.do
     header :
         1.Content-Type: application/x-www-form-urlencoded
     body :
-        1. pageUnit = 50
-        2. pageIndex = {pageCount}
-        3. gesipan_id = 2
+        1. currPage = {pageCount}
+        2. bbsId = 443
     required data searching point :
         header_1 : fixed
-        body_1 = fixed
-        body_2 = pageCount
-        body_3 = fixed
+        body_1 = pageCount
+        body_2 = fixed
 '''
 '''
     @post info
@@ -39,12 +37,13 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelMainUrl = 'https://www.mma.go.kr'
-        self.postUrl = 'https://www.mma.go.kr/board/boardView.do?gesipan_id=2&gsgeul_no={}'
+        self.channelMainUrl = 'http://www.dapa.go.kr'
+        self.postUrl = 'http://www.dapa.go.kr/dapa/na/ntt/selectNttInfo.do?bbsId=443&nttSn={}&menuId=356'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
-        self.session = set_headers(self.session)
+        self.additionalKeyValue.append(("Content-Type", "application/x-www-form-urlencoded"))
+        self.session = set_headers(self.session, self.additionalKeyValue, isUpdate)
         self.pageCount = 1
         while True :
             self.channelUrl = self.channelUrlFrame.format(self.pageCount)
@@ -59,9 +58,8 @@ class Scraper(ABCScraper):
 
     def post_list_scraping(self):
         data = {
-            "pageUnit" : 50,
-            "pageIndex" : self.pageCount,
-            "gesipan_id" : 2
+            "currPage" : self.pageCount,
+            "bbsId" : 443
         }
         super().post_list_scraping(postListParsingProcess, 'post', data, sleepSec)
 

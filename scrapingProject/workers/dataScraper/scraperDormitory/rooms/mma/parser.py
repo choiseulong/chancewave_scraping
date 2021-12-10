@@ -15,7 +15,6 @@ def postListParsingProcess(**params):
                 aTag = extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple)
                 href = extract_attrs(aTag, 'href')
                 postId = extract_text_between_prefix_and_suffix('gsgeul_no=', '&pageIndex', href)
-                print(postId)
                 var['postUrl'].append(
                     var['postUrlFrame'].format(postId)
                 )
@@ -59,13 +58,15 @@ def postContentParsingProcess(**params):
     if imgList:
         for img in imgList:
             src = extract_attrs(img, 'src')
+            if 'base64' in src :
+                var['postImageUrl'].append(src)
+                continue
             if 'http' not in src :
                 src = var['channelMainUrl'] + src
-            var['postImageUrl'].append(src)
-    
+                var['postImageUrl'].append(src)
+                continue
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
-    # print(result)
     return result
 
 
