@@ -52,11 +52,11 @@ class ScrapingManager:
                 # something = checker.is_handling(traceback.format_exc(), e.__class__)
                 # print(something)
             
-            if channelCode != 'nfa_0':
+            if channelCode != 'mcst_0':
                 continue
             print(channelCode, 'init')
             session = self.get_requests_session()
-            scraperRoomAddress = f'workers.dataScraper.scraperDormitory.rooms.{roomName}.scraper'
+            scraperRoomAddress = f'workers.dataScraper.scraperDormitory.rooms.{roomName[0]}.{roomName}.scraper'
             scraper = importlib.import_module(scraperRoomAddress).Scraper(session)
             scraper.scraping_process(channelCode, channelUrl, self.dateRange)
     
