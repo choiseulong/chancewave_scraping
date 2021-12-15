@@ -32,7 +32,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channelMainUrl = 'https://www.forest.go.kr'
-        self.postUrl = 'https://www.rda.go.kr/board/board.do?boardId=ancmtt&prgId=nei_ancmttEntry&menu_id=pun&currPage=1&dataNo={}&mode=updateCnt'
+        self.postUrl = 'https://www.forest.go.kr/kfsweb/cop/bbs/selectBoardArticle.do?nttId={}&bbsId=BBSMSTR_1031&searchtitle=title&mn=NKFS_04_01_01'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
@@ -50,11 +50,7 @@ class Scraper(ABCScraper):
                 break
 
     def post_list_scraping(self):
-        data = {
-            "page" : self.pageCount,
-            "row" : 50
-        }
-        super().post_list_scraping(postListParsingProcess, 'post', data, sleepSec)
+        super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
 
     def target_contents_scraping(self):
         super().target_contents_scraping(postContentParsingProcess, sleepSec)
