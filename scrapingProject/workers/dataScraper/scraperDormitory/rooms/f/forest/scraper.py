@@ -20,7 +20,7 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : 'https://www.rda.go.kr/board/board.do?boardId=ancmtt&prgId=nei_ancmttEntry&dataNo={postId}'
+    url : 'https://www.forest.go.kr/kfsweb/cop/bbs/selectBoardArticle.do?nttId={postId}&bbsId=BBSMSTR_1031&searchtitle=title&mn=NKFS_04_01_01'
     header :
         None
 
