@@ -2,17 +2,15 @@ from workers.dataScraper.scraperDormitory.scraping_default_usage import Scraper 
 from workers.dataScraper.scraperDormitory.scraperTools.tools import *
 from .parser import *
 
-# 채널 이름 : 산림청
-
+# 채널 이름 : 산업통상자원부
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
-
 #HTTP Request
 '''
     @post list
 
     method : GET
-    url =  https://www.forest.go.kr/kfsweb/cop/bbs/selectBoardList.do?mn=NKFS_04_01_01&pageIndex={}&pageUnit=50&searchtitle=title&bbsId=BBSMSTR_1031
+    url =  http://www.motie.go.kr/motie/ne/Notice/bbs/bbsList.do?bbs_cd_n=83&bbs_seq_n=&currentPage={pageCount}
     header :
         None
 
@@ -20,7 +18,7 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : 'https://www.forest.go.kr/kfsweb/cop/bbs/selectBoardArticle.do?nttId={postId}&bbsId=BBSMSTR_1031&searchtitle=title&mn=NKFS_04_01_01'
+    url : http://www.motie.go.kr/motie/ne/Notice/bbs/bbsView.do?bbs_seq_n={postId}&bbs_cd_n=83
     header :
         None
 
@@ -31,9 +29,9 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelMainUrl = 'https://www.forest.go.kr'
-        self.postUrl = 'https://www.forest.go.kr/kfsweb/cop/bbs/selectBoardArticle.do?nttId={}&bbsId=BBSMSTR_1031&searchtitle=title&mn=NKFS_04_01_01'
-        
+        self.channelMainUrl = 'http://www.motie.go.kr'
+        self.postUrl = 'http://www.motie.go.kr/motie/ne/Notice/bbs/bbsView.do?bbs_seq_n={}&bbs_cd_n=83'
+
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
         self.session = set_headers(self.session)

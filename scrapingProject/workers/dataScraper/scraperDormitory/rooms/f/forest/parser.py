@@ -81,7 +81,6 @@ def postContentParsingProcess(**params):
         dlText = extract_text(dl)
         if '주소' in dlText or '위치' in dlText:
             extraInfoText = extract_text(find_next_tag(dl))
-            print(dlText, extraInfoText)
             if extraInfoText:
                 lenExtraInfo = len(extraInfo)
                 extraInfo.update({f'info_{lenExtraInfo}' : extraInfoText})
@@ -90,5 +89,4 @@ def postContentParsingProcess(**params):
 
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
-    print(result)
     return result
