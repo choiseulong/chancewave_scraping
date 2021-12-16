@@ -23,6 +23,8 @@ class Scraper(metaclass=ABCMeta):
         self.scrapingTarget = []
         self.scrapingTargetContents = []
         self.collectedDataList = []
+        self.channelName = ''
+        self.postBoardName = ''
 
         # additional urls
         self.postUrl = ''
@@ -117,7 +119,7 @@ class Scraper(metaclass=ABCMeta):
                     postUrlCanUse = True
             else :
                 postUrlCanUse = True
-            dataFrame = get_post_data_frame(self.channelCode, self.channelUrl, postUrlCanUse)
+            dataFrame = get_post_data_frame(self.channelCode, self.channelUrl, postUrlCanUse, self.channelName, self.postBoardName)
             dataFrameWithTargetInfo = enter_data_into_dataFrame(dataFrame, targetInfo)
             dataFrameWithTargetContents = enter_data_into_dataFrame(dataFrameWithTargetInfo, targetContents)
             self.collectedDataList.append(dataFrameWithTargetContents)

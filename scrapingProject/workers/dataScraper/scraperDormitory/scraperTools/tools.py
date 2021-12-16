@@ -45,9 +45,17 @@ def return_key_value(data):
     value = data[key]
     return key, value
 
-def get_post_data_frame(channelCode='', channelUrl='', postUrlCanUse=True):
+def get_post_data_frame(
+        channelCode='', 
+        channelUrl='', 
+        postUrlCanUse=True, 
+        channelName='', 
+        postBoardName=''
+    ):
     now = datetime.now(timezone('Asia/Seoul'))
     return {
+        'channelName' : channelName,
+        'postBoardName' : postBoardName,
         'channelCode' : channelCode,
         'channelUrl' : channelUrl,
         'postUrl' : None,
