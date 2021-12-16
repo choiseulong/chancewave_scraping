@@ -20,7 +20,7 @@ from .parser import *
     method : GET
     url : https://www.kipo.go.kr/kpo/BoardApp/UnewNotiApp?board_id=notice&catmenu=m03_01_01&c=1003&seq={postId}
     header :
-        None
+        None.
 
 '''
 sleepSec = 2
