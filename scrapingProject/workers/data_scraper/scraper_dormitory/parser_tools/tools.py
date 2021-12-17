@@ -212,7 +212,15 @@ def merge_var_to_dict(keyList, valueList, channelCode=''):
     return result
 
 def extract_groupCode(text):
-    return '_'.join(text.split('_')[:-1])
+    # text = main_site__youthcenter_0
+    return text.split('__')[0]
+
+def extract_roomName_and_channelCode(text):
+    # text = main_site__youthcenter_0
+    channelCode = text.split('__')[1]
+    roomName = channelCode.split('_')[0]
+    return roomName, channelCode
+
 
 def reflect_params(var, params):
     for key in params:

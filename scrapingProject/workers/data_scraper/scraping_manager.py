@@ -41,9 +41,13 @@ class scraping_manager:
     def scraping_worker_job_init(self):
         self.get_channel_url()
         for channelCode, channelUrl in self.channelUrlList:
-            roomName = extract_groupCode(channelCode)
+            # channelCode = main_site__youthcenter_0
+            # groupName = main_site
+            # roomName = youthcenter
+            # channelCode = youthcenter_0
+            groupName = extract_groupCode(channelCode)
+            roomName, channelCode = extract_roomName_and_channelCode(channelCode)
             # job.delay(roomName, channelCode, channelUrl, self.dateRange)
-
             # try :
             #     job.delay(roomName, channelCode, channelUrl, self.dateRange)
             # except Exception as e :
@@ -56,7 +60,7 @@ class scraping_manager:
                 continue
             print(channelCode, 'init')
             session = self.get_requests_session()
-            scraperRoomAddress = f'workers.data_scraper.scraper_dormitory.rooms.{roomName[0]}.{roomName}.scraper'
+            scraperRoomAddress = f'workers.data_scraper.scraper_dormitory.rooms.{groupName}.{roomName}.scraper'
             scraper = importlib.import_module(scraperRoomAddress).Scraper(session)
             scraper.scraping_process(channelCode, channelUrl, self.dateRange)
     
