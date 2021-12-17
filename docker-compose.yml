@@ -40,7 +40,7 @@ services:
     container_name: celery_container
     build:
       context: .
-    command: celery -A workers.scrapingScheduler.scheduler worker --loglevel=info -P gevent
+    command: celery -A workers.scraping_scheduler.scheduler worker --loglevel=info -P gevent
     volumes:
       - C:\scraping_system_mysterico\celery\:/app/
     depends_on:
