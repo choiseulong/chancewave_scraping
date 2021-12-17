@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'multipleType' : ['postUrl', 'postTitle', 'uploader', 'uploadedTime', 'viewCount']
+        'multipleType' : ['postUrl', 'postTitle', 'uploadedTime', 'viewCount']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
@@ -13,23 +13,20 @@ def postListParsingProcess(**params):
             tdText = extract_text(td)
             if tdIdx == 1:
                 aTag = extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple)
-                href = extract_attrs(aTag, 'href')
-                postId = parse_href(href)
+                onclick = extract_attrs(aTag, 'onclick')
+                postId = extract_text_between_prefix_and_suffix("('", "')", onclick)
                 var['postUrl'].append(
                     var['postUrlFrame'].format(postId)
                 )
                 var['postTitle'].append(tdText)
-            elif tdIdx == 3 :
-                var['uploader'].append(tdText)
-            elif tdIdx == 4 :
+            elif tdIdx == 2 :
                 var['uploadedTime'].append(
                     convert_datetime_string_to_isoformat_datetime(tdText)
                 )
-            elif tdIdx == 5 :
+            elif tdIdx == 3 :
                 var['viewCount'].append(
                     extract_numbers_in_text(tdText)
                 )
-
 
     valueList = [var[key] for key in keyList]
     result = merge_var_to_dict(keyList, valueList)
@@ -41,22 +38,36 @@ def parse_href(text):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'singleType' : ['contact', 'postText'],
+        'singleType' : ['contact', 'postText', 'uploader', 'startDate', 'endDate'],
         'multipleType' : ['postImageUrl']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    thList = extract_children_tag(soup, 'th', {'scope' : True}, childIsMultiple)
-    for th in thList:
-        thText = extract_text(th)
-        if '연락처' in thText:
-            var['contact'] = extract_contact_numbers_from_text(
-                extract_text(
-                    find_next_tag(th)
-                )
-            )
-    content = extract_children_tag(soup, 'td', {'class' : 'content'}, childIsNotMultiple)
-    var['postText'] = clean_text(extract_text(content))
-    imgList = extract_children_tag(content, 'img', {'src' : True}, childIsMultiple)
+    bv_category = extract_children_tag(soup, 'div', {'class' : 'bv_category'}, childIsNotMultiple)
+    spanList = extract_children_tag(bv_category, 'span', dummyAttrs, childIsMultiple)
+    uploader=''
+    uploaderCount = 0 
+    for spanIdx, span in enumerate(spanList):
+        spanText = extract_text(span)
+        nextSpanText =  extract_text(spanList[spanIdx+1])
+        if '담당자' in spanText or '담당부서' in spanText : 
+            uploader += nextSpanText + ' '
+            uploaderCount += 1
+        elif '전화번호' in spanText:
+            var['contact'] = extract_contact_numbers_from_text(nextSpanText)
+        elif '기간' in spanText:
+            date = [i.strip() for i in nextSpanText.split('~') if i]
+            if len(date) == 2 :
+                date = [convert_datetime_string_to_isoformat_datetime(d) for d in date]
+                var['startDate']= date[0]
+                var['endDate'] = date[1]
+            elif len(date) == 1 :
+                var['startDate']= convert_datetime_string_to_isoformat_datetime(date[0])
+            break
+        if uploaderCount == 2:
+            var['uploader'] = uploader     
+    bv_content = extract_children_tag(soup, 'div', {'class' : 'bv_content'}, childIsNotMultiple)
+    var['postText'] = clean_text(extract_text(bv_content))
+    imgList = extract_children_tag(bv_content, 'img', {'src' : True}, childIsMultiple)
     if imgList:
         for img in imgList:
             src = extract_attrs(img, 'src')

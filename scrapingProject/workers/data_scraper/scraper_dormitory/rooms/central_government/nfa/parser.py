@@ -52,13 +52,9 @@ def postContentParsingProcess(**params):
     if imgList:
         for img in imgList:
             src = extract_attrs(img, 'src')
-            if 'base64' in src :
-                var['postImageUrl'].append(src)
-                continue
             if 'http' not in src :
                 src = var['channelMainUrl'] + src
-                var['postImageUrl'].append(src)
-                continue
+            var['postImageUrl'].append(src)
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     # print(result)

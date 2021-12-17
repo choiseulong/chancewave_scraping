@@ -49,13 +49,9 @@ def postContentParsingProcess(**params):
     if imgList:
         for img in imgList:
             src = extract_attrs(img, 'src')
-            if 'base64' in src :
-                var['postImageUrl'].append(src)
-                continue
             if 'http' not in src :
                 src = var['channelMainUrl'] + src
-                var['postImageUrl'].append(src)
-                continue
+            var['postImageUrl'].append(src)
     postText = extract_text(DB_view_Tbox)
     var['postText'] = clean_text(postText)
     var['contact'] = extract_contact_numbers_from_text(postText)
