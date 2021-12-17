@@ -43,6 +43,8 @@ sleepSec = 6
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '잡아바'
+        self.postBoardName = '지금 접수중인 정책'
         self.postUrl =  'https://www.jobaba.net/fntn/dtl2020.do?seq={}'
         self.channelMainUrl = 'https://www.jobaba.net'
     

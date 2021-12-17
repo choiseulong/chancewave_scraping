@@ -32,6 +32,8 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '행정안전부'
+        self.postBoardName = '알립니다'
         self.channelMainUrl = 'https://www.mois.go.kr'
         self.postUrl = 'https://www.mois.go.kr/frt/bbs/type013/commonSelectBoardArticle.do?bbsId={}&nttId={}'
         

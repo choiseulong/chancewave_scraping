@@ -51,6 +51,8 @@ sleepSec = 3
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '창업넷'
+        self.postBoardName = '공고 및 신청'
         self.postUrl = 'https://www.k-startup.go.kr/common/announcement/announcementDetail.do'
     
     def scraping_process(self, channelCode, channelUrl, dateRange):

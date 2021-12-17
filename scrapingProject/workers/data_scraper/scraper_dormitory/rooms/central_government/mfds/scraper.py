@@ -19,11 +19,9 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : https://www.mpva.go.kr/mpva/selectBbsNttView.do?key=76&bbsNo=15&nttNo={postNumber}
+    url : postUrl
     header :
         None
-    required data searching point :
-        header_1 : fixed
 '''
 
 sleepSec = 3
@@ -31,6 +29,8 @@ sleepSec = 3
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '식품의약품안전처'
+        self.postBoardName = '공지사항'
         self.channelMainUrl = 'https://www.mfds.go.kr'
         self.postUrl = 'https://www.mfds.go.kr/brd/m_74/view.do?seq={}'
         
@@ -52,6 +52,7 @@ class Scraper(ABCScraper):
     def post_list_scraping(self):
         if self.channelCode == 'mfds_1':
             self.postUrl = 'https://www.mfds.go.kr/brd/m_689/view.do?seq={}'
+            self.postBoardName = '적극행정'
 
         super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
 

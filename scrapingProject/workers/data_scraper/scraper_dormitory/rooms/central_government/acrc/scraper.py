@@ -20,11 +20,7 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : https://www.mpva.go.kr/mpva/selectBbsNttView.do?key=76&bbsNo=15&nttNo={postNumber}
-    header :
-        None
-    required data searching point :
-        header_1 : fixed
+    url : postUrl
 '''
 
 sleepSec = 3
@@ -33,6 +29,8 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '국민권익위원회'
+        self.postBoardName = '공지사항'
         self.channelMainUrl = 'https://www.acrc.go.kr'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):

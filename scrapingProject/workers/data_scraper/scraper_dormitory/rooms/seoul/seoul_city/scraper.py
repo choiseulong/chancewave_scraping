@@ -35,6 +35,8 @@ from .parser import *
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '서울시청'
+        self.postBoardName = '분야별 새소식'
 
     def get_post_body_post_list_page(self, num=1):
         data = {
@@ -60,6 +62,11 @@ class Scraper(ABCScraper):
         data = {
             "fetchStart" : self.pageCount
         }
+        if self.channelCode == 'seoul_city_1':
+            self.postBoardName = '이달의 행사 및 축제'
+        elif self.channelCode == 'seoul_city_2':
+            self.postBoardName = '이벤트 신청'
+
         super().post_list_scraping(postListParsingProcess, 'post', data)
 
     def target_contents_scraping(self):

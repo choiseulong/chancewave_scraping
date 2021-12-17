@@ -33,6 +33,8 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '제주특별자치도'
+        self.postBoardName = '공지사항'
         self.channelMainUrl = 'https://www.jeju.go.kr'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):
@@ -55,6 +57,16 @@ class Scraper(ABCScraper):
             
  
     def post_list_scraping(self):
+        postBoardNameInfo = {
+            'jeju_1' : '일자리/중소기업 알림마당',
+            'jeju_2' : '일자리지원정책 알림마당',
+            'jeju_3' : '평생교육강좌(민간)',
+            'jeju_4' : '여성교육정보(민간)',
+            'jeju_5' : '문화역사 알림마당'
+
+        }
+        if self.channelCode in postBoardNameInfo.keys():
+            self.postBoardName = postBoardNameInfo[self.channelCode]
         super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
 
     def target_contents_scraping(self):

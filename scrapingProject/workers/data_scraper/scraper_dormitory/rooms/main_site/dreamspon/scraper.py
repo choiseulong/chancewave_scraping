@@ -20,11 +20,9 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : https://www.gcon.or.kr/busiNotice/view?pageNum=1&rowCnt=10&linkId={linkId}&menuId=MENU02369
+    url : postUrl
     header :
-        User-Agent
-    required data searching point :
-        header_1 : fixed
+        None
 '''
 
 sleepSec = 3
@@ -33,6 +31,8 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '드림스폰'
+        self.postBoardName = '일반장학금'
         self.channelMainUrl = 'https://www.dreamspon.com'
     
     def scraping_process(self, channelCode, channelUrl, dateRange):

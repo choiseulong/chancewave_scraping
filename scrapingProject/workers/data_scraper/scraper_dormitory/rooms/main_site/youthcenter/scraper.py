@@ -46,6 +46,8 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '온라인청년센터'
+        self.postBoardName = '청년정책 통합검색'
         self.postUrl = 'https://www.youthcenter.go.kr/youngPlcyUnif/youngPlcyUnifDtl.do'
 
     def scraping_process(self, channelCode, channelUrl, dateRange):

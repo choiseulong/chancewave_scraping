@@ -35,6 +35,8 @@ sleepSec = 3
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '기업마당'
+        self.postBoardName = '지원사업조회'
         self.postUrl = "https://www.bizinfo.go.kr/see/seea/selectSEEA140Detail.do?pblancId={}&menuId=80001001001"
     
     def scraping_process(self, channelCode, channelUrl, dateRange):

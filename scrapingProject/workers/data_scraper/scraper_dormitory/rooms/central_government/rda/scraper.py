@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 농림축산식품부
+# 채널 이름 : 농촌진흥청
 
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
@@ -12,7 +12,7 @@ from .parser import *
     @post list
 
     method : GET
-    url =  https://www.forest.go.kr/kfsweb/cop/bbs/selectBoardList.do?mn=NKFS_04_01_01&pageIndex={}&pageUnit=50&searchtitle=title&bbsId=BBSMSTR_1031
+    url =  https://www.rda.go.kr/board/board.do?prgId=nei_ancmttEntry&currPage={}
     header :
         None
 
@@ -20,7 +20,7 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : 'https://www.rda.go.kr/board/board.do?boardId=ancmtt&prgId=nei_ancmttEntry&dataNo={postId}'
+    url : https://www.rda.go.kr/board/board.do?boardId=ancmtt&prgId=nei_ancmttEntry&dataNo={postId}
     header :
         None
 
@@ -31,7 +31,9 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelMainUrl = 'https://www.forest.go.kr'
+        self.channelName = '농촌진흥청'
+        self.postBoardName = '공지사항'
+        self.channelMainUrl = 'https://www.rda.go.kr'
         self.postUrl = 'https://www.rda.go.kr/board/board.do?boardId=ancmtt&prgId=nei_ancmttEntry&menu_id=pun&currPage=1&dataNo={}&mode=updateCnt'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):

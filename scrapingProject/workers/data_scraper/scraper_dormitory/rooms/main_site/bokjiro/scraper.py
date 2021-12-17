@@ -44,6 +44,8 @@ jsonize = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '복지로'
+        self.postBoardName = '서비스 목록'
         self.postUrl = "https://www.bokjiro.go.kr/ssis-teu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId={}"
     
     def scraping_process(self, channelCode, channelUrl, dateRange):

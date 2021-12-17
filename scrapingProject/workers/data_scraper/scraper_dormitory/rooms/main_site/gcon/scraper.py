@@ -34,6 +34,8 @@ sleepSec = 3
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '경기콘텐츠진흥원'
+        self.postBoardName = '사업공고'
         self.channelMainUrl = "https://www.gcon.or.kr"
     
     def scraping_process(self, channelCode, channelUrl, dateRange):
@@ -58,4 +60,6 @@ class Scraper(ABCScraper):
     def target_contents_scraping(self):
         if self.channelCode == 'gyeonggi_content_agency_1':
             postContentParsingProcess = postContentParsingProcess_other
+            self.postBoardName = '교육 및 행사'
+
         super().target_contents_scraping(postContentParsingProcess, sleepSec)

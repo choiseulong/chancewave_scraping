@@ -29,6 +29,8 @@ sleepSec = 5
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '외교부'
+        self.postBoardName = '공지사항'
         self.channelMainUrl = 'https://www.mofa.go.kr'
         self.postUrl = 'https://www.mofa.go.kr/www/brd/m_4075/view.do?seq={}'
         

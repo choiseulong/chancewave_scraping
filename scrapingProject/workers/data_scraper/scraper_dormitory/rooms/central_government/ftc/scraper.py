@@ -51,6 +51,8 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '공정거래위원회'
+        self.postBoardName = '공지/공고'
         self.channelMainUrl = 'https://www.ftc.go.kr'
         self.postUrl = 'https://www.ftc.go.kr/www/cop/bbs/selectBoardArticle.do?key=13'
         

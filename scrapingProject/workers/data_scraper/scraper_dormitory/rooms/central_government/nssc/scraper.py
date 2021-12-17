@@ -31,15 +31,15 @@ from .parser import *
 '''
     @post info
     method : POST
-    url : https://www.ftc.go.kr/www/cop/bbs/selectBoardArticle.do?key=13
+    url : https://www.nssc.go.kr/ajaxf/FR_BBS_SVC/BoardViewData.do
     header :
         None
     body : 
         data = {
-            "bbsId" : "BBSMSTR_000000002424",
-            "bbsTyCode" : "BBST01",
-            "nttId" : {nttId},
-            "pageIndex" : self.pageCount
+            "MENU_ID" : 180,
+            "SITE_NO" : 2,
+            "BOARD_SEQ" : 4, 
+            "BBS_SEQ" : {postId}
         }
     required data searching point :
         header_1 : fixed
@@ -52,6 +52,8 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '원자력안전위원회'
+        self.postBoardName = '공지사항'
         self.channelMainUrl = 'https://www.nssc.go.kr'
         self.postUrl = 'https://www.nssc.go.kr/ajaxf/FR_BBS_SVC/BoardViewData.do'
         

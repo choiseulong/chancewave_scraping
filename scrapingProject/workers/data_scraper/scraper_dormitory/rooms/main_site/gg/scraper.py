@@ -26,7 +26,7 @@ from .parser import *
     @post info
 
     method : GET
-    url : https://www.myhome.go.kr/hws/portal/sch/selectRsdtRcritNtcDetailView.do?pblancId={pblancId} 
+    url : postUrl
     header : 
         None
     body :
@@ -39,6 +39,8 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '경기도청'
+        self.postBoardName = '경기도 통합공모'
         self.postUrl =  'https://www.gg.go.kr/bbs/boardView.do?bIdx={}&bsIdx=731&menuId=2916'
         self.channelMainUrl = 'https://www.gg.go.kr/'
 

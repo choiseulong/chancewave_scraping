@@ -22,7 +22,7 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : 'https://www.cha.go.kr/multiBbz/selectMultiBbzView.do?id={params}&bbzId=newpublic'
+    url : postUrl
     header :
         None
 
@@ -33,6 +33,8 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '농림축산식품부'
+        self.postBoardName = '공지사항'
         self.channelMainUrl = 'https://www.mafra.go.kr'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):

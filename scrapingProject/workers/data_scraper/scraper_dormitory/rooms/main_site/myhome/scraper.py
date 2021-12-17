@@ -39,6 +39,8 @@ sleepSec = 4
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
+        self.channelName = '마이홈'
+        self.postBoardName = '입주자모집공고'
         self.postUrl = "https://www.myhome.go.kr/hws/portal/sch/selectRsdtRcritNtcDetailView.do?pblancId={}"
     
     def scraping_process(self, channelCode, channelUrl, dateRange):
