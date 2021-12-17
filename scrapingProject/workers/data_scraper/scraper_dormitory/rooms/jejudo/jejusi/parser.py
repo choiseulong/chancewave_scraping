@@ -8,16 +8,16 @@ def postListParsingProcess(**params):
     tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
     trList = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
     for tr in trList:
-        Continue = False
-        if imgList:
-            imgList = extract_children_tag(tr, 'img', dummyAttrs, childIsMultiple)
-            for img in imgList:
-                alt = extract_attrs(img, 'alt')
-                if alt == '공지':
-                    Continue = True
-                    break
-        if Continue:
-            continue
+        # Continue = False
+        # if imgList:
+        #     imgList = extract_children_tag(tr, 'img', dummyAttrs, childIsMultiple)
+        #     for img in imgList:
+        #         alt = extract_attrs(img, 'alt')
+        #         if alt == '공지':
+        #             Continue = True
+        #             break
+        # if Continue:
+        #     continue
         var['postUrl'].append(
             var['postUrlFrame'].format(
                 parse_href(

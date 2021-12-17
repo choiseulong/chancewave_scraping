@@ -11,8 +11,8 @@ def postListParsingProcess(**params):
         tdList = extract_children_tag(tr, 'td', dummyAttrs ,childIsMultiple)
         for tdIdx, td in enumerate(tdList):
             tdText = extract_text(td)
-            if tdIdx == 0 and '공지' in tdText:
-                break
+            # if tdIdx == 0 and '공지' in tdText:
+            #     break
             if tdIdx == 1 :
                 aTag = extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple)
                 postId = extract_text_between_prefix_and_suffix("cntId=", "&amp", extract_attrs(aTag, 'href'))

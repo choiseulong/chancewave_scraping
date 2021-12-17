@@ -12,8 +12,8 @@ def postListParsingProcess(**params):
         uploader = ''
         for tdIdx, td in enumerate(tdList):
             tdText = extract_text(td)
-            if tdIdx == 0 and '공지' in tdText:
-                break
+            # if tdIdx == 0 and '공지' in tdText:
+            #     break
             if tdIdx == 1:
                 strong = extract_children_tag(tr, 'strong', dummyAttrs, childIsNotMultiple)
                 uploader += extract_text(strong)[1:-1] + ' - '

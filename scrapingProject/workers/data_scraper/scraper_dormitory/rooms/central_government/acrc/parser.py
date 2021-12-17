@@ -13,10 +13,10 @@ def postListParsingProcess(**params):
         tdList = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple)
         for tdIdx, td in enumerate(tdList):
             tdText = extract_text(td)
-            if tdIdx == 0 :
-                if '공지' == tdText:
-                    break
-            elif tdIdx == 1 :
+            # if tdIdx == 0 :
+            #     if '공지' == tdText:
+            #         break
+            if tdIdx == 1 :
                 var['postTitle'].append(tdText)
                 href = extract_attrs(
                     extract_children_tag(td, 'a', {'href' : True}, childIsNotMultiple),
