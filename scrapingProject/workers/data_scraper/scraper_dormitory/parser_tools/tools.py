@@ -40,6 +40,9 @@ def extract_children_tag(parentsTag, childrenTag, childrenTagAttrs={}, childIsMu
 def find_next_tag(tag):
     return tag.find_next_siblings()[0]
 
+def find_parent_tag(tag):
+    return tag.parent
+
 def check_has_attrs_in_tag(tag, attrs):
     return tag.has_attr(attrs)
             
