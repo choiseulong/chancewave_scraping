@@ -60,7 +60,7 @@ def postContentParsingProcess(**params):
     if imgList:
         for img in imgList:
             src = extract_attrs(img, 'src')
-            if 'http' not in src :
+            if 'http' not in src and 'base64' not in src :
                 src = var['channelMainUrl'] + src
             var['postImageUrl'].append(src)
  

@@ -66,7 +66,7 @@ def split_value_list_based_on_key(keyList, valueList):
     }
 
 def convert_datetime_string_to_isoformat_datetime(datetimeString):
-    specialWord = re.sub(r'[^\.|\-|\:]', '', datetimeString)
+    specialWord = re.sub(r'[^\.|\-|\:|\/]', '', datetimeString)
     specialWordCount = {word:specialWord.count(word) for word in specialWord}
     if not specialWordCount and len(datetimeString) == 8:
         # 20210101처럼 구분 특수문자가 없는 형식일 경우

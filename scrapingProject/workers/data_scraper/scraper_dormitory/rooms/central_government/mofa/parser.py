@@ -44,7 +44,7 @@ def postContentParsingProcess(**params):
     imgList = extract_children_tag(contentsBox, 'img', {'src' : True}, childIsMultiple)
     for img in imgList :
         src = extract_attrs(img, 'src')
-        if 'http' not in src:
+        if 'http' not in src and 'base64' not in src:
             src = var['channelMainUrl'] + src
         var['postImageUrl'].append(src)
     postText = extract_text(contentsBox)
