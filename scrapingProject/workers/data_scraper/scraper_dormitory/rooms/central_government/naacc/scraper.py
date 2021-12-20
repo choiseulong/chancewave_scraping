@@ -15,15 +15,17 @@ from .parser import *
     url =  https://www.naacc.go.kr/csi_board/csi_boardList.do?menu_id=notice&currentPage={}
     header :
         Cookie : JSESSIONID=CzmAdk8thWocQB7+1BnaZayp.node10
-
+    required data searching point :
+        header_1 : 메인페이지에서 쿠키 받아옴
 '''
 '''
     @post info
     method : GET
-    url : http://www.molit.go.kr/USR/BORD0201/m_69/DTL.jsp?id=N01_B&cate=&mode=view&idx={postId}
+    url : https://www.naacc.go.kr/csi_board/csi_boardView.do?menu_id=notice&num={postId}
     header :
-        None
-
+        Cookie : JSESSIONID=CzmAdk8thWocQB7+1BnaZayp.node10
+    required data searching point :
+        header_1 : 메인페이지에서 쿠키 받아옴
 '''
 sleepSec = 2
 isUpdate = True
