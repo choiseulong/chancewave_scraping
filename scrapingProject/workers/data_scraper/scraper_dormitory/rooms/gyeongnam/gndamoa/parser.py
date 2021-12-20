@@ -1,5 +1,5 @@
-from typing_extensions import Literal
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
+import re
 
 def postListParsingProcess(**params):
     targetKeyInfo = {
@@ -12,7 +12,7 @@ def postListParsingProcess(**params):
         tdList = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple)
         for tdIdx, td in enumerate(tdList):
             tdText = extract_text(td)
-            if '공지' in tdText :
+            if '공지' in tdText:
                 if var['pageCount'] == 1 :
                     pass
                 else :
@@ -22,19 +22,15 @@ def postListParsingProcess(**params):
                 var['postTitle'].append(tdText)
                 aTag = extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple)
                 href = extract_attrs(aTag, 'href')
-                postId = extract_text_between_prefix_and_suffix('articleKey=', '&boardKey', href)
                 var['postUrl'].append(
-                    var['postUrlFrame'].format(postId)
+                    var['postUrlFrame'] + href
                 )
-            elif tdIdx == 2 :
+            elif tdIdx == 3 :
                 var['uploader'].append(tdText)
             elif tdIdx == 4 :
-                if tdText:
-                    var['uploadedTime'].append(
-                        convert_datetime_string_to_isoformat_datetime(tdText)
-                    )
-                else :
-                    var['uploadedTime'].append(None)
+                var['uploadedTime'].append(
+                    convert_datetime_string_to_isoformat_datetime(tdText)
+                )
             elif tdIdx == 5 :
                 var['viewCount'].append(
                     extract_numbers_in_text(tdText)
@@ -51,16 +47,11 @@ def postContentParsingProcess(**params):
         'multipleType' : ['postImageUrl']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    tbody = extract_children_tag(soup, 'tbody', {'class' : 'view'}, childIsNotMultiple)
-    thList = extract_children_tag(tbody, 'th', dummyAttrs, childIsMultiple)
-    for th in thList:
-        thText = extract_text(th)
-        if '전화번호' in thText:
-            var['contact'] = extract_text(find_next_tag(th))
-            break
-    boardCont = extract_children_tag(soup, 'div', {'class' : 'boardCont'}, childIsNotMultiple)
-    var['postText'] = clean_text(extract_text(boardCont))
-    imgList = extract_children_tag(boardCont, 'img', {'src' : True}, childIsMultiple)
+    cont = extract_children_tag(soup, 'td', {'class' : 'cont'}, childIsNotMultiple)
+    postText = extract_text(cont)
+    var['postText'] = clean_text(postText)
+    var['contact'] = extract_contact_numbers_from_text(postText)
+    imgList = extract_children_tag(cont, 'img', {'src' : True}, childIsMultiple)
     if imgList:
         for img in imgList:
             src = extract_attrs(img, 'src')
@@ -72,3 +63,5 @@ def postContentParsingProcess(**params):
     result = convert_merged_list_to_dict(keyList, valueList)
     # print(result)
     return result
+
+

@@ -29,7 +29,9 @@ def postListParsingProcess(**params):
             elif tdIdx == 3 :
                 var['uploader'].append(tdText)
             elif tdIdx == 4 :
-                var['uploadedTime'].append(tdText)
+                var['uploadedTime'].append(
+                    convert_datetime_string_to_isoformat_datetime(tdText)
+                )
             elif tdIdx == 5 :
                 var['viewCount'].append(
                     extract_numbers_in_text(tdText)
