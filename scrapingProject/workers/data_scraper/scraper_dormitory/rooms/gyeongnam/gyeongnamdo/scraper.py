@@ -44,7 +44,8 @@ class Scraper(ABCScraper):
             self.channelUrl = self.channelUrlFrame.format(self.pageCount)
             self.post_list_scraping()
             if self.scrapingTarget :
-                self.target_contents_scraping()
+                if self.channelCode != 'gyeongnamdo_1':
+                    self.target_contents_scraping()
                 self.collect_data()
                 self.mongo.reflect_scraped_data(self.collectedDataList)
                 self.pageCount += 1
@@ -52,6 +53,9 @@ class Scraper(ABCScraper):
                 break
 
     def post_list_scraping(self):
+        if self.channelCode == 'gyeongnamdo_1':
+            self.postBoardName = '팝업존'
+            postListParsingProcess = postListParsingProcess_1
         super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
 
     def target_contents_scraping(self):
