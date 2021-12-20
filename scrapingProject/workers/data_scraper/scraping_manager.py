@@ -56,9 +56,10 @@ class scraping_manager:
                 # something = checker.is_handling(traceback.format_exc(), e.__class__)
                 # print(something)
             
-            if channelCode != 'mss_0':
+            if channelCode != 'gyeongnamdo_0':
                 continue
             print(channelCode, 'init')
+            print(groupName, roomName)
             session = self.get_requests_session()
             scraperRoomAddress = f'workers.data_scraper.scraper_dormitory.rooms.{groupName}.{roomName}.scraper'
             scraper = importlib.import_module(scraperRoomAddress).Scraper(session)
