@@ -56,7 +56,7 @@ class scraping_manager:
                 # something = checker.is_handling(traceback.format_exc(), e.__class__)
                 # print(something)
             
-            if channelCode != 'kcg_0':
+            if channelCode != 'mss_0':
                 continue
             print(channelCode, 'init')
             session = self.get_requests_session()
