@@ -39,4 +39,4 @@ docker run -d --name rabbitmq -p 5672:5672 -p 8080:15672 --restart=unless-stoppe
 # 데이터 사용시 참고사항
 
 ##### base64 기반 img 존재
- 
+##### img url 요청시 Refer = {postUrl}선언해야 하는 채널이 존재 gimhae_0 등.

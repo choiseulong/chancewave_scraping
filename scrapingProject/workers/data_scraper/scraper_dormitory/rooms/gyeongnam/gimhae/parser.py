@@ -42,36 +42,36 @@ def postListParsingProcess(**params):
 
     valueList = [var[key] for key in keyList]
     result = merge_var_to_dict(keyList, valueList)
-    print(result)
-    # return result
-#### contents 처리해야함
+    # print(result)
+    return result
+
 def postContentParsingProcess(**params):
     targetKeyInfo = {
         'singleType' : ['contact', 'postText'],
         'multipleType' : ['postImageUrl']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    info = extract_children_tag(soup, 'div', {'class' : 'info'}, childIsNotMultiple)
-    strongList = extract_children_tag(info, 'strong', dummyAttrs, childIsMultiple)
-    for strong in strongList:
-        strongText = extract_text(strong)
-        if '연락처' in strongText:
+    info1 = extract_children_tag(soup, 'div', {'class' : 'info1'}, childIsNotMultiple)
+    dtList = extract_children_tag(info1, 'dt', dummyAttrs, childIsMultiple)
+    for dt in dtList:
+        dtText = extract_text(dt)
+        if '전화번호' in dtText:
             var['contact'] = extract_contact_numbers_from_text(
-                extract_text(
-                    find_parent_tag(strong)
-                )
+                dtText
             )
             break
-    substan = extract_children_tag(soup, 'div', {'class' : 'substan'}, childIsNotMultiple)
-    var['postText'] = clean_text(extract_text(substan))
-    imgList = extract_children_tag(substan, 'img', {'src' : True}, childIsMultiple)
+
+    substance = extract_children_tag(soup, 'div', {'class' : 'substance'}, childIsNotMultiple)
+    var['postText'] = clean_text(extract_text(substance))
+    imgList = extract_children_tag(substance, 'img', {'src' : True}, childIsMultiple)
     if imgList:
         for img in imgList:
             src = extract_attrs(img, 'src')
             if 'http' not in src and 'base64' not in src :
                 src = var['channelMainUrl'] + src
             var['postImageUrl'].append(src)
- 
+    # 이미지 요청시 Referer을 header에 담아 보내야함 
+    # Referer = postUrl
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     # print(result)
