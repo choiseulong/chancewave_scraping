@@ -5,8 +5,9 @@ def postListParsingProcess(**params):
         'multipleType' : ['postUrl', 'postTitle', 'uploadedTime', 'viewCount', 'uploader', 'postThumbnail']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    liList = extract_children_tag(soup, 'li', {'class' : 'li1'}, childIsMultiple)
-    for li in liList :
+    ulBox = extract_children_tag(soup, 'ul', {'class' : 'lst1'}, childIsNotMultiple)
+    liList = extract_children_tag(ulBox, 'li', dummyAttrs, childIsMultiple)
+    for li in liList:
         postThumbnail = extract_children_tag(li, 'img', dummyAttrs, childIsNotMultiple)
         src = extract_attrs(postThumbnail, 'src')
         if 'image.do?' in src:
@@ -17,17 +18,17 @@ def postListParsingProcess(**params):
             var['postThumbnail'].append(None)
         aTag = extract_children_tag(li, 'a', {'class' : 'a1'}, childIsNotMultiple)
         href = extract_attrs(aTag, 'href')
-        postId = extract_text_between_prefix_and_suffix('idx=', '&amode', href)
+        postId = extract_text_between_prefix_and_suffix('&idx=', '&amode', href)
         var['postUrl'].append(
             var['postUrlFrame'].format(postId)
         )
-        strong = extract_children_tag(li, 'strong', {'class' : 't1'}, childIsNotMultiple)
+        strong = extract_children_tag(li, 'strong', {'class' :'t1'}, childIsNotMultiple)
         var['postTitle'].append(
             extract_text(strong)
         )
         wrap1t3 = extract_children_tag(li, 'i', {'class' : 'wrap1t3'}, childIsNotMultiple)
         spanList = extract_children_tag(wrap1t3, 'span', dummyAttrs, childIsMultiple)
-        for spanIdx, span in enumerate(spanList) :
+        for spanIdx, span in enumerate(spanList):
             spanText = extract_text(span)
             if spanIdx == 0 :
                 var['uploadedTime'].append(
@@ -54,9 +55,17 @@ def postContentParsingProcess(**params):
         'multipleType' : ['postImageUrl']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
+    info1 = extract_children_tag(soup, 'div', {'class' : 'info1'}, childIsNotMultiple)
+    dtList = extract_children_tag(info1, 'dt', dummyAttrs, childIsMultiple)
+    for dt in dtList:
+        dtText = extract_text(dt)
+        if '전화번호' in dtText:
+            var['contact'] = extract_contact_numbers_from_text(
+                dtText
+            )
+            break
     substance = extract_children_tag(soup, 'div', {'class' : 'substance'}, childIsNotMultiple)
-    postText = extract_text(substance)
-    var['postText'] = clean_text(postText)
+    var['postText'] = clean_text(extract_text(substance))
     imgList = extract_children_tag(substance, 'img', {'src' : True}, childIsMultiple)
     if imgList:
         for img in imgList:
