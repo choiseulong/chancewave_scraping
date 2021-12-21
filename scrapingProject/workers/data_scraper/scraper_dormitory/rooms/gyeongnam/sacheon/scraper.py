@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 김해시청
+# 채널 이름 : 사천시청
 
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
@@ -12,7 +12,7 @@ from .parser import *
     @post list
 
     method : GET
-    url =  https://www.gimhae.go.kr/03360/00023/00024.web?gcode=1171&cpage={pageCount}
+    url =  https://www.miryang.go.kr/web/bbs/selectNoticeList.do?mnNo=20901000000&pageIndex={pageCount}
     header :
         None
 
@@ -20,7 +20,7 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : https://www.gimhae.go.kr/03360/00023/00024.web + {href}
+    url : https://www.miryang.go.kr + {href}
     header :
         None
 
@@ -31,10 +31,10 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelName = '김해시청'
-        self.postBoardName = '공지사항'
-        self.channelMainUrl = 'https://www.gimhae.go.kr'
-        self.postUrl = 'https://www.gimhae.go.kr/03360/00023/00024.web'
+        self.channelName = '사천시청'
+        self.postBoardName = '새소식'
+        self.channelMainUrl = 'https://www.sacheon.go.kr'
+        self.postUrl = 'https://www.sacheon.go.kr/news/00009/00010.web'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)

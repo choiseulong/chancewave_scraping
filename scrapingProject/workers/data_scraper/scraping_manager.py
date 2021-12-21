@@ -56,7 +56,7 @@ class scraping_manager:
                 # something = checker.is_handling(traceback.format_exc(), e.__class__)
                 # print(something)
             
-            if channelCode != 'gimhae_0':
+            if channelCode != 'sacheon_0':
                 continue
             print(channelCode, 'init')
             print(groupName, roomName)

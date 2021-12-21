@@ -24,7 +24,11 @@ def select_one(soup, tag):
     return soup.select_one(tag)
 
 def extract_text(tag, isMultiple=False):
-    return [clean_text(_.text) for _ in tag] if isMultiple else clean_text(tag.text)
+    try :
+        return [clean_text(_.text) for _ in tag] if isMultiple else clean_text(tag.text)
+    except AttributeError as e :
+        print(e)
+        return ''
 
 def extract_contents(tag, isMultiple=False):
     return [_.contents for _ in tag] if isMultiple else tag.contents
