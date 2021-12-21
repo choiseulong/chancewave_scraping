@@ -185,7 +185,8 @@ def check_date_range_availability(dateRange, date):
     else :
         return 'not valid'
 
-
+def parse_onclick(text, order = 1):
+    return re.findall("'(.+?)'", text)[order]
 
 def convert_text_to_tuple(text):
     return ast.literal_eval(str(text))

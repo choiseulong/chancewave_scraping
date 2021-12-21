@@ -13,7 +13,7 @@ def postListParsingProcess(**params):
             tdText = extract_text(td)
             if tdIdx == 1:
                 aTag = extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple)
-                postId = parse_onclick(extract_attrs(aTag, 'onclick'))
+                postId = parse_onclick(extract_attrs(aTag, 'onclick'), 0)
                 var['postUrl'].append(
                     var['postUrlFrame'].format(postId)
                 )
@@ -33,9 +33,6 @@ def postListParsingProcess(**params):
     result = merge_var_to_dict(keyList, valueList)
     # print(result)
     return result
-
-def parse_onclick(text):
-    return re.findall("'(.+?)'", text)[0]
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {

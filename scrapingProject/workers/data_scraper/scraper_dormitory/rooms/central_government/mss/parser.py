@@ -36,10 +36,6 @@ def postListParsingProcess(**params):
     result = merge_var_to_dict(keyList, valueList)
     return result
 
-def parse_onclick(text):
-    return re.findall("'(.+?)'", text)[1]
-
-
 def postContentParsingProcess(**params):
     targetKeyInfo = {
         'singleType' : ['contact', 'postText'],
