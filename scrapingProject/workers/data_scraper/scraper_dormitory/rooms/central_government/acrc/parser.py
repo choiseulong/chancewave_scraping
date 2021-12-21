@@ -13,9 +13,6 @@ def postListParsingProcess(**params):
         tdList = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple)
         for tdIdx, td in enumerate(tdList):
             tdText = extract_text(td)
-            # if tdIdx == 0 :
-            #     if '공지' == tdText:
-            #         break
             if tdIdx == 1 :
                 var['postTitle'].append(tdText)
                 href = extract_attrs(
@@ -49,14 +46,7 @@ def postContentParsingProcess(**params):
     if postText:
         var['postText'] = clean_text(postText)
         var['contact'] = extract_contact_numbers_from_text(postText)
-    imgList = extract_children_tag(viewContent, 'img', {'src' : True}, childIsMultiple)
-    if imgList:
-        for img in imgList :
-            src = extract_attrs(img, 'src')
-            if 'http' not in src and 'base64' not in src :
-                src = var['channelMainUrl'] + src
-            var['postImageUrl'].append(src)
-            
+    var['postImageUrl'] = search_img_list_in_contents(viewContent, var['channelMainUrl'])
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     return result

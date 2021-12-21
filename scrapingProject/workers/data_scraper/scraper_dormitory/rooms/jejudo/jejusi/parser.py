@@ -8,16 +8,6 @@ def postListParsingProcess(**params):
     tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
     trList = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
     for tr in trList:
-        # Continue = False
-        # if imgList:
-        #     imgList = extract_children_tag(tr, 'img', dummyAttrs, childIsMultiple)
-        #     for img in imgList:
-        #         alt = extract_attrs(img, 'alt')
-        #         if alt == '공지':
-        #             Continue = True
-        #             break
-        # if Continue:
-        #     continue
         var['postUrl'].append(
             var['postUrlFrame'].format(
                 parse_href(
@@ -68,10 +58,7 @@ def postContentParsingProcess(**params):
     
     viewContent = extract_children_tag(soup, 'div', {'class' : 'view-content'}, childIsNotMultiple)
     var['postText'] = extract_text(viewContent)
-    imgList = extract_children_tag(viewContent, 'img', dummyAttrs, childIsMultiple)
-    if imgList:
-        var['postImageUrl'] = [var['channelMainUrl'] + extract_attrs(img, 'src') for img in imgList]
-
+    var['postImageUrl'] = search_img_list_in_contents(viewContent, var['channelMainUrl'])
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     return result

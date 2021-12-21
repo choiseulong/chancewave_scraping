@@ -50,14 +50,7 @@ def postContentParsingProcess(**params):
     postText = extract_text(bbs_view_body)
     var['postText'] = clean_text(postText)
     var['contact'] = extract_contact_numbers_from_text(postText)
-    imgList = extract_children_tag(bbs_view_body, 'img', {'src' : True}, childIsMultiple)
-    if imgList:
-        for img in imgList:
-            src = extract_attrs(img, 'src')
-            if 'http' not in src and 'base64' not in src :
-                src = var['channelMainUrl'] + src
-            var['postImageUrl'].append(src)
- 
+    var['postImageUrl'] = search_img_list_in_contents(bbs_view_body, var['channelMainUrl'])
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     print(result)

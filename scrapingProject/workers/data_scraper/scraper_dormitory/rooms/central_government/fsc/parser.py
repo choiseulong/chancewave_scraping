@@ -59,14 +59,7 @@ def postContentParsingProcess(**params):
     if postText:
         var['postText'] = clean_text(postText)
         var['contact'] = extract_contact_numbers_from_text(postText)
-    imgList = extract_children_tag(contents, 'img', dummyAttrs, childIsMultiple)
-    if imgList :
-        for img in imgList:
-            href = extract_attrs(img, 'href')
-            if 'http' not in href:
-                href = var['channelMainUrl'] + href
-            var['postImageUrl'].append(href)
-
+    var['postImageUrl'] = search_img_list_in_contents(contents, var['channelMainUrl'])
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     return result

@@ -62,15 +62,7 @@ def postContentParsingProcess(**params):
             )
     contents = extract_children_tag(soup, 'div', {'class' : 'b_content'}, childIsNotMultiple)
     var['postText'] = clean_text(extract_text(contents))
-
-    imgList = extract_children_tag(contents, 'img', {'src' : True}, childIsMultiple)
-    if imgList:
-        for img in imgList:
-            src = extract_attrs(img, 'src')
-            if 'http' not in src and 'base64' not in src :
-                src = var['channelMainUrl'] + src
-            var['postImageUrl'].append(src)
-
+    var['postImageUrl'] = search_img_list_in_contents(contents, var['channelMainUrl'])
     dlList = extract_children_tag(soup, 'dl', dummyAttrs, childIsMultiple)
     extraInfo = {'infoTitle' : '행사 정보'}
     for dl in dlList:

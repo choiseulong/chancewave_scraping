@@ -49,14 +49,7 @@ def postContentParsingProcess(**params):
     soupText = extract_text(soup)
     var['postText'] = clean_text(soupText)
     var['contact'] = extract_contact_numbers_from_text(soupText)
-    imgList = extract_children_tag(soup, 'img', {'src' : True}, childIsNotMultiple)
-    if imgList:
-        for img in imgList :
-            src = extract_attrs(img, 'src')
-            if 'http' not in src and 'base64' not in src:
-                src = var['channelMainUrl'] + src
-            var['postImageUrl'].append(src)
-
+    var['postImageUrl'] = search_img_list_in_contents(soup, var['channelMainUrl'])
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     return result

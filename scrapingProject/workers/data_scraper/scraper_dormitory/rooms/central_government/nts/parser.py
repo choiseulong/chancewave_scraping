@@ -52,13 +52,7 @@ def postContentParsingProcess(**params):
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     
     contents = extract_children_tag(soup, 'div', {'class' : 'bbsV_cont'}, childIsNotMultiple)
-    imgList = extract_children_tag(contents, 'img', {'src' : True}, childIsMultiple)
-    if imgList:
-        for img in imgList:
-            src = extract_attrs(img, 'src')
-            if 'http' not in src and 'base64' not in src :
-                src = var['channelMainUrl'] + src
-            var['postImageUrl'].append(src)
+    var['postImageUrl'] = search_img_list_in_contents(contents, var['channelMainUrl'])
     postText = extract_text(contents)
     if postText:
         var['postText'] = clean_text(postText)

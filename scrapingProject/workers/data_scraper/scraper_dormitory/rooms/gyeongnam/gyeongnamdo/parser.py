@@ -66,14 +66,7 @@ def postContentParsingProcess(**params):
     
     conText = extract_children_tag(soup, 'div', {'class' : 'conText'}, childIsNotMultiple)
     var['postText'] = clean_text(extract_text(conText))
-    imgList = extract_children_tag(conText, 'img', {'src' : True}, childIsMultiple)
-    if imgList:
-        for img in imgList:
-            src = extract_attrs(img, 'src')
-            if 'http' not in src and 'base64' not in src :
-                src = var['channelMainUrl'] + src
-            var['postImageUrl'].append(src)
- 
+    var['postImageUrl'] = search_img_list_in_contents(conText, var['channelMainUrl'])
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     # print(result)
@@ -101,7 +94,7 @@ def postListParsingProcess_1(**params):
         var['postTextType'].append(None)
     valueList = [var[key] for key in keyList]
     result = merge_var_to_dict(keyList, valueList)
-    print(result)
-    # return result
+    # print(result)
+    return result
 
 

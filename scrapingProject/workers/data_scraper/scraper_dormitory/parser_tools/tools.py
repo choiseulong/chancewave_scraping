@@ -264,3 +264,14 @@ def json_type_default_setting(params, targetKeyInfo):
 
 def extract_text_between_prefix_and_suffix(prefix, suffix, text):
     return text[text.find(prefix)+len(prefix):text.find(suffix)]
+
+def search_img_list_in_contents(contents, channelMainUrl):
+    imgList = extract_children_tag(contents, 'img', {'src' : True}, childIsMultiple)
+    imgs = []
+    if imgList:
+        for img in imgList:
+            src = extract_attrs(img, 'src')
+            if 'http' not in src and 'base64' not in src :
+                src = channelMainUrl + src
+            imgs.append(src)
+    return imgs

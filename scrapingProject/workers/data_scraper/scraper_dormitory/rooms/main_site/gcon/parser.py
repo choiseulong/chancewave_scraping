@@ -88,11 +88,7 @@ def postContentParsingProcess_other(**params):
             href = extract_attrs(aTag, 'href')
             if href :
                 var['linkedPostUrl'] += href
-    imgList = extract_children_tag(view_content, 'img', dummyAttrs, childIsMultiple)
-    if imgList:
-        for img in imgList:
-            var['postImageUrl'].append(var['channelMainUrl'] + extract_attrs(img, 'src')) 
-
+    var['postImageUrl'] = search_img_list_in_contents(view_content, var['channelMainUrl'])
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     return result

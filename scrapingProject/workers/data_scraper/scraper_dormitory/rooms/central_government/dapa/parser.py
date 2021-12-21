@@ -45,13 +45,7 @@ def postContentParsingProcess(**params):
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
 
     DB_view_Tbox = extract_children_tag(soup, 'div', {'class' : 'DB_view_Tbox'}, childIsNotMultiple)
-    imgList = extract_children_tag(DB_view_Tbox, 'img', {'src' : True}, childIsMultiple)
-    if imgList:
-        for img in imgList:
-            src = extract_attrs(img, 'src')
-            if 'http' not in src and 'base64' not in src :
-                src = var['channelMainUrl'] + src
-            var['postImageUrl'].append(src)
+    var['postImageUrl'] = search_img_list_in_contents(DB_view_Tbox, var['channelMainUrl'])
     postText = extract_text(DB_view_Tbox)
     var['postText'] = clean_text(postText)
     var['contact'] = extract_contact_numbers_from_text(postText)
