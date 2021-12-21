@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 사천시청
+# 채널 이름 : 양산시청
 
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
@@ -11,30 +11,32 @@ from .parser import *
 '''
     @post list
 
-    method : GET
-    url =  https://www.sacheon.go.kr/news/00009/00010.web?gcode=2187&cpage={pageCount}
+    method : POST
+    url =  https://www.yangsan.go.kr/portal/bbs/list.do?ptIdx=293&mId=0401010000
     header :
         None
+    body :
+        1. page = {pageCount}
 
 '''
 '''
     @post info
     method : GET
-    url : https://www.sacheon.go.kr/news/00009/00010.web + {href}
+    url : https://www.yangsan.go.kr/portal/bbs/view.do?mId=0401010000&bIdx={postId}&ptIdx=293
     header :
         None
 
 '''
-sleepSec = 4
+sleepSec = 2
 isUpdate = True
 
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelName = '사천시청'
-        self.postBoardName = '공지사항'
-        self.channelMainUrl = 'https://www.sacheon.go.kr'
-        self.postUrl = 'https://www.sacheon.go.kr/news/00009/00010.web'
+        self.channelName = '양산시청'
+        self.postBoardName = '새소식'
+        self.channelMainUrl = 'https://www.yangsan.go.kr'
+        self.postUrl = 'https://www.yangsan.go.kr/portal/bbs/view.do?mId=0401010000&bIdx={}&ptIdx=293'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
@@ -52,7 +54,10 @@ class Scraper(ABCScraper):
                 break
 
     def post_list_scraping(self):
-        super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
+        data = {
+            "page" : self.pageCount
+        }
+        super().post_list_scraping(postListParsingProcess, 'post', data, sleepSec)
 
     def target_contents_scraping(self):
         super().target_contents_scraping(postContentParsingProcess, sleepSec)
