@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 합천군청
+# 채널 이름 : 경상북도청
 
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
@@ -12,7 +12,7 @@ from .parser import *
     @post list
 
     method : GET
-    url =  https://www.hc.go.kr/04923/04924/04945.web?extParam=notice&gcode=1009&cpage={pageCount}
+    url =  https://www.gb.go.kr/Main/page.do?URL=/common/board/board.do&mnu_uid=6786&BD_CODE=bbs_gongji&cmd=1&Start={(pageCount-1) * 10}
     header :
         None
 
@@ -20,7 +20,7 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : https://www.hc.go.kr/04923/04924/04945.web + href
+    url : https://www.gb.go.kr/Main/page.do?mnu_uid=6786&BD_CODE=bbs_gongji&cmd=2&B_NUM={postId}&B_STEP=149047400&V_NUM=20059
     header :
         None
 
@@ -31,17 +31,17 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelName = '합천군청'
-        self.postBoardName = '새소식'
-        self.channelMainUrl = 'https://www.hc.go.kr'
-        self.postUrl = 'https://www.hc.go.kr/04923/04924/04945.web'
+        self.channelName = '경상북도청'
+        self.postBoardName = '알림마당'
+        self.channelMainUrl = 'https://www.gb.go.kr'
+        self.postUrl = 'https://www.gb.go.kr/Main/page.do?mnu_uid=6786&BD_CODE=bbs_gongji&cmd=2&B_NUM={}&B_STEP={}&V_NUM=20059'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
         self.session = set_headers(self.session)
         self.pageCount = 1
         while True :
-            self.channelUrl = self.channelUrlFrame.format((self.pageCount-1))
+            self.channelUrl = self.channelUrlFrame.format((self.pageCount-1)*10)
             self.post_list_scraping()
             if self.scrapingTarget :
                 self.target_contents_scraping()
