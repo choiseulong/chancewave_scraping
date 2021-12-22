@@ -14,23 +14,20 @@ def postListParsingProcess(**params):
             if tdIdx == 1 :
                 aTag = extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple)
                 href = extract_attrs(aTag, 'href')
-                postId = extract_text_between_prefix_and_suffix('&B_NUM=', '&B_STEP', href)
-                B_STEP = extract_text_between_prefix_and_suffix('&B_STEP=', '&B_LEVEL', href)
+                postId = extract_text_between_prefix_and_suffix('&parm_bod_uid=', '&srchEnable=', href)
                 var['postUrl'].append(
-                    var['postUrlFrame'].format(postId, B_STEP)
+                    var['postUrlFrame'].format(postId)
                 )
                 var['postTitle'].append(tdText)
             elif tdIdx == 3:
                 var['uploader'].append(tdText)
-            elif tdIdx == 4:
+            elif tdIdx == 5:
                 var['viewCount'].append(
                     extract_numbers_in_text(tdText)
                 )
-            elif tdIdx == 5:
+            elif tdIdx == 4:
                 var['uploadedTime'].append(
-                    convert_datetime_string_to_isoformat_datetime(
-                        '20' + tdText
-                    )
+                    convert_datetime_string_to_isoformat_datetime(tdText)
                 )
     valueList = [var[key] for key in keyList]
     result = merge_var_to_dict(keyList, valueList)
@@ -39,26 +36,19 @@ def postListParsingProcess(**params):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'singleType' : ['contact', 'postText'],
-        'multipleType' : ['postImageUrl']
+        'singleType' : ['contact', 'postText']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    span_l = extract_children_tag(soup, 'span', {'class' : 'span_l'}, childIsMultiple)
-    for span in span_l:
-        spanText = extract_text(span)
-        if '작성자' in spanText:
-            var['contact'] = extract_contact_numbers_from_text(
-                extract_text(
-                    find_next_tag(span)
-                )
-            )
-            break
-    content = extract_children_tag(soup, 'dl', {'class' : 'content'}, childIsNotMultiple)
-    var['postText'] = clean_text(extract_text(content))
-    var['postImageUrl'] = search_img_list_in_contents(content, var['channelMainUrl'])
+    view_body = extract_children_tag(soup, 'div', {'class' : 'view_body'}, childIsNotMultiple)
+    postText = str(view_body)
+    postText = extract_text_between_prefix_and_suffix("write('",  "');", postText)
+    if postText :
+        postText = erase_html_tags(postText)
+        var['postText'] = clean_text(postText).replace('&#39;', "'")
+        var['contact'] = extract_contact_numbers_from_text(postText)
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
-    # print(result)
+    print(result)
     return result
 
 
