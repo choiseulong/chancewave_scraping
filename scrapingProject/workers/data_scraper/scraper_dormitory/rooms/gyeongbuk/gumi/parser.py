@@ -1,4 +1,3 @@
-from typing_extensions import Literal
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
 def postListParsingProcess(**params):
@@ -8,38 +7,35 @@ def postListParsingProcess(**params):
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
     trList = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
-    for tr in trList:
+    for tr in trList :
         tdList = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple)
+        uploader = ''
         for tdIdx, td in enumerate(tdList):
             tdText = extract_text(td)
-            if '공지' in tdText :
+            if '공지' in tdText:
                 if var['pageCount'] == 1 :
                     pass
                 else :
                     break
-
-            if tdIdx == 1 : 
-                var['postTitle'].append(tdText)
+            if tdIdx == 1 :
                 aTag = extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple)
-                href = extract_attrs(aTag, 'href')
-                postId = extract_text_between_prefix_and_suffix('articleKey=', '&boardKey', href)
+                onclick = extract_attrs(aTag, 'onclick')
+                postId = parse_onclick(onclick, 4)
                 var['postUrl'].append(
                     var['postUrlFrame'].format(postId)
                 )
-            elif tdIdx == 2 :
-                var['uploader'].append(tdText)
-            elif tdIdx == 4 :
-                if tdText:
-                    var['uploadedTime'].append(
-                        convert_datetime_string_to_isoformat_datetime(tdText)
-                    )
-                else :
-                    var['uploadedTime'].append(None)
-            elif tdIdx == 5 :
+                var['postTitle'].append(tdText)
+            elif tdIdx in [3, 4]:
+                uploader += tdText + ' '
+            elif tdIdx == 6:
                 var['viewCount'].append(
                     extract_numbers_in_text(tdText)
                 )
-
+            elif tdIdx == 5:
+                var['uploadedTime'].append(
+                    convert_datetime_string_to_isoformat_datetime(tdText)
+                )
+        var['uploader'].append(uploader)
     valueList = [var[key] for key in keyList]
     result = merge_var_to_dict(keyList, valueList)
     # print(result)
@@ -51,17 +47,19 @@ def postContentParsingProcess(**params):
         'multipleType' : ['postImageUrl']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    tbody = extract_children_tag(soup, 'tbody', {'class' : 'view'}, childIsNotMultiple)
-    thList = extract_children_tag(tbody, 'th', dummyAttrs, childIsMultiple)
-    for th in thList:
-        thText = extract_text(th)
-        if '전화번호' in thText:
-            var['contact'] = extract_text(find_next_tag(th))
+    view_info = extract_children_tag(soup, 'div', {'class' : 'view_info'}, childIsNotMultiple)
+    liList = extract_children_tag(view_info, 'li', dummyAttrs, childIsMultiple)
+    for li in liList:
+        liText = extract_text(li)
+        if '작성자' in liText:
+            var['contact'] = extract_contact_numbers_from_text(liText)
             break
-    boardCont = extract_children_tag(soup, 'div', {'class' : 'boardCont'}, childIsNotMultiple)
-    var['postText'] = clean_text(extract_text(boardCont))
-    var['postImageUrl'] = search_img_list_in_contents(boardCont, var['channelMainUrl'])
+    view_cont = extract_children_tag(soup, 'div', {'class' : 'view_cont'}, childIsNotMultiple)
+    var['postText'] = clean_text(extract_text(view_cont))
+    var['postImageUrl'] = search_img_list_in_contents(view_cont, var['channelMainUrl'])
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
     # print(result)
     return result
+
+

@@ -13,7 +13,10 @@ def postListParsingProcess(**params):
         for liIdx, li in enumerate(liList):
             liText = extract_text(li)
             if '공지' in liText :
-                continue
+                if var['pageCount'] == 1 :
+                    pass
+                else :
+                    break
             if liIdx == 1:
                 aTag = extract_children_tag(li, 'a', dummyAttrs, childIsNotMultiple)
                 onclick = extract_attrs(aTag, 'onclick')
