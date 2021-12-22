@@ -34,9 +34,8 @@ celery -A tasks worker --loglevel=info --pool=solo --concurrency=24
 #### Run RabbitMQ
 docker run -d --name rabbitmq -p 5672:5672 -p 8080:15672 --restart=unless-stopped -e RABBITMQ_DEFAULT_USER=username -e RABBITMQ_DEFAULT_PASS=password rabbitmq:management  
 
-#
+## 데이터 사용시 참고사항
 
-# 데이터 사용시 참고사항
-
-##### base64 기반 img 존재
-##### img url 요청시 Refer = {postUrl}선언해야 하는 채널이 존재 gimhae_0 등.
+##### base64 기반 img 존재 - api 문서 내 표기
+##### img url 요청시 Refer = {postUrl}선언해야 하는 채널이 존재 
+##### gimhae_0, haman_0 (썸네일)

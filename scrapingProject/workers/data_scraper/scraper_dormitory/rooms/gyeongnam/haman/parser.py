@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'multipleType' : ['postUrl', 'postTitle', 'uploadedTime', 'viewCount', 'uploader']
+        'multipleType' : ['postUrl', 'postTitle', 'uploadedTime', 'viewCount', 'uploader', 'postThumbnail']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     liList = extract_children_tag(soup, 'li', {'class' : 'li1'}, childIsMultiple)
@@ -16,25 +16,32 @@ def postListParsingProcess(**params):
         var['postTitle'].append(
             extract_text(strong)
         )
+        spanF1 = extract_children_tag(li, 'span', {'class' : 'f1'}, childIsNotMultiple)
+        if spanF1:
+            img = extract_children_tag(spanF1, 'img', dummyAttrs, childIsNotMultiple)
+            src = extract_attrs(img, 'src')
+            var['postThumbnail'].append(
+                var['channelMainUrl'] + src
+            )
+        else :
+            var['postThumbnail'].append(
+                None
+            )
         wrap1t3 = extract_children_tag(li, 'i', {'class' :'wrap1t3'}, childIsNotMultiple)
         spanList = extract_children_tag(wrap1t3, 'span', dummyAttrs, childIsMultiple)
         for spanIdx, span in enumerate(spanList):
             spanText = extract_text(span)
-            if spanIdx == 0 :
+            if spanIdx == 1 :
                 var['uploadedTime'].append(
                     convert_datetime_string_to_isoformat_datetime(
                         spanText
                     )
                 )
-            elif spanIdx == 1 :
-                var['uploader'].append(spanText)
             elif spanIdx == 2 :
+                var['uploader'].append(spanText)
+            elif spanIdx == 3 :
                 var['viewCount'].append(
                     extract_numbers_in_text(spanText)
-                )
-            elif spanIdx == 3 :
-                var['postSubject'].append(
-                    spanText
                 )
 
     valueList = [var[key] for key in keyList]
@@ -49,7 +56,6 @@ def postContentParsingProcess(**params):
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     substance = extract_children_tag(soup, 'div', {'class' : 'substance'}, childIsNotMultiple)
-    substance = decompose_tag(substance, 'div', {'class' : 'box1'})
     postText = extract_text(substance)
     var['postText'] = clean_text(postText)
     var['contact'] = extract_contact_numbers_from_text(postText)
