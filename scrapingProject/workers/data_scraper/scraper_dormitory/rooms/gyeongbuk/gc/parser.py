@@ -16,7 +16,7 @@ def postListParsingProcess(**params):
                 if var['pageCount'] == 1 :
                     pass
                 else :
-                    break
+                    continue
             if tdIdx == 1 :
                 aTag = extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple)
                 onclick = extract_attrs(aTag, 'onclick')
@@ -54,7 +54,7 @@ def postContentParsingProcess(**params):
     var['postImageUrl'] = search_img_list_in_contents(view_cont, var['channelMainUrl'])
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
-    print(result)
+    # print(result)
     return result
 
 

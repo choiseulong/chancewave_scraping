@@ -15,7 +15,7 @@ def postListParsingProcess(**params):
                 if var['pageCount'] == 1 :
                     pass
                 else :
-                    break
+                    continue
             if tdIdx == 1 :
                 aTag = extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple)
                 onclick = extract_attrs(aTag, 'onclick')

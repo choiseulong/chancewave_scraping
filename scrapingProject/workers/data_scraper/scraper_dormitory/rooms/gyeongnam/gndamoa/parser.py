@@ -16,7 +16,7 @@ def postListParsingProcess(**params):
                 if var['pageCount'] == 1 :
                     pass
                 else :
-                    break
+                    continue
 
             if tdIdx == 1 : 
                 var['postTitle'].append(tdText)

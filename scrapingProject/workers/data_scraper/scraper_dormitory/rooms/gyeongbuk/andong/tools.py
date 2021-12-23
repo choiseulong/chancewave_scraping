@@ -16,7 +16,7 @@ dummyAttrs = {}
 
 def change_to_soup(reponseText):
     try :
-        return bs(reponseText, 'html.parser')
+        return bs(reponseText, 'html.parser',from_encoding='utf-8')
     except UnboundLocalError as e :
         return remove_tags(reponseText)
 
@@ -253,12 +253,10 @@ def reflect_key(var, targetKeyInfo):
     return var, keyList
 
 
-def html_type_default_setting(params, targetKeyInfo):
+def if 'http' not in src and 'base64' not in src(params, targetKeyInfo):
     var = reflect_params(locals(), params)
     var, keyList = reflect_key(var, targetKeyInfo)
-    # text = var['response'].text
-    text = var['response'].content.decode('utf-8','replace')
-    # print(var['response'].content.decode('utf-8','replace') )
+    text = var['response'].text
     soup = change_to_soup(
         text
     )
