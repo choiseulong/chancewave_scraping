@@ -2,33 +2,27 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
 def postListParsingProcess(**params):
     targetKeyInfo = {
-        'multipleType' : ['postUrl', 'uploadedTime', 'viewCount', 'uploader', 'postTitle']
+        'multipleType' : ['postUrl', 'uploadedTime', 'viewCount', 'uploader']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
     trList = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
     for tr in trList :
         tdList = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple)
-        uploader = ''
+        if len(tdList) < 4 :
+            break 
         for tdIdx, td in enumerate(tdList):
             tdText = extract_text(td)
-            # if '공지' in tdText and tdIdx == 0:
-            #     if var['pageCount'] == 1 :
-            #         pass
-            #     else :
-            #         continue
+            if not tdText and tdIdx == 0:
+                break
             if tdIdx == 1 :
                 aTag = extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple)
                 href = extract_attrs(aTag, 'href')
-                postId = extract_numbers_in_text(href)
                 var['postUrl'].append(
-                    var['postUrlFrame'].format(postId)
-                )
-                var['postTitle'].append(
-                    tdText
+                    var['channelMainUrl'] + href
                 )
             elif tdIdx in [2] :
-                uploader += tdText + ' '
+                var['uploader'].append(tdText)
             elif tdIdx == 4:
                 var['viewCount'].append(
                     extract_numbers_in_text(tdText)
@@ -37,7 +31,6 @@ def postListParsingProcess(**params):
                 var['uploadedTime'].append(
                     convert_datetime_string_to_isoformat_datetime(tdText)
                 )
-        var['uploader'].append(uploader)
     valueList = [var[key] for key in keyList]
     result = merge_var_to_dict(keyList, valueList)
     # print(result)
@@ -45,17 +38,18 @@ def postListParsingProcess(**params):
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
-        'singleType' : ['postText', 'contact'],
+        'singleType' : ['postText', 'contact', 'postTitle'],
         'multipleType' : ['postImageUrl']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    cont = extract_children_tag(soup, 'div', {'class' : 'bb-view-content'}, childIsNotMultiple)
+    var['postTitle'] = extract_text_from_single_tag(soup, 'p', {'class' : 'view_tle'})
+    cont = extract_children_tag(soup, 'div', {'class' : 'view_body'}, childIsNotMultiple)
     var['postText'] = extract_text(cont)
     var['contact'] = extract_contact_numbers_from_text(extract_text(cont))
     var['postImageUrl'] = search_img_list_in_contents(cont, var['channelMainUrl'])
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
-    # print(result)
+    print(result)
     return result
 
 
