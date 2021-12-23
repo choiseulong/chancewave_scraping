@@ -38,10 +38,8 @@ def postListParsingProcess(**params):
         var['uploader'].append(uploader)
     valueList = [var[key] for key in keyList]
     result = merge_var_to_dict(keyList, valueList)
-    print(result)
-    # return result
-
-## 여기까지
+    # print(result)
+    return result
 
 def postContentParsingProcess(**params):
     targetKeyInfo = {
@@ -49,19 +47,14 @@ def postContentParsingProcess(**params):
         'multipleType' : ['postImageUrl']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    view_info = extract_children_tag(soup, 'div', {'class' : 'view_info'}, childIsNotMultiple)
-    liList = extract_children_tag(view_info, 'li', dummyAttrs, childIsMultiple)
-    for li in liList:
-        liText = extract_text(li)
-        if '작성자' in liText:
-            var['contact'] = extract_contact_numbers_from_text(liText)
-            break
     view_cont = extract_children_tag(soup, 'div', {'class' : 'view_cont'}, childIsNotMultiple)
-    var['postText'] = clean_text(extract_text(view_cont))
+    postText = extract_text(view_cont)
+    var['postText'] = clean_text(postText)
+    var['contact'] = extract_contact_numbers_from_text(postText)
     var['postImageUrl'] = search_img_list_in_contents(view_cont, var['channelMainUrl'])
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
-    # print(result)
+    print(result)
     return result
 
 
