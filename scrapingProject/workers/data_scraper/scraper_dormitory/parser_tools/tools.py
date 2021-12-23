@@ -258,7 +258,6 @@ def html_type_default_setting(params, targetKeyInfo):
     var, keyList = reflect_key(var, targetKeyInfo)
     # text = var['response'].text
     text = var['response'].content.decode('utf-8','replace')
-    # print(var['response'].content.decode('utf-8','replace') )
     soup = change_to_soup(
         text
     )
