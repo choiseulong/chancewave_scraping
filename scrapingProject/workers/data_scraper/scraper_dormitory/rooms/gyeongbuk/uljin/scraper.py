@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 울릉군청
+# 채널 이름 : 울진군청
 
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
@@ -12,7 +12,7 @@ from .parser import *
     @post list
 
     method : GET
-    url =  http://www.ulleung.go.kr/ko/page.htm?pageno={pageCount}&mnu_uid=1591
+    url =  http://www.uljin.go.kr/board/list.uljin?boardId=BBS_NOTICE_UJ&menuCd=DOM_000000103002001000&orderBy=REGISTER_DATE%20DESC&paging=ok&startPage={pageCount}
     header :
         None
 
@@ -31,9 +31,9 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelName = '울릉군청'
+        self.channelName = '울진군청'
         self.postBoardName = '공지사항'
-        self.channelMainUrl = 'http://www.ulleung.go.kr'
+        self.channelMainUrl = 'http://www.uljin.go.kr'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
