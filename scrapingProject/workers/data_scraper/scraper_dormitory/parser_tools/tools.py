@@ -197,6 +197,15 @@ def parse_onclick(text, order = 1):
 def convert_text_to_tuple(text):
     return ast.literal_eval(str(text))
 
+def extract_text_from_single_tag(soup, tag, attrs):
+    tag = extract_children_tag(soup, tag, attrs, childIsNotMultiple)
+    text = extract_text(tag)
+    return text
+def extract_attrs_from_single_tag(soup, tag, attrs, targetAttrs):
+    tag = extract_children_tag(soup, tag, attrs, childIsNotMultiple)
+    attrs = extract_attrs(tag, targetAttrs)
+    return attrs
+
 def extract_values_list_in_both_sides_bracket_text(text):
     startIdx = text.find('(')
     endIdx = text.rfind(')')
