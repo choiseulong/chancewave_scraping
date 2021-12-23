@@ -26,7 +26,7 @@ def postListParsingProcess(**params):
                 var['postTitle'].append(
                     tdText
                 )
-            elif tdIdx == [2] :
+            elif tdIdx in [2] :
                 uploader += tdText + ' '
             elif tdIdx == 4:
                 var['viewCount'].append(
