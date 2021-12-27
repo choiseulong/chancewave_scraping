@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 나주시청
+# 채널 이름 : 목포시청
 
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
@@ -12,7 +12,7 @@ from .parser import *
     @post list
 
     method : GET
-    url = https://www.naju.go.kr/www/administration/new/notify?page={pageCount}
+    url = https://www.mokpo.go.kr/www/open_administration/city_news/notice?page={pageCount}
     header :
         None
 
@@ -31,9 +31,9 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelName = '나주시청'
+        self.channelName = '목포시청'
         self.postBoardName = '공지사항'
-        self.channelMainUrl = 'http://www.naju.go.kr'
+        self.channelMainUrl = 'https://www.mokpo.go.kr'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)

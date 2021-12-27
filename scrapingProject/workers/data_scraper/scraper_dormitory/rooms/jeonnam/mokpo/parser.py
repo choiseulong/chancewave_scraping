@@ -1,4 +1,6 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
+from datetime import datetime
+from pytz import timezone
 
 def postListParsingProcess(**params):
     targetKeyInfo = {
@@ -12,6 +14,7 @@ def postListParsingProcess(**params):
         uploader = ''
         for tdIdx, td in enumerate(tdList):
             tdText = extract_text(td)
+            print(tdText)
             # if '공지' in tdText and tdIdx == 0:
             #     if var['pageCount'] == 1 :
             #         pass
@@ -26,16 +29,19 @@ def postListParsingProcess(**params):
                 var['postTitle'].append(
                     tdText
                 )
-            elif tdIdx in [2] :
+            elif tdIdx in [3] :
                 uploader += tdText + ' '
-            elif tdIdx == 4:
+            elif tdIdx == 5:
                 var['viewCount'].append(
                     extract_numbers_in_text(tdText)
                 )
-            elif tdIdx == 3:
-                var['uploadedTime'].append(
-                    convert_datetime_string_to_isoformat_datetime(tdText)
-                )
+            elif tdIdx == 4:
+                if ':' in tdText: 
+                    now = datetime.now(timezone('Asia/Seoul'))
+                    tdText = now.isoformat()
+                else :
+                    tdText = convert_datetime_string_to_isoformat_datetime(tdText)
+                var['uploadedTime'].append(tdText)
         var['uploader'].append(uploader)
     valueList = [var[key] for key in keyList]
     result = merge_var_to_dict(keyList, valueList)
@@ -49,13 +55,13 @@ def postContentParsingProcess(**params):
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
 
-    viewbox = extract_children_tag(soup, 'div', {'class' : 'viewbox'}, childIsNotMultiple)
-    var['postText'] = extract_text(viewbox)
-    var['contact'] = extract_contact_numbers_from_text(extract_text(viewbox))
-    var['postImageUrl'] = search_img_list_in_contents(viewbox, var['channelMainUrl'])
+    cont = extract_children_tag(soup, 'div', {'class' : 'board_cont'}, childIsNotMultiple)
+    var['postText'] = extract_text(cont)
+    var['contact'] = extract_contact_numbers_from_text(extract_text(cont))
+    var['postImageUrl'] = search_img_list_in_contents(cont, var['channelMainUrl'])
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
-    # print(result)
+    print(result)
     return result
 
 
