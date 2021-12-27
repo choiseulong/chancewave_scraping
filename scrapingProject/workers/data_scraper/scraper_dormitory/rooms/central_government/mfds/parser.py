@@ -60,12 +60,13 @@ def postContentParsingProcess(**params):
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     contentBox = extract_children_tag(soup, 'div', {'class' : 'bv_cont'}, childIsNotMultiple)
     contactBox = extract_children_tag(soup, 'div', {'class' : 'bbs_sat_header'}, childIsNotMultiple)
-    spanList = extract_children_tag(contactBox, 'span', dummyAttrs, childIsMultiple)
-    if spanList:
-        for span in spanList:
-            spanText = extract_text(span)
-            var['contact'] += spanText + ' '
-        var['postText'] = extract_text(contentBox)
+    if contactBox:
+        spanList = extract_children_tag(contactBox, 'span', dummyAttrs, childIsMultiple)
+        if spanList:
+            for span in spanList:
+                spanText = extract_text(span)
+                var['contact'] += spanText + ' '
+    var['postText'] = extract_text(contentBox)
     imgBox = extract_children_tag(contentBox, 'img', dummyAttrs, childIsMultiple)
     if imgBox:
         for img in imgBox:
