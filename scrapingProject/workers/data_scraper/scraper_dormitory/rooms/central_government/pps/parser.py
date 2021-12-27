@@ -56,7 +56,7 @@ def postContentParsingProcess(**params):
     for span in spanList:
         spanText = extract_text(span)
         if '작성자' in spanText or '담당부서' in spanText:
-            spanText = spanText.split(': ')[1]
+            # spanText = spanText.split(': ')[1]
             var['uploader'] += spanText + ' '
         elif '전화번호' in spanText:
             var['contact'] = extract_contact_numbers_from_text(spanText)

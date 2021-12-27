@@ -19,7 +19,6 @@ def postListParsingProcess(**params):
                 var['postUrl'].append(
                     var['postUrlFrame'].format(postId)
                 )
-                print(var['postUrl'])
                 var['postTitle'].append(tdText)
             elif tdIdx == 2 :
                 var['uploader'].append(

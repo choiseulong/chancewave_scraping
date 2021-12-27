@@ -4,7 +4,6 @@ from configparser import ConfigParser
 from workers.error_checker.checker import error_checker
 import requests as req
 import importlib
-# import traceback
 
 checker = error_checker()
 
@@ -41,22 +40,12 @@ class scraping_manager:
     def scraping_worker_job_init(self):
         self.get_channel_url()
         for channelCode, channelUrl in self.channelUrlList:
-            # channelCode = main_site__youthcenter_0
-            # groupName = main_site
-            # roomName = youthcenter
-            # channelCode = youthcenter_0
             groupName = extract_groupCode(channelCode)
             roomName, channelCode = extract_roomName_and_channelCode(channelCode)
-            # job.delay(roomName, channelCode, channelUrl, self.dateRange)
-            # try :
-            #     job.delay(roomName, channelCode, channelUrl, self.dateRange)
-            # except Exception as e :
-            #     print('error')
-            #     return
-                # something = checker.is_handling(traceback.format_exc(), e.__class__)
-                # print(something)
-            
-            if channelCode != 'mokpo_0':
+            # job.delay(groupName, roomName, channelCode, channelUrl, self.dateRange)
+
+
+            if channelCode != 'moef_0':
                 continue
             print(channelCode, 'init')
             print(groupName, roomName)
@@ -70,4 +59,3 @@ class scraping_manager:
         endDate = convert_datetime_string_to_isoformat_datetime(targetDate['endDate'])
         self.dateRange = [startDate, endDate]
         return self.dateRange
-

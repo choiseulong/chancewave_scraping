@@ -53,7 +53,6 @@ def postContentParsingProcess(**params):
     dtList = extract_children_tag(soup, 'dt', dummyAttrs, childIsMultiple)
     for dt in dtList :
         if extract_text(dt) == '연락처':
-            print(extract_text(find_next_tag(dt)))
             var['contact'] = extract_text(find_next_tag(dt))
     
     viewContent = extract_children_tag(soup, 'div', {'class' : 'view-content'}, childIsNotMultiple)

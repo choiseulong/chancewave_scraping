@@ -8,11 +8,14 @@ def postListParsingProcess(**params):
     liList = extract_children_tag(soup, 'li', {'class' : 'li1'}, childIsMultiple)
     for li in liList :
         postThumbnail = extract_children_tag(li, 'img', dummyAttrs, childIsNotMultiple)
-        src = extract_attrs(postThumbnail, 'src')
-        if 'image.do?' in src:
-            var['postThumbnail'].append(
-                var['channelMainUrl'] + src
-            )
+        if postThumbnail:
+            src = extract_attrs(postThumbnail, 'src')
+            if 'image.do?' in src:
+                var['postThumbnail'].append(
+                    var['channelMainUrl'] + src
+                )
+            else :
+                var['postThumbnail'].append(None)
         else :
             var['postThumbnail'].append(None)
         aTag = extract_children_tag(li, 'a', {'class' : 'a1'}, childIsNotMultiple)

@@ -99,9 +99,16 @@ def parse_linkedPostUrl(text):
     return text[text.find('http'): text.rfind("',")]
 
 def parse_date(text):
-    date = [
-        convert_datetime_string_to_isoformat_datetime(i[:-5].replace(' ', '')) \
-        for i \
-        in text.split(' ~ ')
-    ]
-    return date[0], date[1]
+    if '2차' in text:
+        text = [i for i in text.split(' ') if '.' in i]
+        text = ' '.join(text)
+        date1 = text[:12]
+        date2 = text[-13:]
+        return date1, date2
+    else :
+        date = [
+            convert_datetime_string_to_isoformat_datetime(i[:-5].replace(' ', '')) \
+            for i \
+            in text.split(' ~ ')
+        ]
+        return date[0], date[1]

@@ -13,6 +13,8 @@ def postListParsingProcess(**params):
             tdText = extract_text(td)
             if tdIdx == 0 :
                 aTag = extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple)
+                if not aTag :
+                    break
                 href = extract_attrs(aTag, 'href')
                 postId = extract_text_between_prefix_and_suffix('gsgeul_no=', '&pageIndex', href)
                 var['postUrl'].append(

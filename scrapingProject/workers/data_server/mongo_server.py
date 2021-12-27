@@ -11,6 +11,7 @@ class mongo_server:
         self.connection = MongoClient(self.url)
         self.db = self.connection.get_database('scraping')
         self.collection = self.db.get_collection('data')
+
     
     def fine_one(self, query):
         return self.collection.find_one(query)

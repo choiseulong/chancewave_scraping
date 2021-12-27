@@ -49,6 +49,11 @@ class Scraper(metaclass=ABCMeta):
         '''
             채널 메인에서 게시글의 기본정보를 가져오기 위한 요청을 처리함
         '''
+        # 첫페이지 테스트
+        # if self.pageCount == 2 :
+        #     self.scrapingTarget = []
+        #     return
+
         self.collectedDataList = []
         if method == 'get':
             status, response = get_method_response(self.session, self.channelUrl, sleepSec)

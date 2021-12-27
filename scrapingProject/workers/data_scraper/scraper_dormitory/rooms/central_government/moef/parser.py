@@ -12,9 +12,12 @@ def postListParsingProcess(**params):
         var['postTitle'].append(
             extract_text(extract_children_tag(li, 'a', dummyAttrs, childIsNotMultiple))
         )
+        aTag = extract_children_tag(li, 'a')
+        if not aTag:
+            print(li)
         MOSF, MOSFBBS = parse_href(
             extract_attrs(
-                extract_children_tag(li, 'a'),
+                aTag,
                 'href'
             )
         )

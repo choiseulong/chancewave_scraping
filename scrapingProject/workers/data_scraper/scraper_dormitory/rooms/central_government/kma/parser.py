@@ -53,5 +53,5 @@ def postContentParsingProcess(**params):
     var['postImageUrl'] = search_img_list_in_contents(bbs_view_body, var['channelMainUrl'])
     valueList = [var[key] for key in keyList]
     result = convert_merged_list_to_dict(keyList, valueList)
-    print(result)
-    # return result
+    # print(result)
+    return result
