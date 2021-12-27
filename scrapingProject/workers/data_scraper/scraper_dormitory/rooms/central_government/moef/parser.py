@@ -6,6 +6,11 @@ def postListParsingProcess(**params):
         'multipleType' : ['postUrl', 'postTitle', 'uploadedTime']
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
+
+    isEmpty = extract_children_tag(soup, 'li', {'class' : 'empty'}, childIsNotMultiple)
+    if isEmpty:
+        return 
+
     contentsBox = extract_children_tag(soup, 'ul', {'class' : 'boardType3'})
     liList = extract_children_tag(contentsBox, 'li', dummyAttrs, childIsMultiple)
     for li in liList:
