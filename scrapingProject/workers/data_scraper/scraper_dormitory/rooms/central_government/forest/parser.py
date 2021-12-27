@@ -24,18 +24,18 @@ def postListParsingProcess(**params):
                     var['postUrlFrame'].format(postId)
                 ) 
                 var['postTitle'].append(
-                    extract_text(aTag)
+                    extract_attrs(aTag, 'title')
                 )
             elif tdIdx == 2:
                 uploader += tdText
                 var['uploader'].append(uploader)
             elif tdIdx == 3:
-                textSplit = tdText.split(' ')
                 var['uploadedTime'].append(
-                    convert_datetime_string_to_isoformat_datetime(textSplit[0])
+                    convert_datetime_string_to_isoformat_datetime(tdText[:10])
                 )
+            elif tdIdx == 5:
                 var['viewCount'].append(
-                    extract_numbers_in_text(textSplit[1])
+                    extract_numbers_in_text(tdText)
                 )
 
     valueList = [var[key] for key in keyList]
