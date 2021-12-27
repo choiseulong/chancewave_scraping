@@ -7,6 +7,8 @@ https://docs.google.com/spreadsheets/d/1cETPlC2dAQtWtms3nNYsj_MgUnK1UhopVM-DtYTv
 # 미스테리코 작성중 API 문서  
 https://docs.google.com/spreadsheets/d/1V6YVV1Wmsp_3gtM5rJSUyqw99qMSuBOyN16DnEUOTSQ/edit#gid=1537643233
 
+https://docs.google.com/spreadsheets/d/11nbCSvvK9feBZ_D-S9BXT-yNsZyT7LymKN3mFKms5aU/edit#gid=0
+
 
 # HTTP Requests
 
