@@ -13,6 +13,8 @@ def postListParsingProcess(**params):
 
     contentsBox = extract_children_tag(soup, 'ul', {'class' : 'boardType3'})
     liList = extract_children_tag(contentsBox, 'li', dummyAttrs, childIsMultiple)
+    if not liList :
+        return
     for li in liList:
         var['postTitle'].append(
             extract_text(extract_children_tag(li, 'a', dummyAttrs, childIsNotMultiple))

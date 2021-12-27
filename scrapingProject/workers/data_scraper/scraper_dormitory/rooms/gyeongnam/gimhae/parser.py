@@ -6,6 +6,8 @@ def postListParsingProcess(**params):
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     liList = extract_children_tag(soup, 'li', {'class' : 'li1'}, childIsMultiple)
+    if not liList:
+        return
     for li in liList:
         em = extract_children_tag(li, 'em', dummyAttrs, childIsNotMultiple)
         if em:

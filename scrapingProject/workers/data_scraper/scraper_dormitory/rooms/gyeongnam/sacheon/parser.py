@@ -7,6 +7,8 @@ def postListParsingProcess(**params):
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     ulBox = extract_children_tag(soup, 'ul', {'class' : 'lst1'}, childIsNotMultiple)
     liList = extract_children_tag(ulBox, 'li', dummyAttrs, childIsMultiple)
+    if not liList:
+        return
     for li in liList:
         aTag = extract_children_tag(li, 'a', dummyAttrs, childIsNotMultiple)
         href = extract_attrs(aTag, 'href')

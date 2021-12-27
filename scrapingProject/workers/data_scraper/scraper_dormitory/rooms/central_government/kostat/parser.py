@@ -9,6 +9,8 @@ def postListParsingProcess(**params):
     Board_list01 = extract_children_tag(soup, 'div', {'class' : 'Board_list01'}, childIsNotMultiple)
     contents = extract_children_tag(Board_list01, 'ul', dummyAttrs, childIsNotMultiple)
     liList = extract_children_tag(contents, 'li', dummyAttrs, childIsMultiple, isNotRecursive)
+    if not liList :
+        return
     for li in liList:
         spanList = extract_children_tag(li, 'span', dummyAttrs, childIsMultiple)
         for span in spanList:

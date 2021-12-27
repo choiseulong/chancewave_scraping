@@ -8,6 +8,8 @@ def postListParsingProcess(**params):
     var, soup, keyList, fullText = html_type_default_setting(params, targetKeyInfo)
     tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
     trList = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
+    if not trList :
+        return
     for tr in trList :
         tdList = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple)
         for tdIdx, td in enumerate(tdList):
