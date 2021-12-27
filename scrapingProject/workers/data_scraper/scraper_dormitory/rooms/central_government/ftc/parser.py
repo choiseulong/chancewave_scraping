@@ -8,6 +8,8 @@ def postListParsingProcess(**params):
     tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsMultiple)
     if len(tbody):
         tbody = tbody[1]
+    else :
+        return
     contentsBox = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
     for contents in contentsBox:
         tdList = extract_children_tag(contents, 'td', dummyAttrs, childIsMultiple)
