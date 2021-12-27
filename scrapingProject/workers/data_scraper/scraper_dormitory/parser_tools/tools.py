@@ -47,10 +47,16 @@ def find_next_tag(tag):
 def find_parent_tag(tag):
     return tag.parent
 
-def decompose_tag(parentsTag, childrenTag, attrs):
+def decompose_tag(parentsTag, childrenTag, attrs, childIsMultiple=False):
     # 유일한 attrs 를 가지는 자식 태그 삭제 기능
-    targetTag = parentsTag.find(childrenTag, attrs)
-    targetTag.decompose()
+    if childIsMultiple:
+        targetTag = parentsTag.find_all(childrenTag, attrs)
+        if targetTag:
+            for tag in targetTag:
+                tag.decompose()
+    else :
+        targetTag = parentsTag.find(childrenTag, attrs)
+        targetTag.decompose()
     return parentsTag
 
 def check_has_attrs_in_tag(tag, attrs):
