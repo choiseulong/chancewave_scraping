@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 전라남도청
+# 채널 이름 : 광양시청
 
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
@@ -12,7 +12,7 @@ from .parser import *
     @post list
 
     method : GET
-    url = https://www.jeonnam.go.kr/M7124/boardList.do?pageIndex={pageCount}&menuId=jeonnam0201000000
+    url = https://www.gwangyang.go.kr/board/list.gwangyang?boardId=BBS_0000004&menuCd=DOM_000000103001000000&orderBy=REGISTER_DATE%20DESC&startPage={pageCount}
     header :
         None
 
@@ -20,7 +20,7 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : self.channMainUrl + {href}
+    url : self.postUrlFrame + {href}
     header :
         None
 
@@ -33,7 +33,7 @@ class Scraper(ABCScraper):
         super().__init__(session)
         self.channelName = '전라남도청'
         self.postBoardName = '공지사항'
-        self.channelMainUrl = 'https://www.jeonnam.go.kr'
+        self.channelMainUrl = 'https://www.gwangyang.go.kr'
         
     def scraping_process(self, channelCode, channelUrl, dateRange):
         super().scraping_process(channelCode, channelUrl, dateRange)
