@@ -6,6 +6,8 @@ def postListParsingProcess(**params):
     }
     var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
     tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
+    if not tbody :
+        return
     trList = extract_children_tag(tbody, 'tr', {'class' : False}, childIsMultiple)
     for tr in trList :
         title = extract_children_tag(tr, 'a', {'title' : True}, childIsNotMultiple)
