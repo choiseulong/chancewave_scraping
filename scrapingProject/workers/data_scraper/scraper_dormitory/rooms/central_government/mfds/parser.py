@@ -13,6 +13,8 @@ def postListParsingProcess(**params):
     else :
         ulList = extract_children_tag(mainDiv, 'ul', dummyAttrs, childIsNotMultiple)
 
+    if not ulList :
+        return
     var['uploadedTime'] = [
         convert_datetime_string_to_isoformat_datetime(
             extract_text(i)

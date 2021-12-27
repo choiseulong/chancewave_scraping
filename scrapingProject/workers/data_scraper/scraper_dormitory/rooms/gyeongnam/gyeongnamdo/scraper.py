@@ -53,10 +53,11 @@ class Scraper(ABCScraper):
                 break
 
     def post_list_scraping(self):
+        parsingProcess = postListParsingProcess
         if self.channelCode == 'gyeongnamdo_1':
             self.postBoardName = '팝업존'
-            postListParsingProcess = postListParsingProcess_1
-        super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
+            parsingProcess = postListParsingProcess_1
+        super().post_list_scraping(parsingProcess, 'get', sleepSec)
 
     def target_contents_scraping(self):
         super().target_contents_scraping(postContentParsingProcess, sleepSec)

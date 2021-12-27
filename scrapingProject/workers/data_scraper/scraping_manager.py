@@ -45,7 +45,7 @@ class scraping_manager:
             # job.delay(groupName, roomName, channelCode, channelUrl, self.dateRange)
 
 
-            if channelCode != 'namhae_0':
+            if channelCode != 'mof_0':
                 continue
             print(channelCode, 'init')
             print(groupName, roomName)

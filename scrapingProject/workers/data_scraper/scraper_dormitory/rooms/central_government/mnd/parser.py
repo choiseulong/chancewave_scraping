@@ -8,6 +8,8 @@ def postListParsingProcess(**params):
 
     contents = extract_children_tag(soup, 'ul', {'class' : 'list_post'}, childIsNotMultiple)
     liList = extract_children_tag(contents, 'li', dummyAttrs, childIsMultiple)
+    if not liList :
+        return
     for li in liList :
         aTag = extract_children_tag(li, 'a', {'title' : True}, childIsNotMultiple)
         postId = extract_text_between_prefix_and_suffix(

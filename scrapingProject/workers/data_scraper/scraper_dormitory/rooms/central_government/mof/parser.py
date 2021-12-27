@@ -31,7 +31,7 @@ def postListParsingProcess(**params):
             elif tdIdx == 4 :
                 if tdText:
                     var['uploadedTime'].append(
-                        convert_datetime_string_to_isoformat_datetime(tdText)
+                        convert_datetime_string_to_isoformat_datetime(tdText[:-1])
                     )
                 else :
                     var['uploadedTime'].append(None)
