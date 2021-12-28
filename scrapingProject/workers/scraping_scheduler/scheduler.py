@@ -15,15 +15,15 @@ schedule.conf.update(
 )
 
 @schedule.task
-def job(groupName, roomName, channelCode, channelUrl, dateRange):
+def job(group_name, room_name, channel_code, channel_url, date_range):
     startTime = datetime.now(timezone('Asia/Seoul')).isoformat()
     session = req.session()
-    scraperRoomAddress = f'workers.data_scraper.scraper_dormitory.rooms.{groupName}.{roomName}.scraper'
-    scraper = importlib.import_module(scraperRoomAddress).Scraper(session)
-    scraper.scraping_process(channelCode, channelUrl, dateRange)
+    scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'
+    scraper = importlib.import_module(scraper_room_address).Scraper(session)
+    scraper.scraping_process(channel_code, channel_url, date_range)
     endTime = datetime.now(timezone('Asia/Seoul')).isoformat()
     return {
-        "channelCode" : channelCode,
+        "channel_code" : channel_code,
         "startTime" : startTime,
         "endTime" : endTime
     }

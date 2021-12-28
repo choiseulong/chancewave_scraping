@@ -16,7 +16,7 @@ from .parser import *
     header :
         1. Content-Type: application/x-www-form-urlencoded
     body :
-        1. page={pageCount}
+        1. page={page_count}
 '''
 '''
     @post info
@@ -26,37 +26,37 @@ from .parser import *
         None
 
 '''
-sleepSec = 2
+sleep_sec = 2
 isUpdate = True
 
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelName = '법무부'
-        self.postBoardName = '공지사항'
-        self.channelMainUrl = 'https://www.moj.go.kr'
+        self.channel_name = '법무부'
+        self.post_board_name = '공지사항'
+        self.channel_main_url = 'https://www.moj.go.kr'
         
-    def scraping_process(self, channelCode, channelUrl, dateRange):
-        super().scraping_process(channelCode, channelUrl, dateRange)
-        self.additionalKeyValue.append(("Content-Type", "application/x-www-form-urlencoded"))
-        self.session = set_headers(self.session, self.additionalKeyValue, isUpdate)
-        self.pageCount = 1
+    def scraping_process(self, channel_code, channel_url, date_range):
+        super().scraping_process(channel_code, channel_url, date_range)
+        self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded"))
+        self.session = set_headers(self.session, self.additional_key_value, isUpdate)
+        self.page_count = 1
         while True :
-            self.channelUrl = self.channelUrlFrame.format(self.pageCount)
+            self.channel_url = self.channel_url_frame.format(self.page_count)
             self.post_list_scraping()
-            if self.scrapingTarget :
+            if self.scraping_target :
                 self.target_contents_scraping()
                 self.collect_data()
-                self.mongo.reflect_scraped_data(self.collectedDataList)
-                self.pageCount += 1
+                self.mongo.reflect_scraped_data(self.collected_data_list)
+                self.page_count += 1
             else :
                 break
 
     def post_list_scraping(self):
         data = {
-            "page" : self.pageCount
+            "page" : self.page_count
         }
-        super().post_list_scraping(postListParsingProcess, 'post', data, sleepSec)
+        super().post_list_scraping(post_list_parsing_process, 'post', data, sleep_sec)
 
     def target_contents_scraping(self):
-        super().target_contents_scraping(postContentParsingProcess, sleepSec)
+        super().target_contents_scraping(post_content_parsing_process, sleep_sec)

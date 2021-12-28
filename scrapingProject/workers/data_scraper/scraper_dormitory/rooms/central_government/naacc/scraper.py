@@ -27,40 +27,40 @@ from .parser import *
     required data searching point :
         header_1 : 메인페이지에서 쿠키 받아옴
 '''
-sleepSec = 2
+sleep_sec = 2
 isUpdate = True
 
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelName = '행정중심복합도시건설청'
-        self.postBoardName = '알립니다'
-        self.channelMainUrl = 'https://www.naacc.go.kr'
-        self.postUrl = 'https://www.naacc.go.kr/csi_board/csi_boardView.do?menu_id=notice&num={}'
+        self.channel_name = '행정중심복합도시건설청'
+        self.post_board_name = '알립니다'
+        self.channel_main_url = 'https://www.naacc.go.kr'
+        self.post_url = 'https://www.naacc.go.kr/csi_board/csi_boardView.do?menu_id=notice&num={}'
         
-    def scraping_process(self, channelCode, channelUrl, dateRange):
-        super().scraping_process(channelCode, channelUrl, dateRange)
+    def scraping_process(self, channel_code, channel_url, date_range):
+        super().scraping_process(channel_code, channel_url, date_range)
         self.session = set_headers(self.session)
-        self.pageCount = 1
+        self.page_count = 1
         while True :
-            self.channelUrl = self.channelUrlFrame.format(self.pageCount)
+            self.channel_url = self.channel_url_frame.format(self.page_count)
             self.post_list_scraping()
-            if self.scrapingTarget :
+            if self.scraping_target :
                 self.target_contents_scraping()
                 self.collect_data()
-                self.mongo.reflect_scraped_data(self.collectedDataList)
-                self.pageCount += 1
+                self.mongo.reflect_scraped_data(self.collected_data_list)
+                self.page_count += 1
             else :
                 break
 
     def post_list_scraping(self):
-        if self.pageCount == 1 :
-            status, response = get_method_response(self.session, self.channelMainUrl)
+        if self.page_count == 1 :
+            status, response = get_method_response(self.session, self.channel_main_url)
             if status == 'ok' :
                 JSESSIONID = response.cookies.get_dict()['JSESSIONID']
-                self.additionalKeyValue.append(("Cookie", f"JSESSIONID={JSESSIONID}"))
-                self.session = set_headers(self.session, self.additionalKeyValue, isUpdate)
-        super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
+                self.additional_key_value.append(("Cookie", f"JSESSIONID={JSESSIONID}"))
+                self.session = set_headers(self.session, self.additional_key_value, isUpdate)
+        super().post_list_scraping(post_list_parsing_process, 'get', sleep_sec)
 
     def target_contents_scraping(self):
-        super().target_contents_scraping(postContentParsingProcess, sleepSec)
+        super().target_contents_scraping(post_content_parsing_process, sleep_sec)

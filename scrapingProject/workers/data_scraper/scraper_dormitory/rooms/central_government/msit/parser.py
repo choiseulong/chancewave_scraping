@@ -1,34 +1,34 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
-def postListParsingProcess(**params):
-    targetKeyInfo = {
-        'multipleType' : ['postUrl']
+def post_list_parsing_process(**params):
+    target_key_info = {
+        'multiple_type' : ['post_url']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
 
-    contentsList = extract_children_tag(soup, 'div', {'class' : 'toggle'}, childIsMultiple)
+    contentsList = extract_children_tag(soup, 'div', {'class' : 'toggle'}, DataStatus.multiple)
     for contents in contentsList:
-        aTag = extract_children_tag(contents, 'a', dummyAttrs, childIsNotMultiple)
+        a_tag = extract_children_tag(contents, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
         postId = extract_numbers_in_text(
-            extract_attrs(aTag, 'onclick')
+            extract_attrs(a_tag, 'onclick')
         )
-        var['postUrl'].append(
-            var['postUrlFrame'].format(postId)
+        var['post_url'].append(
+            var['post_url_frame'].format(postId)
         )
-    valueList = [var[key] for key in keyList]
-    result = merge_var_to_dict(keyList, valueList)
+    value_list = [var[key] for key in key_list]
+    result = merge_var_to_dict(key_list, value_list)
     return result
 
-def postContentParsingProcess(**params):
-    targetKeyInfo = {
-        'singleType' : ['contact', 'postText', 'uploader', 'uploadedTime', 'postTitle'],
-        'multipleType' : ['postImageUrl']
+def post_content_parsing_process(**params):
+    target_key_info = {
+        'single_type' : ['contact', 'post_text', 'uploader', 'uploaded_time', 'post_title'],
+        'multiple_type' : ['post_image_url']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    view_head = extract_children_tag(soup, 'div', {'class' : 'view_head'}, childIsNotMultiple)
-    spanList = extract_children_tag(view_head, 'span', {'class' : True}, childIsMultiple)
-    var['postTitle'] = extract_text(
-        extract_children_tag(view_head, 'h2', dummyAttrs, childIsNotMultiple)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    view_head = extract_children_tag(soup, 'div', {'class' : 'view_head'}, DataStatus.not_multiple)
+    spanList = extract_children_tag(view_head, 'span', {'class' : True}, DataStatus.multiple)
+    var['post_title'] = extract_text(
+        extract_children_tag(view_head, 'h2', DataStatus.empty_attrs, DataStatus.not_multiple)
     )
     for span in spanList:
         spanText = extract_text(span)
@@ -37,14 +37,14 @@ def postContentParsingProcess(**params):
         elif '연락처' in spanText:
             var['contact'] = extract_contact_numbers_from_text(extract_text(find_next_tag(span)))
         elif '작성일' in spanText:
-            var['uploadedTime'] = convert_datetime_string_to_isoformat_datetime(
+            var['uploaded_time'] = convert_datetime_string_to_isoformat_datetime(
                     extract_text(find_next_tag(span))
                 )
             
-    contBox = extract_children_tag(soup, 'div', {'id' : 'cont-wrap'}, childIsNotMultiple)
-    var['postText'] = clean_text(extract_text(contBox))
-    var['postImageUrl'] = search_img_list_in_contents(contBox, var['channelMainUrl'])
-    valueList = [var[key] for key in keyList]
-    result = convert_merged_list_to_dict(keyList, valueList)
+    contBox = extract_children_tag(soup, 'div', {'id' : 'cont-wrap'}, DataStatus.not_multiple)
+    var['post_text'] = clean_text(extract_text(contBox))
+    var['post_image_url'] = search_img_list_in_contents(contBox, var['channel_main_url'])
+    value_list = [var[key] for key in key_list]
+    result = convert_merged_list_to_dict(key_list, value_list)
     # print(result)
     return result

@@ -12,7 +12,7 @@ from .parser import *
     @post list
 
     method : GET
-    url =  https://www.usc.go.kr/board/list.tc?mn=1275&viewType=sub&mngNo=275&pageIndex={pageCount}&boardName=EOVYRHDWL&boardNo=0&pageSeq=1314
+    url =  https://www.usc.go.kr/board/list.tc?mn=1275&viewType=sub&mngNo=275&pageIndex={page_count}&boardName=EOVYRHDWL&boardNo=0&pageSeq=1314
     header :
         None
 
@@ -25,34 +25,34 @@ from .parser import *
         None
 
 '''
-sleepSec = 2
+sleep_sec = 2
 isUpdate = True
 
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelName = '의성군청'
-        self.postBoardName = '공지사항'
-        self.channelMainUrl = 'https://www.usc.go.kr'
-        self.postUrl = 'https://www.usc.go.kr/board/detail.tc?mn=1275&viewType=sub&mngNo=275&pageIndex=1&boardName=EOVYRHDWL&boardNo={}&pageSeq=1314'
+        self.channel_name = '의성군청'
+        self.post_board_name = '공지사항'
+        self.channel_main_url = 'https://www.usc.go.kr'
+        self.post_url = 'https://www.usc.go.kr/board/detail.tc?mn=1275&viewType=sub&mngNo=275&pageIndex=1&boardName=EOVYRHDWL&boardNo={}&pageSeq=1314'
         
-    def scraping_process(self, channelCode, channelUrl, dateRange):
-        super().scraping_process(channelCode, channelUrl, dateRange)
+    def scraping_process(self, channel_code, channel_url, date_range):
+        super().scraping_process(channel_code, channel_url, date_range)
         self.session = set_headers(self.session)
-        self.pageCount = 1
+        self.page_count = 1
         while True :
-            self.channelUrl = self.channelUrlFrame.format(self.pageCount)
+            self.channel_url = self.channel_url_frame.format(self.page_count)
             self.post_list_scraping()
-            if self.scrapingTarget :
+            if self.scraping_target :
                 self.target_contents_scraping()
                 self.collect_data()
-                self.mongo.reflect_scraped_data(self.collectedDataList)
-                self.pageCount += 1
+                self.mongo.reflect_scraped_data(self.collected_data_list)
+                self.page_count += 1
             else :
                 break
 
     def post_list_scraping(self):
-        super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
+        super().post_list_scraping(post_list_parsing_process, 'get', sleep_sec)
 
     def target_contents_scraping(self):
-        super().target_contents_scraping(postContentParsingProcess, sleepSec)
+        super().target_contents_scraping(post_content_parsing_process, sleep_sec)

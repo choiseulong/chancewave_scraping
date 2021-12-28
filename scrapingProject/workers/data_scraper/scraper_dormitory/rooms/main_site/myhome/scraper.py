@@ -17,56 +17,56 @@ from .parser import *
     header :
         1. Content-Type : application/x-www-form-urlencoded; charset=UTF-8
     body :
-        1. pageIndex={pageCount}
+        1. pageIndex={page_count}
         2. srchSuplyTy=
     required data searching point :
         header_1 : fixed
-        body_1 : pageCount
+        body_1 : page_count
         body_2 : fixed
 '''
 '''
     @post info
 
     method : get
-    url : 'postUrl'
+    url : 'post_url'
     header :
         None
 '''
 
 isUpdate = True
-sleepSec = 4
+sleep_sec = 4
 
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelName = '마이홈'
-        self.postBoardName = '입주자모집공고'
-        self.postUrl = "https://www.myhome.go.kr/hws/portal/sch/selectRsdtRcritNtcDetailView.do?pblancId={}"
+        self.channel_name = '마이홈'
+        self.post_board_name = '입주자모집공고'
+        self.post_url = "https://www.myhome.go.kr/hws/portal/sch/selectRsdtRcritNtcDetailView.do?pblancId={}"
     
-    def scraping_process(self, channelCode, channelUrl, dateRange):
-        super().scraping_process(channelCode, channelUrl, dateRange)
-        self.additionalKeyValue.append(("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"))
-        self.session = set_headers(self.session, self.additionalKeyValue, isUpdate)
-        self.pageCount = 1
+    def scraping_process(self, channel_code, channel_url, date_range):
+        super().scraping_process(channel_code, channel_url, date_range)
+        self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"))
+        self.session = set_headers(self.session, self.additional_key_value, isUpdate)
+        self.page_count = 1
         while True :
             self.post_list_scraping()
-            if self.scrapingTarget :
+            if self.scraping_target :
                 self.target_contents_scraping()
                 self.collect_data()
-                self.mongo.reflect_scraped_data(self.collectedDataList)
-                self.pageCount += 1
+                self.mongo.reflect_scraped_data(self.collected_data_list)
+                self.page_count += 1
             else:
                 break
 
     def post_list_scraping(self):
         data = {
-            "pageIndex" : self.pageCount,
+            "pageIndex" : self.page_count,
             "srchSuplyTy" : ""
         }
-        super().post_list_scraping(postListParsingProcess, 'post', data, sleepSec)
+        super().post_list_scraping(post_list_parsing_process, 'post', data, sleep_sec)
 
     def target_contents_scraping(self):
-        super().target_contents_scraping(postContentParsingProcess, sleepSec)
+        super().target_contents_scraping(post_content_parsing_process, sleep_sec)
     
 
 

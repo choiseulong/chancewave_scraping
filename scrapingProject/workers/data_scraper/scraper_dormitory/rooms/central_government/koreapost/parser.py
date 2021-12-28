@@ -1,45 +1,45 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
-def postListParsingProcess(**params):
-    targetKeyInfo = {
-        'multipleType' : ['postUrl', 'postTitle', 'viewCount', 'uploader', 'uploadedTime']
+def post_list_parsing_process(**params):
+    target_key_info = {
+        'multiple_type' : ['post_url', 'post_title', 'view_count', 'uploader', 'uploaded_time']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
-    trList = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
-    for tr in trList:
-        tdList = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple)
-        for tdIdx, td in enumerate(tdList):
-            tdText = extract_text(td)
-            if tdIdx == 2:
-                aTag = extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple)
-                postUrl = extract_attrs(aTag, 'href')
-                if 'http' not in postUrl:
-                    postUrl = var['channelMainUrl'] + postUrl
-                var['postUrl'].append(postUrl)
-                var['postTitle'].append(tdText)
-            elif tdIdx == 3:
-                var['uploader'].append(tdText)
-            elif tdIdx == 4:    
-                var['uploadedTime'].append(
-                    convert_datetime_string_to_isoformat_datetime(tdText)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    tbody = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.not_multiple)
+    tr_list = extract_children_tag(tbody, 'tr', DataStatus.empty_attrs, DataStatus.multiple)
+    for tr in tr_list:
+        td_list = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple)
+        for td_idx, td in enumerate(td_list):
+            td_text = extract_text(td)
+            if td_idx == 2:
+                a_tag = extract_children_tag(td, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
+                post_url = extract_attrs(a_tag, 'href')
+                if 'http' not in post_url:
+                    post_url = var['channel_main_url'] + post_url
+                var['post_url'].append(post_url)
+                var['post_title'].append(td_text)
+            elif td_idx == 3:
+                var['uploader'].append(td_text)
+            elif td_idx == 4:    
+                var['uploaded_time'].append(
+                    convert_datetime_string_to_isoformat_datetime(td_text)
                 )
-            elif tdIdx == 5:
-                var['viewCount'].append(extract_numbers_in_text(tdText))
+            elif td_idx == 5:
+                var['view_count'].append(extract_numbers_in_text(td_text))
 
-    valueList = [var[key] for key in keyList]
-    result = merge_var_to_dict(keyList, valueList)
+    value_list = [var[key] for key in key_list]
+    result = merge_var_to_dict(key_list, value_list)
     # print(result)
     return result
 
-def postContentParsingProcess(**params):
-    targetKeyInfo = {
-        'singleType' : ['contact', 'postText'],
-        'multipleType' : ['postImageUrl']
+def post_content_parsing_process(**params):
+    target_key_info = {
+        'single_type' : ['contact', 'post_text'],
+        'multiple_type' : ['post_image_url']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    contentsBox = extract_children_tag(soup, 'div', {'class' : 'seed_tbl'}, childIsNotMultiple)
-    thList = extract_children_tag(contentsBox, 'th', {'scope' : 'row'}, childIsMultiple)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    contentsBox = extract_children_tag(soup, 'div', {'class' : 'seed_tbl'}, DataStatus.not_multiple)
+    thList = extract_children_tag(contentsBox, 'th', {'scope' : 'row'}, DataStatus.multiple)
     for th in thList:
         thText = extract_text(th)
         if '전화번호' in thText:
@@ -47,9 +47,9 @@ def postContentParsingProcess(**params):
                 extract_text(find_next_tag(th))
             )
             break
-    seedbbsContentWrap = extract_children_tag(contentsBox, 'div', {'class' : 'seedbbsContentWrap'}, childIsNotMultiple)
-    var['postText'] = clean_text(extract_text(seedbbsContentWrap))
-    var['postImageUrl'] = search_img_list_in_contents(seedbbsContentWrap, var['channelMainUrl'])
-    valueList = [var[key] for key in keyList]
-    result = convert_merged_list_to_dict(keyList, valueList)
+    seedbbsContentWrap = extract_children_tag(contentsBox, 'div', {'class' : 'seedbbsContentWrap'}, DataStatus.not_multiple)
+    var['post_text'] = clean_text(extract_text(seedbbsContentWrap))
+    var['post_image_url'] = search_img_list_in_contents(seedbbsContentWrap, var['channel_main_url'])
+    value_list = [var[key] for key in key_list]
+    result = convert_merged_list_to_dict(key_list, value_list)
     return result

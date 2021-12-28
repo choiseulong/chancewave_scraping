@@ -19,24 +19,24 @@ from .parser import *
     header :
         1. User-Agent
     body :
-        1. fetchStart = {pageCount}
+        1. fetchStart = {page_count}
     required data searching point :
         header_1 : fixed
-        body_1 : pageCount
+        body_1 : page_count
 '''
 '''
     @post info
 
     method : get
-    url : 'postUrl'
+    url : 'post_url'
     header :
         None
 '''
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelName = '서울시청'
-        self.postBoardName = '분야별 새소식'
+        self.channel_name = '서울시청'
+        self.post_board_name = '분야별 새소식'
 
     def get_post_body_post_list_page(self, num=1):
         data = {
@@ -44,33 +44,33 @@ class Scraper(ABCScraper):
         }
         return data
     
-    def scraping_process(self, channelCode, channelUrl, dateRange):
-        super().scraping_process(channelCode, channelUrl, dateRange)
+    def scraping_process(self, channel_code, channel_url, date_range):
+        super().scraping_process(channel_code, channel_url, date_range)
         
-        self.pageCount = 1
+        self.page_count = 1
         while True :
             self.post_list_scraping()
-            if self.scrapingTarget :
+            if self.scraping_target :
                 self.target_contents_scraping()
                 self.collect_data()
-                self.mongo.reflect_scraped_data(self.collectedDataList)
-                self.pageCount += 1
+                self.mongo.reflect_scraped_data(self.collected_data_list)
+                self.page_count += 1
             else:
                 break
 
     def post_list_scraping(self):
         data = {
-            "fetchStart" : self.pageCount
+            "fetchStart" : self.page_count
         }
-        if self.channelCode == 'seoul_city_1':
-            self.postBoardName = '이달의 행사 및 축제'
-        elif self.channelCode == 'seoul_city_2':
-            self.postBoardName = '이벤트 신청'
+        if self.channel_code == 'seoul_city_1':
+            self.post_board_name = '이달의 행사 및 축제'
+        elif self.channel_code == 'seoul_city_2':
+            self.post_board_name = '이벤트 신청'
 
-        super().post_list_scraping(postListParsingProcess, 'post', data)
+        super().post_list_scraping(post_list_parsing_process, 'post', data)
 
     def target_contents_scraping(self):
-        super().target_contents_scraping(postContentParsingProcess)
+        super().target_contents_scraping(post_content_parsing_process)
     
 
 

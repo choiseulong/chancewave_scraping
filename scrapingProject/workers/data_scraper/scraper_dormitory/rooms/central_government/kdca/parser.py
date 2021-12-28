@@ -1,55 +1,55 @@
 from typing_extensions import Literal
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
-def postListParsingProcess(**params):
-    targetKeyInfo = {
-        'multipleType' : ['postUrl', 'postTitle', 'uploadedTime', 'viewCount']
+def post_list_parsing_process(**params):
+    target_key_info = {
+        'multiple_type' : ['post_url', 'post_title', 'uploaded_time', 'view_count']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    dbody = extract_children_tag(soup, 'div', {'class' : 'dbody'}, childIsNotMultiple)
-    ulList = extract_children_tag(dbody, 'ul', dummyAttrs, childIsMultiple)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    dbody = extract_children_tag(soup, 'div', {'class' : 'dbody'}, DataStatus.not_multiple)
+    ulList = extract_children_tag(dbody, 'ul', DataStatus.empty_attrs, DataStatus.multiple)
     for ul in ulList:
-        liList = extract_children_tag(ul, 'li', dummyAttrs, childIsMultiple)
+        liList = extract_children_tag(ul, 'li', DataStatus.empty_attrs, DataStatus.multiple)
         for liIdx, li in enumerate(liList):
             liText = extract_text(li)
             if '공지' in liText :
-                if var['pageCount'] == 1 :
+                if var['page_count'] == 1 :
                     pass
                 else :
                     continue
             if liIdx == 1:
-                aTag = extract_children_tag(li, 'a', dummyAttrs, childIsNotMultiple)
-                onclick = extract_attrs(aTag, 'onclick')
+                a_tag = extract_children_tag(li, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
+                onclick = extract_attrs(a_tag, 'onclick')
                 postId = extract_text_between_prefix_and_suffix("('", "')", onclick)
-                var['postUrl'].append(
-                    var['postUrlFrame'].format(postId)
+                var['post_url'].append(
+                    var['post_url_frame'].format(postId)
                 )
-                var['postTitle'].append(liText)
+                var['post_title'].append(liText)
             elif liIdx == 3 :
-                var['uploadedTime'].append(
+                var['uploaded_time'].append(
                     convert_datetime_string_to_isoformat_datetime(liText)
                 )
             elif liIdx == 4 :
-                var['viewCount'].append(
+                var['view_count'].append(
                     extract_numbers_in_text(liText)
                 )
 
-    valueList = [var[key] for key in keyList]
-    result = merge_var_to_dict(keyList, valueList)
+    value_list = [var[key] for key in key_list]
+    result = merge_var_to_dict(key_list, value_list)
     # print(result)
     return result
 
 def parse_href(text):
     return text[text.find('&seq=') + len('&seq='):]
 
-def postContentParsingProcess(**params):
-    targetKeyInfo = {
-        'singleType' : ['contact', 'postText', 'uploader'],
-        'multipleType' : ['postImageUrl']
+def post_content_parsing_process(**params):
+    target_key_info = {
+        'single_type' : ['contact', 'post_text', 'uploader'],
+        'multiple_type' : ['post_image_url']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    headInfo = extract_children_tag(soup, 'ul', {'class': ['head', 'info']}, childIsNotMultiple)
-    spanList = extract_children_tag(headInfo, 'span', dummyAttrs, childIsMultiple)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    headInfo = extract_children_tag(soup, 'ul', {'class': ['head', 'info']}, DataStatus.not_multiple)
+    spanList = extract_children_tag(headInfo, 'span', DataStatus.empty_attrs, DataStatus.multiple)
     for span in spanList:
         spanText = extract_text(span)
         if '담당부서' in spanText:
@@ -60,10 +60,10 @@ def postContentParsingProcess(**params):
                 extract_text(find_next_tag(span))
             )
 
-    tb_contents = extract_children_tag(soup, 'div', {'class' : 'tb_contents'}, childIsNotMultiple)
-    var['postText'] = clean_text(extract_text(tb_contents))
-    var['postImageUrl'] = search_img_list_in_contents(tb_contents, var['channelMainUrl'])
-    valueList = [var[key] for key in keyList]
-    result = convert_merged_list_to_dict(keyList, valueList)
+    tb_contents = extract_children_tag(soup, 'div', {'class' : 'tb_contents'}, DataStatus.not_multiple)
+    var['post_text'] = clean_text(extract_text(tb_contents))
+    var['post_image_url'] = search_img_list_in_contents(tb_contents, var['channel_main_url'])
+    value_list = [var[key] for key in key_list]
+    result = convert_merged_list_to_dict(key_list, value_list)
     # print(result)
     return result

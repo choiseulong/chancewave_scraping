@@ -1,36 +1,36 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
-def postListParsingProcess(**params):
+def post_list_parsing_process(**params):
     var = reflect_params(locals(), params)
-    targetKeyInfo = {
-        'multipleType' : ['isGoingOn', 'postSubject', 'postTitle', 'uploader', 'contentsReqParams'],
-        'singleType' : ['Cookie','_csrf']
+    target_key_info = {
+        'multiple_type' : ['is_going_on', 'post_subject', 'post_title', 'uploader', 'contents_req_params'],
+        'single_type' : ['Cookie','_csrf']
     }
-    var, soup, _, _ = html_type_default_setting(params, targetKeyInfo)
-    # var, _ = reflect_key(var, targetKeyInfo)
+    var, soup, _, _ = html_type_default_setting(params, target_key_info)
+    # var, _ = reflect_key(var, target_key_info)
     # soup = change_to_soup(
     #     var['response'].text
     # )
 
-    postCountBox = extract_children_tag(soup, 'div', {'class' : ['sch-result-wrap compare-result-list']}, childIsNotMultiple)
+    postCountBox = extract_children_tag(soup, 'div', {'class' : ['sch-result-wrap compare-result-list']}, DataStatus.not_multiple)
     postCount = extract_numbers_in_text(
             extract_text(
-            extract_children_tag(postCountBox, 'div', {'class' : 'l'}, childIsNotMultiple)
+            extract_children_tag(postCountBox, 'div', {'class' : 'l'}, DataStatus.not_multiple)
         )
     )
-    if postCount < var['pageCount'] * 12 :
+    if postCount < var['page_count'] * 12 :
         return 'endpoint'
 
-    post_list_box = extract_children_tag(soup, "div", {"class" : "result-list-box"}, childIsNotMultiple)
-    post_list = extract_children_tag(post_list_box, "li", dummyAttrs, childIsMultiple)
+    post_list_box = extract_children_tag(soup, "div", {"class" : "result-list-box"}, DataStatus.not_multiple)
+    post_list = extract_children_tag(post_list_box, "li", DataStatus.empty_attrs, DataStatus.multiple)
     
     var['_csrf'] = extract_attrs(
-        extract_children_tag(soup, "meta", {"name" : "_csrf"}, childIsNotMultiple),
+        extract_children_tag(soup, "meta", {"name" : "_csrf"}, DataStatus.not_multiple),
         "content"
     )
     labelColorList = []
     for post in post_list:
-        var['contentsReqParams'].append(
+        var['contents_req_params'].append(
             {
                 "_csrf" : var['_csrf'],
                 "bizId" : extract_attrs(
@@ -39,12 +39,12 @@ def postListParsingProcess(**params):
                 )
             }
         ) 
-        var['postTitle'].append(
+        var['post_title'].append(
             extract_text(
                 extract_children_tag(post, "a"),
             )
         )
-        var['postSubject'].append(
+        var['post_subject'].append(
             extract_text(
                 extract_children_tag(post, "span", {"class" : "srh-cate-data"}),
             ) 
@@ -58,54 +58,54 @@ def postListParsingProcess(**params):
             'class'
         )
         if 'red-label' in badgeLabelColor:
-            var['isGoingOn'].append(True)
+            var['is_going_on'].append(True)
         else :
-            var['isGoingOn'].append(False)
+            var['is_going_on'].append(False)
             
-    valueList = [
+    value_list = [
         [_ for idx, _ in enumerate(var[key])] \
        for key \
-        in targetKeyInfo['multipleType']
+        in target_key_info['multiple_type']
     ]
 
-    result = merge_var_to_dict(targetKeyInfo['multipleType'], valueList)
+    result = merge_var_to_dict(target_key_info['multiple_type'], value_list)
     var['Cookie'] = var['response'].cookies.get_dict()['YOUTHCENTERSESSIONID']
     result.append({'Cookie' : 'YOUTHCENTERSESSIONID=' + var['Cookie']})
     return result
 
-def postContentParsingProcess(**params):
+def post_content_parsing_process(**params):
     var = reflect_params(locals(), params)
-    targetKeyInfo = {
-        'multipleType' : ['extraInfo'],
-        'singleType' : ['postTextType']
+    target_key_info = {
+        'multiple_type' : ['extra_info'],
+        'single_type' : ['post_text_type']
     }
-    var, keyList = reflect_key(var, targetKeyInfo)
+    var, key_list = reflect_key(var, target_key_info)
     soup = change_to_soup(
         var['response'].text
     )
-    infoTitle = [
+    info_title = [
         extract_text(h5) \
         for h5 \
-        in extract_children_tag(soup, 'h5', {"class" : "view_tit"}, childIsMultiple)
+        in extract_children_tag(soup, 'h5', {"class" : "view_tit"}, DataStatus.multiple)
     ]
-    infoTable = [table for table in extract_children_tag(soup, 'div', {"class" : "table_wrap"}, childIsMultiple)]
+    infoTable = [table for table in extract_children_tag(soup, 'div', {"class" : "table_wrap"}, DataStatus.multiple)]
     for tableIdx, table in enumerate(infoTable) :
-        var['extraInfo'].append({'infoTitle' : infoTitle[tableIdx]}) 
+        var['extra_info'].append({'info_title' : info_title[tableIdx]}) 
         contentsTitle = [
             extract_text(_) \
             for _ \
-            in extract_children_tag(table, 'div', {"class" : "list_tit"}, childIsMultiple)
+            in extract_children_tag(table, 'div', {"class" : "list_tit"}, DataStatus.multiple)
         ]
         contents = [
             extract_text(_) \
             for _ \
-            in extract_children_tag(table, 'div', {"class" : "list_cont"}, childIsMultiple)
+            in extract_children_tag(table, 'div', {"class" : "list_cont"}, DataStatus.multiple)
         ]
         for title, cont in zip(contentsTitle, contents):
-            infoNum = len(var['extraInfo'][tableIdx])
-            var['extraInfo'][tableIdx].update({f'info_{infoNum}' : [title, cont]})
-    var['postTextType'] = 'onlyExtraInfo'
-    valueList = [var[key] for key in keyList]
-    result = convert_merged_list_to_dict(keyList, valueList)
+            infoNum = len(var['extra_info'][tableIdx])
+            var['extra_info'][tableIdx].update({f'info_{infoNum}' : [title, cont]})
+    var['post_text_type'] = 'only_extra_info'
+    value_list = [var[key] for key in key_list]
+    result = convert_merged_list_to_dict(key_list, value_list)
     return result
         

@@ -16,51 +16,51 @@ from .parser import *
     header :
         1. Content-Type: application/x-www-form-urlencoded
     body :
-        1. "pageIndex":{pageCount}
+        1. "pageIndex":{page_count}
     required data searching point :
         header_1 : fixed
-        body_1 : pageCount
+        body_1 : page_count
 '''
 '''
     @post info
     method : GET
-    url : 'postUrl'
+    url : 'post_url'
     header :
         None
 '''
 
 isUpdate = True
-sleepSec = 3
+sleep_sec = 3
 
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelName = '기업마당'
-        self.postBoardName = '지원사업조회'
-        self.postUrl = "https://www.bizinfo.go.kr/see/seea/selectSEEA140Detail.do?pblancId={}&menuId=80001001001"
+        self.channel_name = '기업마당'
+        self.post_board_name = '지원사업조회'
+        self.post_url = "https://www.bizinfo.go.kr/see/seea/selectSEEA140Detail.do?pblancId={}&menuId=80001001001"
     
-    def scraping_process(self, channelCode, channelUrl, dateRange):
-        super().scraping_process(channelCode, channelUrl, dateRange)
-        self.additionalKeyValue.append(("Content-Type", "application/x-www-form-urlencoded"))
-        self.session = set_headers(self.session, self.additionalKeyValue, isUpdate)
+    def scraping_process(self, channel_code, channel_url, date_range):
+        super().scraping_process(channel_code, channel_url, date_range)
+        self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded"))
+        self.session = set_headers(self.session, self.additional_key_value, isUpdate)
         while True :
-            self.pageCount += 1 
+            self.page_count += 1 
             self.post_list_scraping()
-            if self.scrapingTarget :
+            if self.scraping_target :
                 self.target_contents_scraping()
                 self.collect_data()
-                self.mongo.reflect_scraped_data(self.collectedDataList)
+                self.mongo.reflect_scraped_data(self.collected_data_list)
             else:
                 break
             
-            if self.pageCount == 5 :
+            if self.page_count == 5 :
                 break
 
     def post_list_scraping(self):
         data = {
-            "pageIndex" : self.pageCount
+            "pageIndex" : self.page_count
         }
-        super().post_list_scraping(postListParsingProcess, 'post', data, sleepSec)
+        super().post_list_scraping(post_list_parsing_process, 'post', data, sleep_sec)
 
     def target_contents_scraping(self):
-        super().target_contents_scraping(postContentParsingProcess, sleepSec)
+        super().target_contents_scraping(post_content_parsing_process, sleep_sec)

@@ -11,8 +11,8 @@ todayString = now.strftime('%Y-%m-%d %H:%M:%S')
 before2WeekString = (now-timedelta(days=30)).strftime('%Y-%m-%d %H:%M:%S')
 
 class TargetDate(BaseModel):
-    startDate : str = todayString # 오늘 부터
-    endDate : str = before2WeekString # 2주 전까지
+    start_date : str = todayString # 오늘 부터
+    end_date : str = before2WeekString # 2주 전까지
 
 @app.post("/scraping-start")
 async def scraping_with_target_date(targetDate : TargetDate):
@@ -24,27 +24,27 @@ async def scraping_with_target_date(targetDate : TargetDate):
         return "날짜 입력 형식을 확인해 주세요"
 
 def check_input_date_vaildation(inputDate):
-    startDate = inputDate["startDate"]
-    endDate = inputDate["endDate"]
+    start_date = inputDate["start_date"]
+    end_date = inputDate["end_date"]
 
-    if ":" not in startDate:
-        startDate += " 23:59:59"
+    if ":" not in start_date:
+        start_date += " 23:59:59"
 
-    if ":" not in endDate:
-        endDate += " 00:00:01"
+    if ":" not in end_date:
+        end_date += " 00:00:01"
 
-    endDate = datetime.strptime(endDate, "%Y-%m-%d %H:%M:%S").isoformat()
-    startDate = datetime.strptime(startDate, "%Y-%m-%d %H:%M:%S").isoformat()
+    end_date = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S").isoformat()
+    start_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S").isoformat()
 
-    if startDate >= endDate :
+    if start_date >= end_date :
         return 'vaild'
     else :
         return
 
 @app.get('/getChannelData/')
-def get_channel_data(channelCode : str = ''):
+def get_channel_data(channel_code : str = ''):
     manager = project_manager()
-    data = manager.get_data(channelCode)
+    data = manager.get_data(channel_code)
     return data
 
 @app.get('/getTotalData')

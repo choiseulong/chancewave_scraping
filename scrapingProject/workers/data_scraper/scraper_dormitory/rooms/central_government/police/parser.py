@@ -1,49 +1,49 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
-def postListParsingProcess(**params):
-    targetKeyInfo = {
-        'multipleType' : ['postUrl', 'postTitle', 'uploader', 'uploadedTime', 'viewCount']
+def post_list_parsing_process(**params):
+    target_key_info = {
+        'multiple_type' : ['post_url', 'post_title', 'uploader', 'uploaded_time', 'view_count']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
-    trList = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
-    for tr in trList:
-        tdList = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple)
-        for tdIdx, td in enumerate(tdList):
-            tdText = extract_text(td)
-            if tdIdx == 1:
-                aTag = extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple)
-                postId = parse_onclick(extract_attrs(aTag, 'onclick'), 0)
-                var['postUrl'].append(
-                    var['postUrlFrame'].format(postId)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    tbody = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.not_multiple)
+    tr_list = extract_children_tag(tbody, 'tr', DataStatus.empty_attrs, DataStatus.multiple)
+    for tr in tr_list:
+        td_list = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple)
+        for td_idx, td in enumerate(td_list):
+            td_text = extract_text(td)
+            if td_idx == 1:
+                a_tag = extract_children_tag(td, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
+                postId = parse_onclick(extract_attrs(a_tag, 'onclick'), 0)
+                var['post_url'].append(
+                    var['post_url_frame'].format(postId)
                 )
-                var['postTitle'].append(tdText)
-            elif tdIdx == 3:
-                var['uploader'].append(tdText)
-            elif tdIdx == 4:
-                var['uploadedTime'].append(
-                    convert_datetime_string_to_isoformat_datetime(tdText)
+                var['post_title'].append(td_text)
+            elif td_idx == 3:
+                var['uploader'].append(td_text)
+            elif td_idx == 4:
+                var['uploaded_time'].append(
+                    convert_datetime_string_to_isoformat_datetime(td_text)
                 )
-            elif tdIdx == 5:
-                var['viewCount'].append(
-                    extract_numbers_in_text(tdText)
+            elif td_idx == 5:
+                var['view_count'].append(
+                    extract_numbers_in_text(td_text)
                 )
 
-    valueList = [var[key] for key in keyList]
-    result = merge_var_to_dict(keyList, valueList)
+    value_list = [var[key] for key in key_list]
+    result = merge_var_to_dict(key_list, value_list)
     # print(result)
     return result
 
-def postContentParsingProcess(**params):
-    targetKeyInfo = {
-        'singleType' : ['contact', 'postText', 'startDate', 'endDate', 'startDate2', 'endDate2'],
-        'multipleType' : ['postImageUrl']
+def post_content_parsing_process(**params):
+    target_key_info = {
+        'single_type' : ['contact', 'post_text', 'start_date', 'end_date', 'start_date2', 'end_date2'],
+        'multiple_type' : ['post_image_url']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
-    thList = extract_children_tag(tbody, 'th', dummyAttrs, childIsMultiple)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    tbody = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.not_multiple)
+    thList = extract_children_tag(tbody, 'th', DataStatus.empty_attrs, DataStatus.multiple)
     dateCount = 0
-    dateInfo = {'startDate' : '공지시작일', 'endDate' : '공지종료일', 'startDate2' : '게시시작일시', 'endDate2' : '게시종료일시'}
+    dateInfo = {'start_date' : '공지시작일', 'end_date' : '공지종료일', 'start_date2' : '게시시작일시', 'end_date2' : '게시종료일시'}
     for th in thList:
         thText = extract_text(th)
         for key in dateInfo:
@@ -54,12 +54,12 @@ def postContentParsingProcess(**params):
                 dateCount += 1
         if dateCount == 4:
             break
-    board_contents = extract_children_tag(tbody, 'div', {'class' : 'board-contents'}, childIsNotMultiple)
-    postText = extract_text(board_contents)
-    var['postText'] = clean_text(postText)
-    var['contact'] = extract_contact_numbers_from_text(postText)
-    var['postImageUrl'] = search_img_list_in_contents(board_contents, var['channelMainUrl'])
-    valueList = [var[key] for key in keyList]
-    result = convert_merged_list_to_dict(keyList, valueList)
+    board_contents = extract_children_tag(tbody, 'div', {'class' : 'board-contents'}, DataStatus.not_multiple)
+    post_text = extract_text(board_contents)
+    var['post_text'] = clean_text(post_text)
+    var['contact'] = extract_contact_numbers_from_text(post_text)
+    var['post_image_url'] = search_img_list_in_contents(board_contents, var['channel_main_url'])
+    value_list = [var[key] for key in key_list]
+    result = convert_merged_list_to_dict(key_list, value_list)
     # print(result)
     return result

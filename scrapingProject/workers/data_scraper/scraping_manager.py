@@ -9,8 +9,8 @@ checker = error_checker()
 
 class scraping_manager:
     def __init__(self):
-        self.channelUrlList = []
-        self.dateRange = []
+        self.channel_url_list = []
+        self.date_range = []
     
     def get_requests_session(
             self, 
@@ -28,34 +28,34 @@ class scraping_manager:
         config = ConfigParser()
         config.read('./workers/data_scraper/scraper_dormitory/scraper_tools/url.ini', encoding='utf-8')
         for section in config.sections():
-            sectionName = section.lower()
+            section_name = section.lower()
             for item in list(config[section].items()):
                 key = item[0] 
                 value = item[1] 
-                globals()[f'{sectionName}_{key}'] = value
+                globals()[f'{section_name}_{key}'] = value
         for key in globals():
             if 'url_' in key :
-                self.channelUrlList.append((key[4:], globals()[key]))
+                self.channel_url_list.append((key[4:], globals()[key]))
 
     def scraping_worker_job_init(self):
         self.get_channel_url()
-        for channelCode, channelUrl in self.channelUrlList:
-            groupName = extract_groupCode(channelCode)
-            roomName, channelCode = extract_roomName_and_channelCode(channelCode)
-            # job.delay(groupName, roomName, channelCode, channelUrl, self.dateRange)
+        for channel_code, channel_url in self.channel_url_list:
+            group_name = extract_groupCode(channel_code)
+            room_name, channel_code = extract_roomName_and_channelCode(channel_code)
+            # job.delay(group_name, room_name, channel_code, channel_url, self.date_range)
 
 
-            if channelCode != 'mof_0':
+            if channel_code != 'suncheon_0':
                 continue
-            print(channelCode, 'init')
-            print(groupName, roomName)
+            print(channel_code, 'init')
+            print(group_name, room_name)
             session = self.get_requests_session()
-            scraperRoomAddress = f'workers.data_scraper.scraper_dormitory.rooms.{groupName}.{roomName}.scraper'
-            scraper = importlib.import_module(scraperRoomAddress).Scraper(session)
-            scraper.scraping_process(channelCode, channelUrl, self.dateRange)
+            scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'
+            scraper = importlib.import_module(scraper_room_address).Scraper(session)
+            scraper.scraping_process(channel_code, channel_url, self.date_range)
     
     def get_date_range(self, targetDate):
-        startDate = convert_datetime_string_to_isoformat_datetime(targetDate['startDate'])
-        endDate = convert_datetime_string_to_isoformat_datetime(targetDate['endDate'])
-        self.dateRange = [startDate, endDate]
-        return self.dateRange
+        start_date = convert_datetime_string_to_isoformat_datetime(targetDate['start_date'])
+        end_date = convert_datetime_string_to_isoformat_datetime(targetDate['end_date'])
+        self.date_range = [start_date, end_date]
+        return self.date_range

@@ -1,26 +1,26 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
-def postListParsingProcess(**params):
-    targetKeyInfo = {
-        'multipleType' : ['postSubject', 'postTitle', 'contentsReqParams', 'viewCount', 'uploader', 'endDate']
+def post_list_parsing_process(**params):
+    target_key_info = {
+        'multiple_type' : ['post_subject', 'post_title', 'contents_req_params', 'view_count', 'uploader', 'end_date']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     CSRF_NONCE = extract_attrs(
-        extract_children_tag(soup, 'input', {"name" : "CSRF_NONCE"}, childIsNotMultiple),
+        extract_children_tag(soup, 'input', {"name" : "CSRF_NONCE"}, DataStatus.not_multiple),
         'value'
     )
     tagList = [
         i \
         for i \
-        in extract_children_tag(soup, 'li', {'id' : True, 'style' : True, 'class':False}, childIsMultiple)
+        in extract_children_tag(soup, 'li', {'id' : True, 'style' : True, 'class':False}, DataStatus.multiple)
         if 'liArea' in extract_attrs(i, 'id')
     ]
     for tag in tagList :
-        spanList = extract_children_tag(tag, 'span', {"class" : True}, childIsMultiple)
+        spanList = extract_children_tag(tag, 'span', {"class" : True}, DataStatus.multiple)
         for span in spanList :
             if 'ann_list_group' in extract_attrs(span, 'class')[0]:
-                var['postSubject'].append(extract_text(span))
-    var['postTitle'] = [
+                var['post_subject'].append(extract_text(span))
+    var['post_title'] = [
         extract_text(
             extract_children_tag(tag, 'a')
         ) \
@@ -39,12 +39,12 @@ def postListParsingProcess(**params):
             "searchPrefixCode" : tuple_result[0],
             "searchPostSn" : tuple_result[1]
         }
-        var['contentsReqParams'].append(reqParams)
+        var['contents_req_params'].append(reqParams)
 
-    infoIdxRoot = {1:'uploader', 2:'endDate', 3:'viewCount'}
+    infoIdxRoot = {1:'uploader', 2:'end_date', 3:'view_count'}
     for tag in tagList:
         ann_list_info = extract_children_tag(tag, 'ul', {"class" : "ann_list_info"})
-        ann_list_info_li = extract_children_tag(ann_list_info, 'li', dummyAttrs, childIsMultiple)
+        ann_list_info_li = extract_children_tag(ann_list_info, 'li', DataStatus.empty_attrs, DataStatus.multiple)
 
         for infoIdx in range(len(ann_list_info_li)) :
             if infoIdx in infoIdxRoot.keys():
@@ -56,42 +56,42 @@ def postListParsingProcess(**params):
                 var[infoIdxRoot[infoIdx]].append(
                     text
                 )
-    valueList = [var[key] for key in keyList]
-    result = merge_var_to_dict(keyList, valueList)
+    value_list = [var[key] for key in key_list]
+    result = merge_var_to_dict(key_list, value_list)
     return result
 
-def postContentParsingProcess(**params):
-    targetKeyInfo = {
-        'singleType' : ['postText', 'contact', 'postContentTarget', 'postTextType'],
-        'multipleType' : ['extraInfo']
+def post_content_parsing_process(**params):
+    target_key_info = {
+        'single_type' : ['post_text', 'contact', 'post_content_target', 'post_text_type'],
+        'multiple_type' : ['extra_info']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    var['postText'] = clean_text(
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    var['post_text'] = clean_text(
         extract_attrs(
-            extract_children_tag(soup, 'meta', {'name' : 'og:description'}, childIsNotMultiple),
+            extract_children_tag(soup, 'meta', {'name' : 'og:description'}, DataStatus.not_multiple),
             'content'
         ) 
     )
-    extraDict = {"infoTitle" : "공고 개요"}
-    table = extract_children_tag(soup, 'table', {"class" : ["tbl_gray", "mgb_10"]}, childIsNotMultiple)
+    extraDict = {"info_title" : "공고 개요"}
+    table = extract_children_tag(soup, 'table', {"class" : ["tbl_gray", "mgb_10"]}, DataStatus.not_multiple)
     
-    th = extract_children_tag(table, 'th', dummyAttrs, childIsMultiple)
-    td = extract_children_tag(table, 'td', dummyAttrs, childIsMultiple)
+    th = extract_children_tag(table, 'th', DataStatus.empty_attrs, DataStatus.multiple)
+    td = extract_children_tag(table, 'td', DataStatus.empty_attrs, DataStatus.multiple)
     for infoName, infoValue in zip(th, td):
         infoName = extract_text(infoName)
         infoValue = extract_text(infoValue)
 
         if infoName == '대상': 
-            var['postContentTarget'] += "대상:" + infoValue + ' - '
+            var['post_content_target'] += "대상:" + infoValue + ' - '
         elif infoName == '대상연령': 
-            var['postContentTarget'] += "대상연령:" + infoValue
+            var['post_content_target'] += "대상연령:" + infoValue
         elif infoName in ['담당부서', '연락처']:
             var['contact'] += infoValue + ' '
         else :
-            extraInfo = [infoName, infoValue]
-            extraDict.update({f'info_{len(extraDict)}' : extraInfo})
-    var['extraInfo'].append(extraDict)
-    var['postTextType'] = 'both'
-    valueList = [var[key] for key in keyList]
-    result = convert_merged_list_to_dict(keyList, valueList)
+            extra_info = [infoName, infoValue]
+            extraDict.update({f'info_{len(extraDict)}' : extra_info})
+    var['extra_info'].append(extraDict)
+    var['post_text_type'] = 'both'
+    value_list = [var[key] for key in key_list]
+    result = convert_merged_list_to_dict(key_list, value_list)
     return result 
