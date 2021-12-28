@@ -1,23 +1,25 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
-def postListParsingProcess(**params):
-    targetKeyInfo = {
-        'multipleType' : ['viewCount', 'postTitle', 'uploader', 'uploadedTime', 'contentsReqParams']
+def post_list_parsing_process(**params):
+    target_key_info = {
+        'multiple_type' : ['view_count', 'post_title', 'uploader', 'uploaded_time', 'contents_req_params']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsMultiple)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    tbody = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.multiple)
     if len(tbody):
         tbody = tbody[1]
-    contentsBox = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
+    else :
+        return
+    contentsBox = extract_children_tag(tbody, 'tr', DataStatus.empty_attrs, DataStatus.multiple)
     for contents in contentsBox:
-        tdList = extract_children_tag(contents, 'td', dummyAttrs, childIsMultiple)
-        for tdIdx, td in enumerate(tdList):
-            tdText = extract_text(td)
-            if tdIdx == 1:
-                var['postTitle'].append(tdText) 
+        td_list = extract_children_tag(contents, 'td', DataStatus.empty_attrs, DataStatus.multiple)
+        for td_idx, td in enumerate(td_list):
+            td_text = extract_text(td)
+            if td_idx == 1:
+                var['post_title'].append(td_text) 
                 nttId = parse_href(
                     extract_attrs(
-                        extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple),
+                        extract_children_tag(td, 'a', DataStatus.empty_attrs, DataStatus.not_multiple),
                         'onclick'
                     )
                 )
@@ -27,26 +29,26 @@ def postListParsingProcess(**params):
                     "nttId" : nttId,
                     "pageIndex" : 1
                 }
-                var['contentsReqParams'].append(
+                var['contents_req_params'].append(
                     data
                 )
-            elif tdIdx == 2:
-                var['uploader'].append(tdText)
-            elif tdIdx == 3:
-                var['uploadedTime'].append(
+            elif td_idx == 2:
+                var['uploader'].append(td_text)
+            elif td_idx == 3:
+                var['uploaded_time'].append(
                     convert_datetime_string_to_isoformat_datetime(
-                        tdText
+                        td_text
                     )
                 )
-            elif tdIdx == 5 :
-                var['viewCount'].append(
-                    extract_numbers_in_text(tdText)
+            elif td_idx == 5 :
+                var['view_count'].append(
+                    extract_numbers_in_text(td_text)
                 )
             else :
                 continue
 
-    valueList = [var[key] for key in keyList]
-    result = merge_var_to_dict(keyList, valueList)
+    value_list = [var[key] for key in key_list]
+    result = merge_var_to_dict(key_list, value_list)
     return result
 
 def parse_href(text):
@@ -56,25 +58,25 @@ def parse_href(text):
     return result
 
     
-def postContentParsingProcess(**params):
-    targetKeyInfo = {
-        'singleType' : ['postText'],
-        'multipleType' : ['postImageUrl', 'contact']
+def post_content_parsing_process(**params):
+    target_key_info = {
+        'single_type' : ['post_text'],
+        'multiple_type' : ['post_image_url', 'contact']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    contents = extract_children_tag(soup, 'td', {'class' : 'bbs_content'}, childIsNotMultiple)
-    postText = extract_text(contents)
-    if postText:
-        var['postText'] = clean_text(postText)
-        var['contact'] = extract_contact_numbers_from_text(postText)
-    imgList = extract_children_tag(contents, 'img', dummyAttrs, childIsMultiple)
-    if imgList :
-        for img in imgList:
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    contents = extract_children_tag(soup, 'td', {'class' : 'bbs_content'}, DataStatus.not_multiple)
+    post_text = extract_text(contents)
+    if post_text:
+        var['post_text'] = clean_text(post_text)
+        var['contact'] = extract_contact_numbers_from_text(post_text)
+    img_list = extract_children_tag(contents, 'img', DataStatus.empty_attrs, DataStatus.multiple)
+    if img_list :
+        for img in img_list:
             href = extract_attrs(img, 'href')
             if 'http' not in href:
-                href = var['channelMainUrl'] + href
-            var['postImageUrl'].append(href)
+                href = var['channel_main_url'] + href
+            var['post_image_url'].append(href)
 
-    valueList = [var[key] for key in keyList]
-    result = convert_merged_list_to_dict(keyList, valueList)
+    value_list = [var[key] for key in key_list]
+    result = convert_merged_list_to_dict(key_list, value_list)
     return result

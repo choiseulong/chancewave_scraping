@@ -46,30 +46,30 @@ from .parser import *
 
 '''
 
-sleepSec = 3
+sleep_sec = 6
 
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelName = '창업넷'
-        self.postBoardName = '공고 및 신청'
-        self.postUrl = 'https://www.k-startup.go.kr/common/announcement/announcementDetail.do'
+        self.channel_name = '창업넷'
+        self.post_board_name = '공고 및 신청'
+        self.post_url = 'https://www.k-startup.go.kr/common/announcement/announcementDetail.do'
     
-    def scraping_process(self, channelCode, channelUrl, dateRange):
-        super().scraping_process(channelCode, channelUrl, dateRange)
+    def scraping_process(self, channel_code, channel_url, date_range):
+        super().scraping_process(channel_code, channel_url, date_range)
         self.session = set_headers(self.session)
         self.post_list_scraping()
-        if self.scrapingTarget :
+        if self.scraping_target :
             if not self.CSRF_TOKEN:
-                self.CSRF_TOKEN = self.scrapingTarget[-1]
-                del self.scrapingTarget[-1]
+                self.CSRF_TOKEN = self.scraping_target[-1]
+                del self.scraping_target[-1]
             self.target_contents_scraping()
             self.collect_data()
-            self.mongo.reflect_scraped_data(self.collectedDataList)
+            self.mongo.reflect_scraped_data(self.collected_data_list)
 
     def post_list_scraping(self):
-        super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
+        super().post_list_scraping(post_list_parsing_process, 'get', sleep_sec)
 
     def target_contents_scraping(self):
-        super().target_contents_scraping(postContentParsingProcess, sleepSec)
+        super().target_contents_scraping(post_content_parsing_process, sleep_sec)
     

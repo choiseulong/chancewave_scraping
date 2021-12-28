@@ -1,94 +1,94 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
-def postListParsingProcess(**params):
-    targetKeyInfo = {
-        'multipleType' : ['isGoingOn', 'viewCount', 'uploadedTime', 'postTitle', 'postUrl', 'uploader']
+def post_list_parsing_process(**params):
+    target_key_info = {
+        'multiple_type' : ['is_going_on', 'view_count', 'uploaded_time', 'post_title', 'post_url', 'uploader']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
-    contentsList = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    tbody = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.not_multiple)
+    contentsList = extract_children_tag(tbody, 'tr', DataStatus.empty_attrs, DataStatus.multiple)
 
     for contents in contentsList:
-        ongoingCheck = extract_children_tag(contents, 'span', {"class": ['tag color01']}, childIsNotMultiple)
-        if var['channelCode'] == 'gyeonggi_content_agency_0':
+        ongoingCheck = extract_children_tag(contents, 'span', {"class": ['tag color01']}, DataStatus.not_multiple)
+        if var['channel_code'] == 'gyeonggi_content_agency_0':
             if not ongoingCheck :
-                var['isGoingOn'].append(False)
+                var['is_going_on'].append(False)
                 # continue
             else :
-                var['isGoingOn'].append(True)
+                var['is_going_on'].append(True)
         else :
-            var['isGoingOn'].append(None)
-        viewCount = extract_children_tag(contents, 'td', {"class": "hit"}, childIsNotMultiple)
-        var['viewCount'].append(extract_numbers_in_text(extract_text(viewCount)))
-        uploadedTime = extract_children_tag(contents, 'td', {"class": "date"}, childIsNotMultiple)
-        var['uploadedTime'].append(
+            var['is_going_on'].append(None)
+        view_count = extract_children_tag(contents, 'td', {"class": "hit"}, DataStatus.not_multiple)
+        var['view_count'].append(extract_numbers_in_text(extract_text(view_count)))
+        uploaded_time = extract_children_tag(contents, 'td', {"class": "date"}, DataStatus.not_multiple)
+        var['uploaded_time'].append(
             convert_datetime_string_to_isoformat_datetime(
-                extract_text(uploadedTime).strip()
+                extract_text(uploaded_time).strip()
             )
         )
-        postTitle = extract_children_tag(contents, 'a', {"title": True}, childIsNotMultiple)
-        var['postTitle'].append(
-            extract_text(postTitle)
+        post_title = extract_children_tag(contents, 'a', {"title": True}, DataStatus.not_multiple)
+        var['post_title'].append(
+            extract_text(post_title)
         )
-        var['postUrl'].append(
-            var['channelMainUrl'] + extract_attrs(postTitle, 'href')
+        var['post_url'].append(
+            var['channel_main_url'] + extract_attrs(post_title, 'href')
         )
-        uploader = extract_children_tag(contents, 'td', {"class": "name"}, childIsNotMultiple)
+        uploader = extract_children_tag(contents, 'td', {"class": "name"}, DataStatus.not_multiple)
         var['uploader'].append(extract_text(uploader))
-    valueList = [var[key] for key in keyList]
-    result = merge_var_to_dict(keyList, valueList)
+    value_list = [var[key] for key in key_list]
+    result = merge_var_to_dict(key_list, value_list)
     return result
 
-def postContentParsingProcess(**params):
-    targetKeyInfo = {
-        'multipleType' : ['extraInfo'],
-        'singleType' : ['postTextType', 'postThumbnail']
+def post_content_parsing_process(**params):
+    target_key_info = {
+        'multiple_type' : ['extra_info'],
+        'single_type' : ['post_text_type', 'post_thumbnail']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    var['postTextType'] = 'onlyExtraInfo'
-    commBoxList = extract_children_tag(soup, 'div', {"class" : "commBox"}, childIsMultiple)
-    extraDict = {'infoTitle' : '사업 상세'}
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    var['post_text_type'] = 'only_extra_info'
+    commBoxList = extract_children_tag(soup, 'div', {"class" : "commBox"}, DataStatus.multiple)
+    extraDict = {'info_title' : '사업 상세'}
     for commBox in commBoxList:
-        ul = extract_children_tag(commBox, 'ul', dummyAttrs, childIsNotMultiple)
+        ul = extract_children_tag(commBox, 'ul', DataStatus.empty_attrs, DataStatus.not_multiple)
         if type(ul) == type(None):
             continue
-        sTlt = extract_children_tag(ul, 'div', {"class" : "sTlt"}, childIsNotMultiple)
+        sTlt = extract_children_tag(ul, 'div', {"class" : "sTlt"}, DataStatus.not_multiple)
         sTltText = extract_text(sTlt)
         sTltContentsText = extract_text(find_next_tag(sTlt))
         lenExtraDict = len(extraDict)
         extraDict.update({f'info_{lenExtraDict}' : [sTltText, sTltContentsText]})
-    var['extraInfo'].append(extraDict)
-    imgDiv = extract_children_tag(soup, 'div', {"class" : "img"}, childIsNotMultiple)
+    var['extra_info'].append(extraDict)
+    imgDiv = extract_children_tag(soup, 'div', {"class" : "img"}, DataStatus.not_multiple)
     if imgDiv:
-        var['postThumbnail'] = var['channelMainUrl'] + extract_attrs(
-            extract_children_tag(imgDiv, 'img', dummyAttrs, childIsNotMultiple),
+        var['post_thumbnail'] = var['channel_main_url'] + extract_attrs(
+            extract_children_tag(imgDiv, 'img', DataStatus.empty_attrs, DataStatus.not_multiple),
             'src'
         )
     else :
-        var['postThumbnail'] = None
+        var['post_thumbnail'] = None
 
-    valueList = [var[key] for key in keyList]
-    result = convert_merged_list_to_dict(keyList, valueList)
+    value_list = [var[key] for key in key_list]
+    result = convert_merged_list_to_dict(key_list, value_list)
     return result
 
 
 def postContentParsingProcess_other(**params):
-    targetKeyInfo = {
-        'singleType' : ['postText', 'linkedPostUrl'],
-        'multipleType' : ['postImageUrl']
+    target_key_info = {
+        'single_type' : ['post_text', 'linked_post_url'],
+        'multiple_type' : ['post_image_url']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
 
-    view_content = extract_children_tag(soup, 'div', {"class" : "view-content"}, childIsNotMultiple)
-    var['postText'] = clean_text(extract_text(view_content))
-    aTagList = extract_children_tag(view_content, 'a', {'target' : True}, childIsMultiple)
+    view_content = extract_children_tag(soup, 'div', {"class" : "view-content"}, DataStatus.not_multiple)
+    var['post_text'] = clean_text(extract_text(view_content))
+    aTagList = extract_children_tag(view_content, 'a', {'target' : True}, DataStatus.multiple)
     if aTagList:
-        for aTag in aTagList:
-            print(aTag)
-            href = extract_attrs(aTag, 'href')
+        for a_tag in aTagList:
+            print(a_tag)
+            href = extract_attrs(a_tag, 'href')
             if href :
-                var['linkedPostUrl'] += href
-    var['postImageUrl'] = search_img_list_in_contents(view_content, var['channelMainUrl'])
-    valueList = [var[key] for key in keyList]
-    result = convert_merged_list_to_dict(keyList, valueList)
+                var['linked_post_url'] += href
+    var['post_image_url'] = search_img_list_in_contents(view_content, var['channel_main_url'])
+    value_list = [var[key] for key in key_list]
+    result = convert_merged_list_to_dict(key_list, value_list)
     return result

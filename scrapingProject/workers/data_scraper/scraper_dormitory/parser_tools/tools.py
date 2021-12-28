@@ -6,40 +6,45 @@ import json
 import xmltodict
 import re
 from w3lib.html import remove_tags
+from enum import Enum
 
-childIsNotMultiple = False
-childIsMultiple = True
-dataIsUnique = 'solo'
-isNotRecursive = False
-isMultiple = True
-dummyAttrs = {}
+class StrEnum(str, Enum):
+    def __str__(self):
+        return self.value
 
-def change_to_soup(reponseText):
+class DataStatus(StrEnum):
+    not_multiple = False
+    multiple = True
+    unique = 'solo'
+    not_recursive = False
+    empty_attrs = {}
+
+def change_to_soup(reponse_text):
     try :
-        return bs(reponseText, 'html.parser')
+        return bs(reponse_text, 'html.parser')
     except UnboundLocalError as e :
-        return remove_tags(reponseText)
+        return remove_tags(reponse_text)
 
 def select_one(soup, tag):
     return soup.select_one(tag)
 
-def extract_text(tag, isMultiple=False):
+def extract_text(tag, is_multiple=False):
     try :
-        return [clean_text(_.text) for _ in tag] if isMultiple else clean_text(tag.text)
+        return [clean_text(_.text) for _ in tag] if is_multiple else clean_text(tag.text)
     except AttributeError as e :
         print(e)
         return ''
 
-def extract_contents(tag, isMultiple=False):
-    return [_.contents for _ in tag] if isMultiple else tag.contents
+def extract_contents(tag, is_multiple=False):
+    return [_.contents for _ in tag] if is_multiple else tag.contents
 
-def extract_attrs(tag, attrsName, isMultiple=False):
-    return [_[attrsName] for _ in tag] if isMultiple else tag[attrsName]
+def extract_attrs(tag, attrs_name, is_multiple=False):
+    return [_[attrs_name] for _ in tag] if is_multiple else tag[attrs_name]
 
-def extract_children_tag(parentsTag, childrenTag, childrenTagAttrs={}, childIsMultiple=False, Recursive=True):
-    return parentsTag.find_all(childrenTag, attrs=childrenTagAttrs, recursive=Recursive) \
-        if childIsMultiple \
-        else parentsTag.find(childrenTag, attrs=childrenTagAttrs, recursive=Recursive)
+def extract_children_tag(parents_tag, children_tag, children_tag_attrs={}, child_is_multiple=False, Recursive=True):
+    return parents_tag.find_all(children_tag, attrs=children_tag_attrs, recursive=Recursive) \
+        if child_is_multiple \
+        else parents_tag.find(children_tag, attrs=children_tag_attrs, recursive=Recursive)
 
 def find_next_tag(tag):
     return tag.find_next_siblings()[0]
@@ -47,69 +52,51 @@ def find_next_tag(tag):
 def find_parent_tag(tag):
     return tag.parent
 
-def decompose_tag(parentsTag, childrenTag, attrs, childIsMultiple=False):
+def decompose_tag(parents_tag, children_tag, attrs, multiple=False):
     # 유일한 attrs 를 가지는 자식 태그 삭제 기능
-    if childIsMultiple:
-        targetTag = parentsTag.find_all(childrenTag, attrs)
-        if targetTag:
-            for tag in targetTag:
+    if multiple:
+        target_tag = parents_tag.find_all(children_tag, attrs)
+        if target_tag:
+            for tag in target_tag:
                 tag.decompose()
     else :
-        targetTag = parentsTag.find(childrenTag, attrs)
-        targetTag.decompose()
-    return parentsTag
+        target_tag = parents_tag.find(children_tag, attrs)
+        target_tag.decompose()
+    return parents_tag
 
-def check_has_attrs_in_tag(tag, attrs):
-    return tag.has_attr(attrs)
-            
-def check_children_tag_existence(parentsTag, childrenTag, childrenTagAttrs={}):
-    return 'exists' if parentsTag.find(childrenTag, attrs=childrenTagAttrs) \
-        else 'not exists' 
-
-def divide_individual_value_based_on_key(keyList, valueList):
-    return [
-        {
-            key:valueList[keyIdx][dataIdx] \
-            for keyIdx, key \
-            in enumerate(keyList)
-        } \
-        for dataIdx \
-        in range(len(valueList[0]))
-    ]
-
-def split_value_list_based_on_key(keyList, valueList):
+def split_value_list_based_on_key(key_list, value_list):
     return {
-        {key : valueList[keyIdx]} \
+        {key : value_list[keyIdx]} \
         for keyIdx, key \
-        in enumerate(keyList)
+        in enumerate(key_list)
     }
 
-def convert_datetime_string_to_isoformat_datetime(datetimeString):
-    specialWord = re.sub(r'[^\.|\-|\:|\/]', '', datetimeString)
-    specialWordCount = {word:specialWord.count(word) for word in specialWord}
-    if not specialWordCount and len(datetimeString) == 8:
+def convert_datetime_string_to_isoformat_datetime(datetime_string):
+    special_word = re.sub(r'[^\.|\-|\:|\/]', '', datetime_string)
+    special_word_count = {word:special_word.count(word) for word in special_word}
+    if not special_word_count and len(datetime_string) == 8:
         # 20210101처럼 구분 특수문자가 없는 형식일 경우
-        year, month, days = datetimeString[:4], datetimeString[4:6], datetimeString[6:]
-        datetimeString = year + "-" + month + "-" + days
-        strptimeFormat = "%Y-%m-%d"
+        year, month, days = datetime_string[:4], datetime_string[4:6], datetime_string[6:]
+        datetime_string = year + "-" + month + "-" + days
+        strptime_format = "%Y-%m-%d"
     else :
         # 2021-02-14 와 같이 구분자로 특수문자가 사용된 경우
         timeFormat = ['%Y{}%m{}%d ', '%H{}%M{}%S ']
-        strptimeFormat = ''
-        for idx, key in enumerate(specialWordCount):      
-            if idx == 1 and len(datetimeString.split(' ')) == 2:
-                if '24' in datetimeString.split(' ')[1] :
-                    cleanedDate = " 00" + ''.join([':00' for _ in range(specialWordCount[key])])
-                    datetimeString = datetimeString.split(' ')[0] + cleanedDate
-            if specialWordCount[key] == 2 :
-                strptimeFormat += timeFormat[idx].format(key, key)
-            elif idx == 1 and specialWordCount[key] == 1:
-                strptimeFormat += '%H{}%M '.format(key)
+        strptime_format = ''
+        for idx, key in enumerate(special_word_count):      
+            if idx == 1 and len(datetime_string.split(' ')) == 2:
+                if '24' in datetime_string.split(' ')[1] :
+                    cleanedDate = " 00" + ''.join([':00' for _ in range(special_word_count[key])])
+                    datetime_string = datetime_string.split(' ')[0] + cleanedDate
+            if special_word_count[key] == 2 :
+                strptime_format += timeFormat[idx].format(key, key)
+            elif idx == 1 and special_word_count[key] == 1:
+                strptime_format += '%H{}%M '.format(key)
     try :
-        time = datetime.strptime(datetimeString, strptimeFormat.strip()).isoformat()
+        time = datetime.strptime(datetime_string, strptime_format.strip()).isoformat()
     except ValueError:
-        strptimeFormat = strptimeFormat.replace(strptimeFormat[1], strptimeFormat[1].lower())
-        time = datetime.strptime(datetimeString, strptimeFormat.strip()).isoformat()
+        strptime_format = strptime_format.replace(strptime_format[1], strptime_format[1].lower())
+        time = datetime.strptime(datetime_string, strptime_format.strip()).isoformat()
     return time
 
 def convert_datetime_to_isoformat(date):
@@ -117,11 +104,7 @@ def convert_datetime_to_isoformat(date):
 
 def extract_numbers_in_text(text):
     num = re.sub('[^0-9]', '', text)
-    try :
-        return int(num)
-    except Exception as e :
-        print(num)
-        return 0
+    return int(num)
 
 def extract_korean_in_text(text):
     return ' '.join(re.compile('[가-힣]+').findall(text))
@@ -129,7 +112,7 @@ def extract_korean_in_text(text):
 def erase_html_tags(text):
     return re.sub('(<([^>]+)>)', '', text)
 
-def extract_groupCode(text):
+def extract_group_code(text):
     return '_'.join(text.split('_')[:-1])
 
 def convert_multiple_empty_erea_to_one_erea(text):
@@ -137,11 +120,11 @@ def convert_multiple_empty_erea_to_one_erea(text):
 
 def clean_text(text):
     try :
-        eraseSpace = ['\r', '&lsquo;', '&rsquo;', '\u200b']
-        leaveSpace = ['\xa0', '\n', '\t', '&nbsp;']
-        for _ in eraseSpace:
+        erase_space = ['\r', '&lsquo;', '&rsquo;', '\u200b']
+        leave_space = ['\xa0', '\n', '\t', '&nbsp;']
+        for _ in erase_space:
             text = text.replace(_, '')
-        for _ in leaveSpace:
+        for _ in leave_space:
             text = text.replace(_, ' ')
         text = convert_multiple_empty_erea_to_one_erea(text)
         return text
@@ -151,8 +134,8 @@ def clean_text(text):
 def convert_response_contents_to_dict(contents):
     return xmltodict.parse(contents)
 
-def search_value_in_json_data_using_path(jsonData, path, number_of_data='multiple', reverse = False):
-    tartget_data = jsonpath_parse(path).find(jsonData)
+def search_value_in_json_data_using_path(json_data, path, number_of_data='multiple', reverse = False):
+    tartget_data = jsonpath_parse(path).find(json_data)
     result = []
     if tartget_data and number_of_data == 'solo':
         result = tartget_data[0].value
@@ -174,25 +157,25 @@ def extract_contact_numbers_from_text(in_str):
     contact_no_list = re.findall(r'(\d{2,3}[- .]?\d{3,4}[- .]?\d{4})', in_str)
     return contact_no_list
 
-def add_empty_list(local_var, keyList):
-    for key in keyList:
+def add_empty_list(local_var, key_list):
+    for key in key_list:
         local_var[key] = []
     return local_var
 
-def convert_merged_list_to_dict(keyList, valueList):
+def convert_merged_list_to_dict(key_list, value_list):
     result = {}
-    for idx, key in enumerate(keyList):
-        result.update({key : valueList[idx]})
+    for idx, key in enumerate(key_list):
+        result.update({key : value_list[idx]})
     return result
 
-def check_date_range_availability(dateRange, date):
+def check_date_range_availability(date_range, date):
     try :
-        convertedDate = convert_datetime_string_to_isoformat_datetime(date)
+        converted_date = convert_datetime_string_to_isoformat_datetime(date)
     except ValueError :
-        convertedDate = date
-    startDate = dateRange[0]
-    endDate = dateRange[1]
-    if endDate <= convertedDate <= startDate:
+        converted_date = date
+    start_date = date_range[0]
+    end_date = date_range[1]
+    if end_date <= converted_date <= start_date:
         return 'vaild'
     else :
         return 'not valid'
@@ -204,96 +187,95 @@ def convert_text_to_tuple(text):
     return ast.literal_eval(str(text))
 
 def extract_text_from_single_tag(soup, tag, attrs):
-    tag = extract_children_tag(soup, tag, attrs, childIsNotMultiple)
+    tag = extract_children_tag(soup, tag, attrs, DataStatus.not_multiple)
     text = extract_text(tag)
     return text
+
 def extract_attrs_from_single_tag(soup, tag, attrs, targetAttrs):
-    tag = extract_children_tag(soup, tag, attrs, childIsNotMultiple)
+    tag = extract_children_tag(soup, tag, attrs, DataStatus.not_multiple)
     attrs = extract_attrs(tag, targetAttrs)
     return attrs
 
 def extract_values_list_in_both_sides_bracket_text(text):
-    startIdx = text.find('(')
-    endIdx = text.rfind(')')
-    text = text[startIdx+1 : endIdx]
-    valueList = [i.replace("'", "") for i in text.split(',')]
-    return valueList
+    start_idx = text.find('(')
+    end_idx = text.rfind(')')
+    text = text[start_idx+1 : end_idx]
+    value_list = [i.replace("'", "") for i in text.split(',')]
+    return value_list
 
-def multiple_appends(valueList, *element):
-    valueList.extend(element)
-    return valueList
+def multiple_appends(value_list, *element):
+    value_list.extend(element)
+    return value_list
 
-def merge_var_to_dict(keyList, valueList, channelCode=''):
-    lenthList = [len(_) for _ in valueList]
-    if len(list(set(lenthList))) == 1:
+def merge_var_to_dict(key_list, value_list, channel_code=''):
+    lenth_list = [len(_) for _ in value_list]
+    if len(list(set(lenth_list))) == 1:
         pass
     else :
-        print(f'{channelCode} 채널 데이터 수집 에러')
-        print({i : len(k) for i, k in zip(keyList, valueList)})
+        print(f'{channel_code} 채널 데이터 수집 에러')
+        print({i : len(k) for i, k in zip(key_list, value_list)})
         return []
     result = []
-    for idx in range(len(valueList[0])):
+    for idx in range(len(value_list[0])):
         result.append(
                 {
-                key: valueList[key_idx][idx] for key_idx, key in enumerate(keyList)
+                key: value_list[key_idx][idx] for key_idx, key in enumerate(key_list)
             }
         )
     return result
 
-def extract_groupCode(text):
+def extract_group_code(text):
     # text = main_site__youthcenter_0
     return text.split('__')[0]
 
-def extract_roomName_and_channelCode(text):
+def extract_room_name_and_channel_code(text):
     # text = main_site__youthcenter_0
-    channelCode = text.split('__')[1]
-    roomName = channelCode.split('_')[0]
-    return roomName, channelCode
-
+    channel_code = text.split('__')[1]
+    room_name = channel_code.split('_')[0]
+    return room_name, channel_code
 
 def reflect_params(var, params):
     for key in params:
         var[key] = params[key]
     return var
 
-def reflect_key(var, targetKeyInfo):
-    keyList = []
-    for Type in targetKeyInfo.keys():
-        for key in targetKeyInfo[Type]:
-            keyList.append(key)
-            if Type == 'multipleType':
+def reflect_key(var, target_key_info):
+    key_list = []
+    for Type in target_key_info.keys():
+        for key in target_key_info[Type]:
+            key_list.append(key)
+            if Type == 'multiple_type':
                 var[key] = []
-            elif Type == 'singleType':
+            elif Type == 'single_type':
                 var[key] = ''
-    return var, keyList
+    return var, key_list
 
-
-def html_type_default_setting(params, targetKeyInfo):
+def html_type_default_setting(params, target_key_info):
     var = reflect_params(locals(), params)
-    var, keyList = reflect_key(var, targetKeyInfo)
+    var, key_list = reflect_key(var, target_key_info)
     # text = var['response'].text
     text = var['response'].content.decode('utf-8','replace')
     soup = change_to_soup(
         text
     )
-    return var, soup, keyList, text
+    return var, soup, key_list, text
 
-def json_type_default_setting(params, targetKeyInfo):
+def json_type_default_setting(params, target_key_info):
     var = reflect_params(locals(), params)
-    var, keyList = reflect_key(var, targetKeyInfo)
-    jsonData = json.loads(var['response'].text)
-    return var, jsonData, keyList
+    var, key_list = reflect_key(var, target_key_info)
+    json_data = json.loads(var['response'].text)
+    return var, json_data, key_list
 
 def extract_text_between_prefix_and_suffix(prefix, suffix, text):
     return text[text.find(prefix)+len(prefix):text.find(suffix)]
 
-def search_img_list_in_contents(contents, channelMainUrl):
-    imgList = extract_children_tag(contents, 'img', {'src' : True}, childIsMultiple)
+def search_img_list_in_contents(contents, channel_main_url):
+    img_list = extract_children_tag(contents, 'img', {'src' : True}, DataStatus.multiple)
     imgs = []
-    if imgList:
-        for img in imgList:
+    if img_list:
+        for img in img_list:
             src = extract_attrs(img, 'src')
             if 'http' not in src and 'base64' not in src :
-                src = channelMainUrl + src
+                src = channel_main_url + src
             imgs.append(src)
     return imgs

@@ -11,6 +11,7 @@ class mongo_server:
         self.connection = MongoClient(self.url)
         self.db = self.connection.get_database('scraping')
         self.collection = self.db.get_collection('data')
+
     
     def fine_one(self, query):
         return self.collection.find_one(query)
@@ -30,24 +31,24 @@ class mongo_server:
     def update_one(self, target_query, update_query) : 
         self.collection.update_one(target_query, update_query)
     
-    def remove_channel_data(self, channelCode):
-        self.collection.remove({'channelCode' : channelCode})
+    def remove_channel_data(self, channel_code):
+        self.collection.remove({'channel_code' : channel_code})
     
-    def reflect_scraped_data(self, collectedDataList):
+    def reflect_scraped_data(self, collected_data_list):
         bulkInsertDataList = []
-        for newData in collectedDataList:
-            postUrl = newData['postUrl']
-            channelCode = newData['channelCode']
+        for newData in collected_data_list:
+            post_url = newData['post_url']
+            channel_code = newData['channel_code']
             crc32 = make_crc(newData)
             newData['crc'] = crc32
-            beforeData = self.fine_one({'postUrl' : postUrl, "channelCode" : channelCode})
-            if beforeData and postUrl != None :
+            beforeData = self.fine_one({'post_url' : post_url, "channel_code" : channel_code})
+            if beforeData and post_url != None :
                 if beforeData['crc'] == newData['crc']:
-                    postUrl = beforeData['postUrl']
-                    self.update_checkTime(postUrl, beforeData)
+                    post_url = beforeData['post_url']
+                    self.update_checkTime(post_url, beforeData)
                     continue
                 elif beforeData['crc'] - newData['crc']:
-                    # print(f'{postUrl}\n@@ 문서 업데이트 @@')
+                    # print(f'{post_url}\n@@ 문서 업데이트 @@')
                     self.update_data_process(newData, beforeData)
             else :
                 bulkInsertDataList.append(newData)
@@ -56,26 +57,26 @@ class mongo_server:
 
     def update_data_process(self, newData, beforeData):
         now = datetime.now(timezone('Asia/Seoul')).isoformat()
-        isUpdateCheck = beforeData['isUpdateCheckTime']
+        isUpdateCheck = beforeData['is_update_check_time		']
         isUpdateCheck.append(now)
-        updatedTime = beforeData['updatedTime']
-        updatedTime.append(now)
-        newData['isUpdateCheckTime'] = isUpdateCheck
-        newData['updatedTime'] = updatedTime
+        updated_time = beforeData['updated_time']
+        updated_time.append(now)
+        newData['is_update_check_time		'] = isUpdateCheck
+        newData['updated_time'] = updated_time
         beforeDocId = beforeData['_id']
         targetQuery = {'_id' : beforeDocId}
         self.delete_and_insert(targetQuery, newData)
     
-    def update_checkTime(self, postUrl, beforeData):
+    def update_checkTime(self, post_url, beforeData):
         now = datetime.now(timezone('Asia/Seoul')).isoformat()
-        isUpdateCheck = beforeData['isUpdateCheckTime']
+        isUpdateCheck = beforeData['is_update_check_time		']
         isUpdateCheck.append(now)
-        target_query = {'postUrl' : postUrl}
-        update_query= {'$set' : {'isUpdateCheckTime' : isUpdateCheck}}
+        target_query = {'post_url' : post_url}
+        update_query= {'$set' : {'is_update_check_time		' : isUpdateCheck}}
         self.update_one(target_query, update_query)
 
-    def get_data(self, channelCode):
-        query = {"channelCode" : channelCode}
+    def get_data(self, channel_code):
+        query = {"channel_code" : channel_code}
         projection = {'_id': 0}
         data = self.find(query, projection)
         return data

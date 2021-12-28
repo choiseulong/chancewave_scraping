@@ -46,41 +46,41 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelName = '온라인청년센터'
-        self.postBoardName = '청년정책 통합검색'
-        self.postUrl = 'https://www.youthcenter.go.kr/youngPlcyUnif/youngPlcyUnifDtl.do'
+        self.channel_name = '온라인청년센터'
+        self.post_board_name = '청년정책 통합검색'
+        self.post_url = 'https://www.youthcenter.go.kr/youngPlcyUnif/youngPlcyUnifDtl.do'
 
-    def scraping_process(self, channelCode, channelUrl, dateRange):
-        super().scraping_process(channelCode, channelUrl, dateRange)
-        # self.mongo.remove_channel_data(channelCode)
-        self.pageCount = 1
+    def scraping_process(self, channel_code, channel_url, date_range):
+        super().scraping_process(channel_code, channel_url, date_range)
+        # self.mongo.remove_channel_data(channel_code)
+        self.page_count = 1
         while True :
             self.session = set_headers(self.session)
-            self.channelUrl = self.channelUrlFrame.format(self.pageCount)
+            self.channel_url = self.channel_url_frame.format(self.page_count)
             self.post_list_scraping()
-            if isinstance(self.scrapingTarget, list):
-                self.additionalKeyValue.extend(find_request_params(self.scrapingTarget, ['Cookie'])) 
-                for i in range(len(self.additionalKeyValue)):
-                    del self.scrapingTarget[-(i+1)]
-                self.additionalKeyValue.append(("Content-Type", "application/x-www-form-urlencoded "))
-                self.session = set_headers(self.session, self.additionalKeyValue, isUpdate)
+            if isinstance(self.scraping_target, list):
+                self.additional_key_value.extend(find_request_params(self.scraping_target, ['Cookie'])) 
+                for i in range(len(self.additional_key_value)):
+                    del self.scraping_target[-(i+1)]
+                self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded "))
+                self.session = set_headers(self.session, self.additional_key_value, isUpdate)
                 self.target_contents_scraping()
                 self.collect_data()
-                self.mongo.reflect_scraped_data(self.collectedDataList)
-                self.pageCount += 1
-                self.emptyPageCount = 0
+                self.mongo.reflect_scraped_data(self.collected_data_list)
+                self.page_count += 1
+                self.empty_page_count = 0
 
                 #쿠키 초기화
                 self.session.cookies.clear()
-                self.additionalKeyValue = []
-            elif self.scrapingTarget == 'endpoint' : break
+                self.additional_key_value = []
+            elif self.scraping_target == 'endpoint' : break
                 
     
     def post_list_scraping(self):
-        super().post_list_scraping(postListParsingProcess, 'get')
+        super().post_list_scraping(post_list_parsing_process, 'get')
     
     def target_contents_scraping(self):
-        super().target_contents_scraping(postContentParsingProcess)
+        super().target_contents_scraping(post_content_parsing_process)
     
 
 

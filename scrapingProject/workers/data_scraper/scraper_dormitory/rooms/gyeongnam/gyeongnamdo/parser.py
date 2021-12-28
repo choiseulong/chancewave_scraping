@@ -1,44 +1,44 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 import re
 
-def postListParsingProcess(**params):
-    targetKeyInfo = {
-        'multipleType' : ['postUrl', 'postTitle', 'uploadedTime', 'viewCount', 'uploader']
+def post_list_parsing_process(**params):
+    target_key_info = {
+        'multiple_type' : ['post_url', 'post_title', 'uploaded_time', 'view_count', 'uploader']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
-    trList = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
-    for tr in trList:
-        tdList = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple)
-        for tdIdx, td in enumerate(tdList):
-            tdText = extract_text(td)
-            if '공지' in tdText:
-                if var['pageCount'] == 1 :
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    tbody = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.not_multiple)
+    tr_list = extract_children_tag(tbody, 'tr', DataStatus.empty_attrs, DataStatus.multiple)
+    for tr in tr_list:
+        td_list = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple)
+        for td_idx, td in enumerate(td_list):
+            td_text = extract_text(td)
+            if '공지' in td_text:
+                if var['page_count'] == 1 :
                     pass
                 else :
                     continue
 
-            if tdIdx == 1 : 
-                var['postTitle'].append(tdText)
-                aTag = extract_children_tag(td, 'a', dummyAttrs, childIsNotMultiple)
-                href = extract_attrs(aTag, 'href')
+            if td_idx == 1 : 
+                var['post_title'].append(td_text)
+                a_tag = extract_children_tag(td, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
+                href = extract_attrs(a_tag, 'href')
                 postId = parse_href(href)
-                var['postUrl'].append(
-                    var['postUrlFrame'].format(postId)
+                var['post_url'].append(
+                    var['post_url_frame'].format(postId)
                 )
-            elif tdIdx == 3 :
-                var['uploader'].append(tdText)
-            elif tdIdx == 4 :
-                var['uploadedTime'].append(
-                    convert_datetime_string_to_isoformat_datetime(tdText)
+            elif td_idx == 3 :
+                var['uploader'].append(td_text)
+            elif td_idx == 4 :
+                var['uploaded_time'].append(
+                    convert_datetime_string_to_isoformat_datetime(td_text)
                 )
-            elif tdIdx == 5 :
-                var['viewCount'].append(
-                    extract_numbers_in_text(tdText)
+            elif td_idx == 5 :
+                var['view_count'].append(
+                    extract_numbers_in_text(td_text)
                 )
 
-    valueList = [var[key] for key in keyList]
-    result = merge_var_to_dict(keyList, valueList)
+    value_list = [var[key] for key in key_list]
+    result = merge_var_to_dict(key_list, value_list)
     # print(result)
     return result
 
@@ -48,14 +48,14 @@ def parse_href(text):
 
 
 
-def postContentParsingProcess(**params):
-    targetKeyInfo = {
-        'singleType' : ['contact', 'postText'],
-        'multipleType' : ['postImageUrl']
+def post_content_parsing_process(**params):
+    target_key_info = {
+        'single_type' : ['contact', 'post_text'],
+        'multiple_type' : ['post_image_url']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    titleField = extract_children_tag(soup, 'div', {'class' : 'titleField'}, childIsNotMultiple)
-    strongList = extract_children_tag(titleField, 'strong', dummyAttrs, childIsMultiple)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    titleField = extract_children_tag(soup, 'div', {'class' : 'titleField'}, DataStatus.not_multiple)
+    strongList = extract_children_tag(titleField, 'strong', DataStatus.empty_attrs, DataStatus.multiple)
     for strong in strongList:
         strongText = extract_text(strong)
         if '연락처' in strongText:
@@ -64,36 +64,36 @@ def postContentParsingProcess(**params):
             )
             break
     
-    conText = extract_children_tag(soup, 'div', {'class' : 'conText'}, childIsNotMultiple)
-    var['postText'] = clean_text(extract_text(conText))
-    var['postImageUrl'] = search_img_list_in_contents(conText, var['channelMainUrl'])
-    valueList = [var[key] for key in keyList]
-    result = convert_merged_list_to_dict(keyList, valueList)
+    conText = extract_children_tag(soup, 'div', {'class' : 'conText'}, DataStatus.not_multiple)
+    var['post_text'] = clean_text(extract_text(conText))
+    var['post_image_url'] = search_img_list_in_contents(conText, var['channel_main_url'])
+    value_list = [var[key] for key in key_list]
+    result = convert_merged_list_to_dict(key_list, value_list)
     # print(result)
     return result
 
 
 def postListParsingProcess_1(**params):
-    targetKeyInfo = {
-        'multipleType' : ['postUrl', 'postTitle', 'postImageUrl', 'postTextType'],
+    target_key_info = {
+        'multiple_type' : ['post_url', 'post_title', 'post_image_url', 'post_text_type'],
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    photoList = extract_children_tag(soup, 'div', {'class' : 'photoList'}, childIsNotMultiple)
-    aTagList = extract_children_tag(photoList, 'a', dummyAttrs, childIsMultiple)
-    for aTag in aTagList:
-        href = extract_attrs(aTag, 'href')
-        img = extract_children_tag(aTag, 'img', {'src' : True}, childIsNotMultiple)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    photoList = extract_children_tag(soup, 'div', {'class' : 'photoList'}, DataStatus.not_multiple)
+    aTagList = extract_children_tag(photoList, 'a', DataStatus.empty_attrs, DataStatus.multiple)
+    for a_tag in aTagList:
+        href = extract_attrs(a_tag, 'href')
+        img = extract_children_tag(a_tag, 'img', {'src' : True}, DataStatus.not_multiple)
         src = extract_attrs(img, 'src')
-        var['postImageUrl'].append(
-            var['channelMainUrl'] + src
+        var['post_image_url'].append(
+            var['channel_main_url'] + src
         )
-        var['postTitle'].append(
+        var['post_title'].append(
             extract_attrs(img, 'alt')
         )
-        var['postUrl'].append(href)
-        var['postTextType'].append(None)
-    valueList = [var[key] for key in keyList]
-    result = merge_var_to_dict(keyList, valueList)
+        var['post_url'].append(href)
+        var['post_text_type'].append(None)
+    value_list = [var[key] for key in key_list]
+    result = merge_var_to_dict(key_list, value_list)
     # print(result)
     return result
 

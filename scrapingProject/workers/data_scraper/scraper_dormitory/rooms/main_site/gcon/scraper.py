@@ -13,7 +13,7 @@ from .parser import *
     @post list
 
     method : GET
-    url = https://www.gcon.or.kr/busiNotice?pageNum={pageCount}&rowCnt={포스트 숫자}&menuId=MENU02369
+    url = https://www.gcon.or.kr/busiNotice?pageNum={page_count}&rowCnt={포스트 숫자}&menuId=MENU02369
     header :
         User-Agent
     required data searching point :
@@ -29,37 +29,37 @@ from .parser import *
         header_1 : fixed
 '''
 
-sleepSec = 3
+sleep_sec = 3
 
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelName = '경기콘텐츠진흥원'
-        self.postBoardName = '사업공고'
-        self.channelMainUrl = "https://www.gcon.or.kr"
+        self.channel_name = '경기콘텐츠진흥원'
+        self.post_board_name = '사업공고'
+        self.channel_main_url = "https://www.gcon.or.kr"
     
-    def scraping_process(self, channelCode, channelUrl, dateRange):
-        super().scraping_process(channelCode, channelUrl, dateRange)
+    def scraping_process(self, channel_code, channel_url, date_range):
+        super().scraping_process(channel_code, channel_url, date_range)
         self.session = set_headers(self.session)
 
-        self.pageCount = 1
+        self.page_count = 1
         while True :
-            self.channelUrl = self.channelUrlFrame.format(self.pageCount)
+            self.channel_url = self.channel_url_frame.format(self.page_count)
             self.post_list_scraping()
-            if self.scrapingTarget :
+            if self.scraping_target :
                 self.target_contents_scraping()
                 self.collect_data()
-                self.mongo.reflect_scraped_data(self.collectedDataList)
-                self.pageCount += 1
+                self.mongo.reflect_scraped_data(self.collected_data_list)
+                self.page_count += 1
             else :
                 break
 
     def post_list_scraping(self):
-        super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
+        super().post_list_scraping(post_list_parsing_process, 'get', sleep_sec)
 
     def target_contents_scraping(self):
-        if self.channelCode == 'gyeonggi_content_agency_1':
-            postContentParsingProcess = postContentParsingProcess_other
-            self.postBoardName = '교육 및 행사'
-
-        super().target_contents_scraping(postContentParsingProcess, sleepSec)
+        parsingFunc = post_content_parsing_process
+        if '1' in self.channel_code:
+            parsingFunc = postContentParsingProcess_other
+            self.post_board_name = '교육 및 행사'
+        super().target_contents_scraping(parsingFunc, sleep_sec)

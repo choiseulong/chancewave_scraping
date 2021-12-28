@@ -1,64 +1,64 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
-def postListParsingProcess(**params):
-    targetKeyInfo = {
-        'multipleType' : ['isGoingOn', 'postUrl', 'postTitle', 'contact', 'postSubject', 
-            'linkedPostUrl', 'startDate', 'endDate', 'uploadedTime',]
+def post_list_parsing_process(**params):
+    target_key_info = {
+        'multiple_type' : ['is_going_on', 'post_url', 'post_title', 'contact', 'post_subject', 
+            'linked_post_url', 'start_date', 'end_date', 'uploaded_time',]
     }
-    var, jsonData, keyList = json_type_default_setting(params, targetKeyInfo)
+    var, json_data, key_list = json_type_default_setting(params, target_key_info)
 
-    var['isGoingOn'] = [
+    var['is_going_on'] = [
         True if prgrStts == '모집중' else False \
         for prgrStts \
-        in search_value_in_json_data_using_path(jsonData, '$..prgrStts')
+        in search_value_in_json_data_using_path(json_data, '$..prgrStts')
     ]
-    if not any(var['isGoingOn']):
+    if not any(var['is_going_on']):
         # 모든 공고가 모집 완료인 시점에서 종료
         return
 
-    var['postUrl'] = [
-        var['postUrlFrame'].format(pblancId) \
+    var['post_url'] = [
+        var['post_url_frame'].format(pblancId) \
         for pblancId \
-        in search_value_in_json_data_using_path(jsonData, '$..pblancId')
+        in search_value_in_json_data_using_path(json_data, '$..pblancId')
     ]
-    var['postTitle'] = [
-        postTitle \
-        for postTitle \
-        in search_value_in_json_data_using_path(jsonData, '$..pblancNm')
+    var['post_title'] = [
+        post_title \
+        for post_title \
+        in search_value_in_json_data_using_path(json_data, '$..pblancNm')
     ]
     var['contact'] = [
         contact \
         for contact \
-        in search_value_in_json_data_using_path(jsonData, '$..refrnc')
+        in search_value_in_json_data_using_path(json_data, '$..refrnc')
     ]
-    var['postSubject'] = [
-        postSubject \
-        for postSubject \
-        in search_value_in_json_data_using_path(jsonData, '$..suplyInsttNm')
+    var['post_subject'] = [
+        post_subject \
+        for post_subject \
+        in search_value_in_json_data_using_path(json_data, '$..suplyInsttNm')
     ]
-    var['linkedPostUrl'] = [
-        linkedPostUrl \
-        for linkedPostUrl \
-        in search_value_in_json_data_using_path(jsonData, '$..url')
+    var['linked_post_url'] = [
+        linked_post_url \
+        for linked_post_url \
+        in search_value_in_json_data_using_path(json_data, '$..url')
     ]
-    var['startDate'] = [
-        parse_frstRegistDt(startDate) \
-        for startDate \
-        in search_value_in_json_data_using_path(jsonData, '$..rcritPblancDe')
+    var['start_date'] = [
+        parse_frstRegistDt(start_date) \
+        for start_date \
+        in search_value_in_json_data_using_path(json_data, '$..rcritPblancDe')
     ]
-    var['endDate'] = [
-        parse_frstRegistDt(endDate) \
-        for endDate \
-        in search_value_in_json_data_using_path(jsonData, '$..przwnerPresnatnDe')
+    var['end_date'] = [
+        parse_frstRegistDt(end_date) \
+        for end_date \
+        in search_value_in_json_data_using_path(json_data, '$..przwnerPresnatnDe')
     ]
-    var['uploadedTime'] = [
-        parse_frstRegistDt(uploadedTime)\
-        for uploadedTime \
-        in search_value_in_json_data_using_path(jsonData, '$..frstRegistDt')
+    var['uploaded_time'] = [
+        parse_frstRegistDt(uploaded_time)\
+        for uploaded_time \
+        in search_value_in_json_data_using_path(json_data, '$..frstRegistDt')
     ]
 
-    valueList = [var[key][:-1] for key in keyList]
-    result = merge_var_to_dict(keyList, valueList)
+    value_list = [var[key][:-1] for key in key_list]
+    result = merge_var_to_dict(key_list, value_list)
     return result
 
 def parse_frstRegistDt(textDate):
@@ -74,36 +74,36 @@ def parse_frstRegistDt(textDate):
     date = convert_datetime_string_to_isoformat_datetime(textDate)
     return date
 
-def postContentParsingProcess(**params):
-    targetKeyInfo = {
-        'singleType' : ['postContentTarget', 'postTextType'],
-        'multipleType' : ['extraInfo']
+def post_content_parsing_process(**params):
+    target_key_info = {
+        'single_type' : ['post_content_target', 'post_text_type'],
+        'multiple_type' : ['extra_info']
     }
-    var, soup, keyList, text = html_type_default_setting(params, targetKeyInfo)
+    var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    var['postContentTarget'] = '-'.join(
-        [extract_text(tag) for tag in extract_children_tag(soup, 'span', {'class' : 'ds'}, childIsMultiple)]
+    var['post_content_target'] = '-'.join(
+        [extract_text(tag) for tag in extract_children_tag(soup, 'span', {'class' : 'ds'}, DataStatus.multiple)]
     )
-    var['postTextType'] = 'onlyExtraInfo'
-    extraDict = {'infoTitle' : '공고 개요'}
-    div_info = extract_children_tag(soup, 'div', {'class' : 'info'}, childIsNotMultiple)
+    var['post_text_type'] = 'only_extra_info'
+    extraDict = {'info_title' : '공고 개요'}
+    div_info = extract_children_tag(soup, 'div', {'class' : 'info'}, DataStatus.not_multiple)
     for title, value in zip(
-        extract_children_tag(div_info, 'dt', dummyAttrs, childIsMultiple), 
-        extract_children_tag(div_info, 'dd', dummyAttrs, childIsMultiple), 
+        extract_children_tag(div_info, 'dt', DataStatus.empty_attrs, DataStatus.multiple), 
+        extract_children_tag(div_info, 'dd', DataStatus.empty_attrs, DataStatus.multiple), 
     ):
         title = extract_text(title)
         value = extract_text(value)
         extraDictLenth = len(extraDict)
         extraDict.update({f'info_{extraDictLenth}' : [title, value]})
-    var['extraInfo'].append(extraDict)
+    var['extra_info'].append(extraDict)
 
-    extraDict = {'infoTitle' : '단지 정보'}
+    extraDict = {'info_title' : '단지 정보'}
     addressList, firstEntryDateList = extract_info(text)
     extraDict.update({'info_0' : ['주소', addressList]})
     extraDict.update({'info_1': ['최초 입주 년월', firstEntryDateList]})
-    var['extraInfo'].append(extraDict)
-    valueList = [var[key] for key in keyList]
-    result = convert_merged_list_to_dict(keyList, valueList)
+    var['extra_info'].append(extraDict)
+    value_list = [var[key] for key in key_list]
+    result = convert_merged_list_to_dict(key_list, value_list)
     return result
 
 def extract_info(text):

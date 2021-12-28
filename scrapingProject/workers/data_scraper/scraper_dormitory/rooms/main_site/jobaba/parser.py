@@ -1,54 +1,54 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
-def postListParsingProcess(**params):
-    targetKeyInfo = {
-        'multipleType' : ['postUrl', 'postTitle', 'postThumbnail', 'postContentTarget', 'startDate', 'endDate'],
+def post_list_parsing_process(**params):
+    target_key_info = {
+        'multiple_type' : ['post_url', 'post_title', 'post_thumbnail', 'post_content_target', 'start_date', 'end_date'],
     }
-    var, jsonData, keyList = json_type_default_setting(params, targetKeyInfo)
-    var['postUrl'] = [
-        var['postUrlFrame'].format(seq) \
+    var, json_data, key_list = json_type_default_setting(params, target_key_info)
+    var['post_url'] = [
+        var['post_url_frame'].format(seq) \
         for seq \
-        in search_value_in_json_data_using_path(jsonData, '$..seq')
+        in search_value_in_json_data_using_path(json_data, '$..seq')
     ]
-    var['postTitle'] = search_value_in_json_data_using_path(jsonData, '$..mainTitle')
-    var['postThumbnail'] = [
-        var['channelMainUrl'] + thumbParams \
+    var['post_title'] = search_value_in_json_data_using_path(json_data, '$..mainTitle')
+    var['post_thumbnail'] = [
+        var['channel_main_url'] + thumbParams \
         for thumbParams \
-        in search_value_in_json_data_using_path(jsonData, '$..thumbImgEncptFileNm')
+        in search_value_in_json_data_using_path(json_data, '$..thumbImgEncptFileNm')
     ]
-    var['postContentTarget'] = search_value_in_json_data_using_path(jsonData, '$..sprtTrgetDtlApi')
-    var['startDate'] = [
+    var['post_content_target'] = search_value_in_json_data_using_path(json_data, '$..sprtTrgetDtlApi')
+    var['start_date'] = [
         convert_datetime_string_to_isoformat_datetime(date) \
         for date \
-        in search_value_in_json_data_using_path(jsonData, '$..rqtBgnDe')
+        in search_value_in_json_data_using_path(json_data, '$..rqtBgnDe')
     ]
-    var['endDate'] = [
+    var['end_date'] = [
         convert_datetime_string_to_isoformat_datetime(date) \
         for date \
-        in search_value_in_json_data_using_path(jsonData, '$..rqtEndDe')
+        in search_value_in_json_data_using_path(json_data, '$..rqtEndDe')
     ]
-    valueList = [var[key] for key in keyList]
-    result = merge_var_to_dict(keyList, valueList)
+    value_list = [var[key] for key in key_list]
+    result = merge_var_to_dict(key_list, value_list)
     return result
 
-def postContentParsingProcess(**params):
-    targetKeyInfo = {
-        'singleType' : ['uploader', 'linkedPostUrl', 'postText', 'contact']
+def post_content_parsing_process(**params):
+    target_key_info = {
+        'single_type' : ['uploader', 'linked_post_url', 'post_text', 'contact']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    error_warp = extract_children_tag(soup, 'div', {"class" : "error-warp"}, childIsNotMultiple)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    error_warp = extract_children_tag(soup, 'div', {"class" : "error-warp"}, DataStatus.not_multiple)
     if error_warp :
         # 페이지는 있으나 요청에 오류가 발생한 포스트
         return 'retry'
 
-    scripts = extract_children_tag(soup, 'script', dummyAttrs, childIsMultiple)
+    scripts = extract_children_tag(soup, 'script', DataStatus.empty_attrs, DataStatus.multiple)
     if len(scripts) == 1 :
         # 모집이 마감된 포스트
         return
 
-    mainText = extract_children_tag(soup, 'div', {'class' : 'con-wrap'}, childIsNotMultiple)
+    mainText = extract_children_tag(soup, 'div', {'class' : 'con-wrap'}, DataStatus.not_multiple)
     if mainText :
-        var['postText'] = clean_text(
+        var['post_text'] = clean_text(
                 extract_text(
                 mainText
             )
@@ -58,13 +58,13 @@ def postContentParsingProcess(**params):
         return 
 
     linkedPostUrlData = extract_attrs(
-        extract_children_tag(soup, 'a', {'class' : 'homepage_go_btn'}, childIsNotMultiple),
+        extract_children_tag(soup, 'a', {'class' : 'homepage_go_btn'}, DataStatus.not_multiple),
         'onclick'
     )
-    var['linkedPostUrl'] = extract_values_list_in_both_sides_bracket_text(linkedPostUrlData)[1] if linkedPostUrlData else None
-    uploaderData = extract_children_tag(soup, 'p', {'class' : 'note'}, childIsMultiple)
+    var['linked_post_url'] = extract_values_list_in_both_sides_bracket_text(linkedPostUrlData)[1] if linkedPostUrlData else None
+    uploaderData = extract_children_tag(soup, 'p', {'class' : 'note'}, DataStatus.multiple)
     var['uploader'] = extract_text(uploaderData[1]) if uploaderData else None
-    var['contact'] = list(set(extract_contact_numbers_from_text(var['postText']) + extract_emails(var['postText'])))
-    valueList = [var[key] for key in keyList]
-    result = convert_merged_list_to_dict(keyList, valueList)
+    var['contact'] = list(set(extract_contact_numbers_from_text(var['post_text']) + extract_emails(var['post_text'])))
+    value_list = [var[key] for key in key_list]
+    result = convert_merged_list_to_dict(key_list, value_list)
     return result

@@ -1,25 +1,25 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
-def postListParsingProcess(**params):
-    targetKeyInfo = {
-        'multipleType' : ['postUrl', 'postTitle', 'startDate', 'endDate', 'uploader', 'uploadedTime', 'viewCount']
+def post_list_parsing_process(**params):
+    target_key_info = {
+        'multiple_type' : ['post_url', 'post_title', 'start_date', 'end_date', 'uploader', 'uploaded_time', 'view_count']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
-    contents_tr = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    tbody = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.not_multiple)
+    contents_tr = extract_children_tag(tbody, 'tr', DataStatus.empty_attrs, DataStatus.multiple)
     for tr in contents_tr :
-        anchor = extract_children_tag(tr, 'a', dummyAttrs, childIsNotMultiple)
-        var['postUrl'].append(
-            var['postUrlFrame'].format(
+        anchor = extract_children_tag(tr, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
+        var['post_url'].append(
+            var['post_url_frame'].format(
                     extract_params(
                        extract_attrs(anchor, 'onclick')
                 )
             )
         )
-        var['postTitle'].append(
+        var['post_title'].append(
             extract_text(anchor)
         )
-        contents_td = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple)
+        contents_td = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple)
         for idx, td in enumerate(contents_td):
             td_text = extract_text(td)
             if idx == 2:
@@ -28,23 +28,23 @@ def postListParsingProcess(**params):
                     date = [convert_datetime_string_to_isoformat_datetime(date[0]), convert_datetime_string_to_isoformat_datetime(date[1])]
                 else :
                     date = [td_text, td_text]
-                var['startDate'].append(
+                var['start_date'].append(
                     date[0]
                 )
-                var['endDate'].append(
+                var['end_date'].append(
                     date[1]
                 )
             elif idx == 3:
                 var['uploader'].append(td_text)
             elif idx == 4:
-                var['uploadedTime'].append(
+                var['uploaded_time'].append(
                     convert_datetime_string_to_isoformat_datetime(td_text)
                 )
             elif idx == 5:
-                var['viewCount'].append(extract_numbers_in_text((td_text)))
+                var['view_count'].append(extract_numbers_in_text((td_text)))
 
-    valueList = [var[key] for key in keyList]
-    result = merge_var_to_dict(keyList, valueList)
+    value_list = [var[key] for key in key_list]
+    result = merge_var_to_dict(key_list, value_list)
     return result
 
 def extract_params(text):
@@ -52,21 +52,21 @@ def extract_params(text):
     suffix = "')"
     return text[text.find(prefix)+len(prefix):text.find(suffix)]
 
-def postContentParsingProcess(**params):
-    targetKeyInfo = {
-        'singleType' : ['postSubject', 'postTextType'],
-        'multipleType' : ['extraInfo']
+def post_content_parsing_process(**params):
+    target_key_info = {
+        'single_type' : ['post_subject', 'post_text_type'],
+        'multiple_type' : ['extra_info']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    var['postTextType'] = 'onlyExtraInfo'
-    tbody_list = extract_children_tag(soup, 'tbody', dummyAttrs, childIsMultiple)
-    tr = extract_children_tag(tbody_list[0], 'tr', dummyAttrs, childIsNotMultiple) 
-    td_list = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple) 
-    var['postSubject'] = extract_text(td_list[0])
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    var['post_text_type'] = 'only_extra_info'
+    tbody_list = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.multiple)
+    tr = extract_children_tag(tbody_list[0], 'tr', DataStatus.empty_attrs, DataStatus.not_multiple) 
+    td_list = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple) 
+    var['post_subject'] = extract_text(td_list[0])
 
-    boardBusiness = extract_children_tag(soup, 'div', {"class" : "boardBusiness"}, childIsNotMultiple)
-    h4_contName = extract_children_tag(boardBusiness, 'h4', {"class" : True}, childIsMultiple)
-    extraDict = {"infoTitle" : "지원사업 상세"}
+    boardBusiness = extract_children_tag(soup, 'div', {"class" : "boardBusiness"}, DataStatus.not_multiple)
+    h4_contName = extract_children_tag(boardBusiness, 'h4', {"class" : True}, DataStatus.multiple)
+    extraDict = {"info_title" : "지원사업 상세"}
 
     for h4 in h4_contName:
         h4_text = extract_text(h4)
@@ -77,9 +77,9 @@ def postContentParsingProcess(**params):
             extraInfoLength = len(extraDict)
             extraDict.update({f'info_{extraInfoLength}' : [h4_text, next_tag_text]})
     
-    var['extraInfo'].append(extraDict)
-    valueList = [var[key] for key in keyList]
-    result = convert_merged_list_to_dict(keyList, valueList)
+    var['extra_info'].append(extraDict)
+    value_list = [var[key] for key in key_list]
+    result = convert_merged_list_to_dict(key_list, value_list)
     return result
 
 

@@ -1,27 +1,29 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
-def postListParsingProcess(**params):
-    targetKeyInfo = {
-        'multipleType' : ['postUrl', 'postTitle', 'uploadedTime', 'viewCount', 'uploader', 'postSubject']
+def post_list_parsing_process(**params):
+    target_key_info = {
+        'multiple_type' : ['post_url', 'post_title', 'uploaded_time', 'view_count', 'uploader', 'post_subject']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    liList = extract_children_tag(soup, 'li', {'class' : 'li1'}, childIsMultiple)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    liList = extract_children_tag(soup, 'li', {'class' : 'li1'}, DataStatus.multiple)
+    if not liList:
+        return
     for li in liList:
-        em = extract_children_tag(li, 'em', dummyAttrs, childIsNotMultiple)
+        em = extract_children_tag(li, 'em', DataStatus.empty_attrs, DataStatus.not_multiple)
         if em:
-            postSubject = extract_text(em)[1:-1]
+            post_subject = extract_text(em)[1:-1]
         else :
-            postSubject = ''
-        var['postSubject'].append(postSubject)
-        strong = extract_children_tag(li, 'strong', dummyAttrs, childIsNotMultiple)
-        postTitle = extract_text(strong).replace('새 글', '').replace(postSubject, '').strip()
-        var['postTitle'].append(postTitle)
-        spanList = extract_children_tag(li, 'span', {'class' : 't3'}, childIsMultiple)
+            post_subject = ''
+        var['post_subject'].append(post_subject)
+        strong = extract_children_tag(li, 'strong', DataStatus.empty_attrs, DataStatus.not_multiple)
+        post_title = extract_text(strong).replace('새 글', '').replace(post_subject, '').strip()
+        var['post_title'].append(post_title)
+        spanList = extract_children_tag(li, 'span', {'class' : 't3'}, DataStatus.multiple)
         uploader = ''
         for spanIdx, span in enumerate(spanList):
             spanText = extract_text(span)
             if spanIdx == 0:
-                var['uploadedTime'].append(
+                var['uploaded_time'].append(
                     convert_datetime_string_to_isoformat_datetime(
                         spanText
                     )
@@ -29,30 +31,30 @@ def postListParsingProcess(**params):
             elif spanIdx in [1, 2] :
                 uploader += spanText + ' '
             elif spanIdx == 3 :
-                var['viewCount'].append(
+                var['view_count'].append(
                     extract_numbers_in_text(spanText)
                 )
         var['uploader'].append(uploader)
-        aTag = extract_children_tag(li, 'a', dummyAttrs, childIsNotMultiple)
-        href = extract_attrs(aTag, 'href')
-        var['postUrl'].append(
-            var['postUrlFrame'] + href
+        a_tag = extract_children_tag(li, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
+        href = extract_attrs(a_tag, 'href')
+        var['post_url'].append(
+            var['post_url_frame'] + href
         )
             
 
-    valueList = [var[key] for key in keyList]
-    result = merge_var_to_dict(keyList, valueList)
+    value_list = [var[key] for key in key_list]
+    result = merge_var_to_dict(key_list, value_list)
     # print(result)
     return result
 
-def postContentParsingProcess(**params):
-    targetKeyInfo = {
-        'singleType' : ['contact', 'postText'],
-        'multipleType' : ['postImageUrl']
+def post_content_parsing_process(**params):
+    target_key_info = {
+        'single_type' : ['contact', 'post_text'],
+        'multiple_type' : ['post_image_url']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    info1 = extract_children_tag(soup, 'div', {'class' : 'info1'}, childIsNotMultiple)
-    dtList = extract_children_tag(info1, 'dt', dummyAttrs, childIsMultiple)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    info1 = extract_children_tag(soup, 'div', {'class' : 'info1'}, DataStatus.not_multiple)
+    dtList = extract_children_tag(info1, 'dt', DataStatus.empty_attrs, DataStatus.multiple)
     for dt in dtList:
         dtText = extract_text(dt)
         if '전화번호' in dtText:
@@ -61,13 +63,13 @@ def postContentParsingProcess(**params):
             )
             break
 
-    substance = extract_children_tag(soup, 'div', {'class' : 'substance'}, childIsNotMultiple)
-    var['postText'] = clean_text(extract_text(substance))
-    var['postImageUrl'] = search_img_list_in_contents(substance, var['channelMainUrl'])
+    substance = extract_children_tag(soup, 'div', {'class' : 'substance'}, DataStatus.not_multiple)
+    var['post_text'] = clean_text(extract_text(substance))
+    var['post_image_url'] = search_img_list_in_contents(substance, var['channel_main_url'])
     # 이미지 요청시 Referer을 header에 담아 보내야함 
-    # Referer = postUrl
-    valueList = [var[key] for key in keyList]
-    result = convert_merged_list_to_dict(keyList, valueList)
+    # Referer = post_url
+    value_list = [var[key] for key in key_list]
+    result = convert_merged_list_to_dict(key_list, value_list)
     # print(result)
     return result
 

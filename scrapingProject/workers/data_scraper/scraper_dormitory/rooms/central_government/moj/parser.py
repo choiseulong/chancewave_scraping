@@ -1,46 +1,46 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
-def postListParsingProcess(**params):
-    targetKeyInfo = {
-        'multipleType' : ['postUrl', 'postTitle', 'postSubject', 'uploadedTime', 'uploader', 'viewCount']
+def post_list_parsing_process(**params):
+    target_key_info = {
+        'multiple_type' : ['post_url', 'post_title', 'post_subject', 'uploaded_time', 'uploader', 'view_count']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    tbody = extract_children_tag(soup, 'tbody', dummyAttrs, childIsNotMultiple)
-    trList = extract_children_tag(tbody, 'tr', dummyAttrs, childIsMultiple)
-    for tr in trList:
-        trList = extract_children_tag(tr, 'td', dummyAttrs, childIsMultiple)
-        for trIdx, tr in enumerate(trList):
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    tbody = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.not_multiple)
+    tr_list = extract_children_tag(tbody, 'tr', DataStatus.empty_attrs, DataStatus.multiple)
+    for tr in tr_list:
+        tr_list = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple)
+        for trIdx, tr in enumerate(tr_list):
             trText = extract_text(tr)
             if trIdx == 1:
-                var['postTitle'].append(trText)
-                aTag = extract_children_tag(tr, 'a', dummyAttrs, childIsNotMultiple)
-                href = extract_attrs(aTag, 'href')
-                var['postUrl'].append(var['channelMainUrl'] + href)
+                var['post_title'].append(trText)
+                a_tag = extract_children_tag(tr, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
+                href = extract_attrs(a_tag, 'href')
+                var['post_url'].append(var['channel_main_url'] + href)
             elif trIdx == 2 : 
-                var['postSubject'].append(trText)
+                var['post_subject'].append(trText)
             elif trIdx == 3 :
                 var['uploader'].append(trText)
             elif trIdx == 5 :
-                var['uploadedTime'].append(
+                var['uploaded_time'].append(
                     convert_datetime_string_to_isoformat_datetime(trText)
                 )
             elif trIdx == 6 :
-                var['viewCount'].append(
+                var['view_count'].append(
                     extract_numbers_in_text(trText)
                 )
 
-    valueList = [var[key] for key in keyList]
-    result = merge_var_to_dict(keyList, valueList)
+    value_list = [var[key] for key in key_list]
+    result = merge_var_to_dict(key_list, value_list)
     # print(result)
     return result
 
-def postContentParsingProcess(**params):
-    targetKeyInfo = {
-        'singleType' : ['contact', 'postText'],
-        'multipleType' : ['postImageUrl']
+def post_content_parsing_process(**params):
+    target_key_info = {
+        'single_type' : ['contact', 'post_text'],
+        'multiple_type' : ['post_image_url']
     }
-    var, soup, keyList, _ = html_type_default_setting(params, targetKeyInfo)
-    dtList = extract_children_tag(soup, 'dt', dummyAttrs, childIsMultiple)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    dtList = extract_children_tag(soup, 'dt', DataStatus.empty_attrs, DataStatus.multiple)
     for dt in dtList:
         dtText = extract_text(dt)
         if '전화번호' in dtText:
@@ -50,10 +50,10 @@ def postContentParsingProcess(**params):
                 )
             )
             break
-    artclView = extract_children_tag(soup, 'div', {'class' : 'artclView'}, childIsNotMultiple)
-    var['postText'] = clean_text(extract_text(artclView))
-    var['postImageUrl'] = search_img_list_in_contents(artclView, var['channelMainUrl'])
-    valueList = [var[key] for key in keyList]
-    result = convert_merged_list_to_dict(keyList, valueList)
+    artclView = extract_children_tag(soup, 'div', {'class' : 'artclView'}, DataStatus.not_multiple)
+    var['post_text'] = clean_text(extract_text(artclView))
+    var['post_image_url'] = search_img_list_in_contents(artclView, var['channel_main_url'])
+    value_list = [var[key] for key in key_list]
+    result = convert_merged_list_to_dict(key_list, value_list)
     # print(result)
     return result

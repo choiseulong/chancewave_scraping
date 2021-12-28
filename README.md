@@ -16,9 +16,9 @@ url : scraping-start-with-date
 method : post  
 body : {  
     #optional  (상대적 최근 날짜)이날부터
-    "startDate" : "2021-10-26",  --> "%Y-%m-%d"  
+    "start_date" : "2021-10-26",  --> "%Y-%m-%d"  
     #optional  (상대적 과거 날짜)이날까지
-    "endDate" : "2021-10-01",  --> "%Y-%m-%d"  
+    "end_date" : "2021-10-01",  --> "%Y-%m-%d"  
 }
 
 #  
@@ -63,5 +63,5 @@ docker run -d --name rabbitmq -p 5672:5672 -p 8080:15672 --restart=unless-stoppe
 ## 데이터 사용시 참고사항
 
 ##### base64 기반 img 존재 - api 문서 내 표기
-##### img url 요청시 Referer = {postUrl}선언해야 하는 채널이 존재 
+##### img url 요청시 Referer = {post_url}선언해야 하는 채널이 존재 
 ##### gimhae_0, haman_0, hygn_0
