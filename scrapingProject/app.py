@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from workers.project_manager import project_manager
+from workers.project_manager import ProjectManager
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 from pytz import timezone
@@ -18,10 +18,16 @@ class TargetDate(BaseModel):
 async def scraping_with_target_date(targetDate : TargetDate):
     inputDate = targetDate.dict()
     if check_input_date_vaildation(inputDate) == 'vaild':
-        manager = project_manager()
+        manager = ProjectManager()
         manager.job_init_with_target_date(inputDate)
     else :
         return "날짜 입력 형식을 확인해 주세요"
+
+@app.get('/scraping-test/{channel_code}')
+def scraping_test(channel_code : str):
+    manager = ProjectManager()
+    manager.scraping_test(channel_code)
+
 
 def check_input_date_vaildation(inputDate):
     start_date = inputDate["start_date"]
@@ -43,12 +49,12 @@ def check_input_date_vaildation(inputDate):
 
 @app.get('/getChannelData/')
 def get_channel_data(channel_code : str = ''):
-    manager = project_manager()
+    manager = ProjectManager()
     data = manager.get_data(channel_code)
     return data
 
 @app.get('/getTotalData')
 def get_total_data():
-    manager = project_manager()
+    manager = ProjectManager()
     data = manager.get_data()
     return data

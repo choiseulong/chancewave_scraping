@@ -7,7 +7,7 @@ import importlib
 
 checker = error_checker()
 
-class scraping_manager:
+class ScrapingManager:
     def __init__(self):
         self.channel_url_list = []
         self.date_range = []
@@ -36,12 +36,15 @@ class scraping_manager:
         for key in globals():
             if 'url_' in key :
                 self.channel_url_list.append((key[4:], globals()[key]))
+    
+    # def scraping_test(self, channel_code):
+    #     print(channel_code)
 
     def scraping_worker_job_init(self):
         self.get_channel_url()
         for channel_code, channel_url in self.channel_url_list:
-            group_name = extract_groupCode(channel_code)
-            room_name, channel_code = extract_roomName_and_channelCode(channel_code)
+            group_name = extract_group_code(channel_code)
+            room_name, channel_code = extract_room_name_and_channel_code(channel_code)
             # job.delay(group_name, room_name, channel_code, channel_url, self.date_range)
 
 
@@ -59,3 +62,9 @@ class scraping_manager:
         end_date = convert_datetime_string_to_isoformat_datetime(targetDate['end_date'])
         self.date_range = [start_date, end_date]
         return self.date_range
+
+
+if __name__ == '__main__':
+    manager = ScrapingManager()
+    manager.get_channel_url()
+    print(manager.channel_url_list)

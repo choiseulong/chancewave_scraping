@@ -101,7 +101,7 @@ def find_key_root(keyName) :
                 if value is not None :
                     return key
 
-def enter_data_into_dataFrame(data_frame, result):
+def enter_data_into_data_frame(data_frame, result):
     for key in result:
         if key in data_frame.keys():
             data_frame[key] = result[key]

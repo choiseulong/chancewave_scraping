@@ -8,7 +8,11 @@ import re
 from w3lib.html import remove_tags
 from enum import Enum
 
-class DataStatus(Enum):
+class StrEnum(str, Enum):
+    def __str__(self):
+        return self.value
+
+class DataStatus(StrEnum):
     not_multiple = False
     multiple = True
     unique = 'solo'
@@ -60,24 +64,6 @@ def decompose_tag(parents_tag, children_tag, attrs, multiple=False):
         target_tag.decompose()
     return parents_tag
 
-def check_has_attrs_in_tag(tag, attrs):
-    return tag.has_attr(attrs)
-            
-def check_children_tag_existence(parents_tag, children_tag, children_tag_attrs={}):
-    return 'exists' if parents_tag.find(children_tag, attrs=children_tag_attrs) \
-        else 'not exists' 
-
-def divide_individual_value_based_on_key(key_list, value_list):
-    return [
-        {
-            key:value_list[keyIdx][dataIdx] \
-            for keyIdx, key \
-            in enumerate(key_list)
-        } \
-        for dataIdx \
-        in range(len(value_list[0]))
-    ]
-
 def split_value_list_based_on_key(key_list, value_list):
     return {
         {key : value_list[keyIdx]} \
@@ -126,7 +112,7 @@ def extract_korean_in_text(text):
 def erase_html_tags(text):
     return re.sub('(<([^>]+)>)', '', text)
 
-def extract_groupCode(text):
+def extract_group_code(text):
     return '_'.join(text.split('_')[:-1])
 
 def convert_multiple_empty_erea_to_one_erea(text):
@@ -204,6 +190,7 @@ def extract_text_from_single_tag(soup, tag, attrs):
     tag = extract_children_tag(soup, tag, attrs, DataStatus.not_multiple)
     text = extract_text(tag)
     return text
+
 def extract_attrs_from_single_tag(soup, tag, attrs, targetAttrs):
     tag = extract_children_tag(soup, tag, attrs, DataStatus.not_multiple)
     attrs = extract_attrs(tag, targetAttrs)
@@ -237,16 +224,15 @@ def merge_var_to_dict(key_list, value_list, channel_code=''):
         )
     return result
 
-def extract_groupCode(text):
+def extract_group_code(text):
     # text = main_site__youthcenter_0
     return text.split('__')[0]
 
-def extract_roomName_and_channelCode(text):
+def extract_room_name_and_channel_code(text):
     # text = main_site__youthcenter_0
     channel_code = text.split('__')[1]
     room_name = channel_code.split('_')[0]
     return room_name, channel_code
-
 
 def reflect_params(var, params):
     for key in params:
@@ -263,7 +249,6 @@ def reflect_key(var, target_key_info):
             elif Type == 'single_type':
                 var[key] = ''
     return var, key_list
-
 
 def html_type_default_setting(params, target_key_info):
     var = reflect_params(locals(), params)

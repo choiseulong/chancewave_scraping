@@ -6,6 +6,8 @@ def post_list_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     tbody = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.not_multiple)
+    print(type(tbody))
+    print(type(DataStatus.not_multiple))
     tr_list = extract_children_tag(tbody, 'tr', DataStatus.empty_attrs, DataStatus.multiple)
     if not tr_list :
         return
@@ -43,8 +45,8 @@ def post_list_parsing_process(**params):
         var['uploader'].append(uploader)
     value_list = [var[key] for key in key_list]
     result = merge_var_to_dict(key_list, value_list)
-    # print(result)
-    return result
+    print(result)
+    # return result
 
 def post_content_parsing_process(**params):
     target_key_info = {
