@@ -3,6 +3,11 @@ import json
 from datetime import datetime
 from pytz import timezone
 from ..parser_tools.tools import *
+import urllib3
+
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 
 def set_headers(session, additionalKeyValue=None, isUpdate=False):
     headers = {
@@ -15,7 +20,7 @@ def set_headers(session, additionalKeyValue=None, isUpdate=False):
     return session
 
 def get_method_response(session, url, sleepSec=2):
-    response = session.get(url)
+    response = session.get(url, verify=False)
     status = 'fail'
     if response.status_code == 200 :
         status = 'ok'
@@ -25,7 +30,7 @@ def get_method_response(session, url, sleepSec=2):
 def post_method_response(session, url, data={}, sleepSec=2, jsonize=False):
     if jsonize :
         data = json.dumps(data)
-    response = session.post(url, data=data)
+    response = session.post(url, data=data, verify=False)
     status = 'fail'
     if response.status_code == 200 :
         status = 'ok'
