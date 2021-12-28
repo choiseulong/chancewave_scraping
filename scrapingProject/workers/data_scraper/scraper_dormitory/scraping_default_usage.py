@@ -124,8 +124,8 @@ class Scraper(metaclass=ABCMeta):
             else :
                 post_url_can_use = True
             data_frame = get_post_data_frame(self.channel_code, self.channel_url, post_url_can_use, self.channel_name, self.post_board_name)
-            data_frame_with_target_info = enter_data_into_data_frame(data_frame, target_info)
-            data_frame_with_target_contents = enter_data_into_data_frame(data_frame_with_target_info, target_contents)
+            data_frame_with_target_info = enter_data_into_dataFrame(data_frame, target_info)
+            data_frame_with_target_contents = enter_data_into_dataFrame(data_frame_with_target_info, target_contents)
             self.collected_data_list.append(data_frame_with_target_contents)
         self.scraping_target_contents = []
         self.scraping_target = []

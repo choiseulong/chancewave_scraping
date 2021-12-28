@@ -43,7 +43,7 @@ def extract_attrs(tag, attrs_name, is_multiple=False):
 
 def extract_children_tag(parents_tag, children_tag, children_tag_attrs={}, child_is_multiple=False, Recursive=True):
     return parents_tag.find_all(children_tag, attrs=children_tag_attrs, recursive=Recursive) \
-        if child_is_multiple \
+        if DataStatus.multiple is child_is_multiple \
         else parents_tag.find(children_tag, attrs=children_tag_attrs, recursive=Recursive)
 
 def find_next_tag(tag):

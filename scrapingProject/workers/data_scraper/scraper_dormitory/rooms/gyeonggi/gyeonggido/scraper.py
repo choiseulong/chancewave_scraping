@@ -32,35 +32,35 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channelName = '경기도청'
-        self.postBoardName = '분야별 소식'
-        self.channelMainUrl = 'https://www.gg.go.kr/'
-        self.postUrl = 'https://www.gg.go.kr/bbs/boardView.do?bIdx={}&bsIdx=570&bcIdx=0&menuId=1590&isManager=false&isCharge=false&page=1'
+        self.channel_name = '경기도청'
+        self.post_board_name = '분야별 소식'
+        self.channel_main_url = 'https://www.gg.go.kr/'
+        self.post_url = 'https://www.gg.go.kr/bbs/boardView.do?bIdx={}&bsIdx=570&bcIdx=0&menuId=1590&isManager=false&isCharge=false&page=1'
 
-    def scraping_process(self, channelCode, channelUrl, dateRange):
-        super().scraping_process(channelCode, channelUrl, dateRange)
+    def scraping_process(self, channel_code, channel_url, date_range):
+        super().scraping_process(channel_code, channel_url, date_range)
         self.session = set_headers(self.session)
-        self.pageCount = 0
+        self.page_count = 0
         while True:
-            self.channelUrl = self.channelUrlFrame.format(self.pageCount)
+            self.channel_url = self.channel_url_frame.format(self.page_count)
             list_param = {
                 'bsIdx': 570,
                 'bcIdx': 0,
                 'menuId': 1590,
                 'isManager': 'false',
                 'isCharge': 'false',
-                'offset': self.pageCount * 10,
+                'offset': self.page_count * 10,
                 'limit': 10
             }
 
-            self.channelUrl = 'https://www.gg.go.kr/ajax/board/getList.do'
+            self.channel_url = 'https://www.gg.go.kr/ajax/board/getList.do'
 
-            self.post_list_scraping(postListParsingProcess, 'post', data=list_param, jsonize=False)
-            if self.scrapingTarget:
+            self.post_list_scraping(post_list_parsing_process, 'post', data=list_param, jsonize=False)
+            if self.scraping_target:
                 self.target_contents_scraping()
                 self.collect_data()
-                self.mongo.reflect_scraped_data(self.collectedDataList)
-                self.pageCount += 1
+                self.mongo.reflect_scraped_data(self.scraping_target)
+                self.page_count += 1
             else:
                 break
 
@@ -68,4 +68,4 @@ class Scraper(ABCScraper):
     #     super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
 
     def target_contents_scraping(self):
-        super().target_contents_scraping(postContentParsingProcess, sleepSec)
+        super().target_contents_scraping(post_content_parsing_process, sleepSec)
