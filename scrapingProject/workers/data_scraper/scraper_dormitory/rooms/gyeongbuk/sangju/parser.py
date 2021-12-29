@@ -10,6 +10,7 @@ def post_list_parsing_process(**params):
     for tr in tr_list :
         td_list = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple)
         uploader = ''
+        td_text = ''
         for td_idx, td in enumerate(td_list):
             td_text = extract_text(td)
             if '공지' in td_text and td_idx == 0:

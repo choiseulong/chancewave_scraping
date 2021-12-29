@@ -14,7 +14,7 @@ def post_list_parsing_process(**params):
         td_list = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple)
         uploader = ''
         td_text = ''
-        # 2021-12-29 header [번호, 제목, 첨부파일, 등록자, 등록일, 조회수]
+        # 2021-12-29 header [번호, 제목, 파일, 작성자, 조회수, 작성일]
         for td_idx, td in enumerate(td_list):
             td_text = extract_text(td)
             if '공지' in td_text and td_idx == 0:
@@ -26,18 +26,18 @@ def post_list_parsing_process(**params):
                 a_tag = extract_children_tag(td, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
                 href = extract_attrs(a_tag, 'href')
                 var['post_url'].append(
-                    var['channel_main_url'] + href
+                    var['channel_main_url'] + href 
                 )
                 var['post_title'].append(
                     td_text
                 )
             elif td_idx in [3] :
                 uploader += td_text + ' '
-            elif td_idx == 5:
+            elif td_idx == 4:
                 var['view_count'].append(
                     extract_numbers_in_text(td_text)
                 )
-            elif td_idx == 4:
+            elif td_idx == 5:
                 var['uploaded_time'].append(
                     convert_datetime_string_to_isoformat_datetime(td_text)
                 )
@@ -49,13 +49,16 @@ def post_list_parsing_process(**params):
     # print(result)
     return result
 
+def parse_href(text):
+    return text
+
 def post_content_parsing_process(**params):
     target_key_info = {
         'single_type' : ['post_text', 'contact'],
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    cont = extract_children_tag(soup, 'div', {'class' : 'board_cont'}, DataStatus.not_multiple)
+    cont = extract_children_tag(soup, 'div', {'class' : 'board-view-cont'}, DataStatus.not_multiple)
     var['post_text'] = extract_text(cont)
     var['contact'] = extract_contact_numbers_from_text(extract_text(cont))
     var['post_image_url'] = search_img_list_in_contents(cont, var['channel_main_url'])
