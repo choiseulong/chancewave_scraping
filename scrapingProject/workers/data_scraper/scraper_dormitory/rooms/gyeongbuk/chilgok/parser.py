@@ -13,11 +13,6 @@ def post_list_parsing_process(**params):
         td_list = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple)
         for td_idx, td in enumerate(td_list):
             td_text = extract_text(td)
-            # if '공지' in td_text and td_idx == 0:
-            #     if var['page_count'] == 1 :
-            #         pass
-            #     else :
-            #         break
             if td_idx == 1 :
                 a_tag = extract_children_tag(td, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
                 onclick = extract_attrs(a_tag, 'onclick')

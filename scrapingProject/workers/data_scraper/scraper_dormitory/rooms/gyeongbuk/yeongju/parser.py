@@ -16,7 +16,7 @@ def post_list_parsing_process(**params):
                 if var['page_count'] == 1 :
                     pass
                 else :
-                    continue
+                    break
             if td_idx == 2 :
                 a_tag = extract_children_tag(td, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
                 href = extract_attrs(a_tag, 'href')
@@ -34,7 +34,8 @@ def post_list_parsing_process(**params):
                 var['uploaded_time'].append(
                     convert_datetime_string_to_isoformat_datetime(td_text)
                 )
-        var['uploader'].append(uploader)
+        if '공지' not in td_text:
+            var['uploader'].append(uploader)
     value_list = [var[key] for key in key_list]
     result = merge_var_to_dict(key_list, value_list)
     # print(result)

@@ -57,11 +57,11 @@ class MongoServer:
 
     def update_data_process(self, newData, beforeData):
         now = datetime.now(timezone('Asia/Seoul')).isoformat()
-        is_update_check = beforeData['is_update_check_time		']
+        is_update_check = beforeData['is_update_check_time']
         is_update_check.append(now)
         updated_time = beforeData['updated_time']
         updated_time.append(now)
-        newData['is_update_check_time		'] = is_update_check
+        newData['is_update_check_time'] = is_update_check
         newData['updated_time'] = updated_time
         beforeDocId = beforeData['_id']
         targetQuery = {'_id' : beforeDocId}
@@ -69,10 +69,10 @@ class MongoServer:
     
     def update_checkTime(self, post_url, beforeData):
         now = datetime.now(timezone('Asia/Seoul')).isoformat()
-        is_update_check = beforeData['is_update_check_time		']
+        is_update_check = beforeData['is_update_check_time']
         is_update_check.append(now)
         target_query = {'post_url' : post_url}
-        update_query= {'$set' : {'is_update_check_time		' : is_update_check}}
+        update_query= {'$set' : {'is_update_check_time' : is_update_check}}
         self.update_one(target_query, update_query)
 
     def get_data(self, channel_code):
