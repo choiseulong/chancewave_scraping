@@ -26,13 +26,8 @@ def post_list_parsing_process(**params):
 
     value_list = [var[key] for key in key_list]
     result = merge_var_to_dict(key_list, value_list)
-    print(result)
+    # print(result)
     return result
-
-
-def parse_onclick(text):
-    return re.findall("'(.+?)'", text)[1]
-
 
 def post_content_parsing_process(**params):
     target_key_info = {
@@ -41,14 +36,14 @@ def post_content_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     content_area = extract_children_tag(soup, 'div', {'class': 's-v-board-default'},
-                                        child_is_multiple=DataStatus.not_multiple)
+                                        is_child_multiple=False)
 
     content_info_header_area = extract_children_tag(content_area, 'div', {'class': 'header'},
-                                                    child_is_multiple=DataStatus.not_multiple)
+                                                    is_child_multiple=False)
     content_info_header_list = extract_children_tag(content_info_header_area, 'dl',
-                                                    child_is_multiple=DataStatus.not_multiple)
+                                                    is_child_multiple=False)
     content_info_header_list = extract_children_tag(content_info_header_list, 'dd',
-                                                    child_is_multiple=DataStatus.multiple)
+                                                    is_child_multiple=True)
 
     for tmp_info_header in content_info_header_list:
         tmp_column = tmp_info_header.strong
@@ -63,5 +58,5 @@ def post_content_parsing_process(**params):
 
     value_list = [var[key] for key in key_list]
     result = convert_merged_list_to_dict(key_list, value_list)
-    print(result)
+    # print(result)
     return result

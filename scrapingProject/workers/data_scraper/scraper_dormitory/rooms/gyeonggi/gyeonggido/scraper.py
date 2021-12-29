@@ -59,12 +59,13 @@ class Scraper(ABCScraper):
             if self.scraping_target:
                 self.target_contents_scraping()
                 self.collect_data()
-                self.mongo.reflect_scraped_data(self.scraping_target)
+                self.mongo.reflect_scraped_data(self.collected_data_list)
                 self.page_count += 1
             else:
                 break
 
     # def post_list_scraping(self):
+    ## post 방식이라면 super().post_list_scraping(postListParsingProcess, 'post', data, sleepSec)
     #     super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
 
     def target_contents_scraping(self):
