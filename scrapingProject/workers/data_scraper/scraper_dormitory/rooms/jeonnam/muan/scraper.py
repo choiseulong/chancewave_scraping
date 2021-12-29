@@ -2,17 +2,14 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 문경시청
-
-# 타겟 : 모든 공고
-# 중단 시점 : 마지막 페이지 도달시
+# 채널 이름 : 무안군청
 
 #HTTP Request
 '''
     @post list
 
     method : GET
-    url =  https://www.gbmg.go.kr/portal/bbs/list.do?ptIdx=73&mId=0301010000&cancelUrl=%2Fportal%2Fbbs%2Flist.do%3FptIdx%3D73%26mId%3D0301010000&page={page_count}
+    url = https://www.muan.go.kr/www/openmuan/new/notice?page={pageCount}
     header :
         None
 
@@ -20,21 +17,21 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : https://www.gbmg.go.kr/portal/bbs/view.do?mId=0301010000&bIdx={postId}&ptIdx=73
+    url : self.channel_main_url + href
     header :
         None
 
 '''
-sleep_sec = 8
+sleep_sec = 4
 isUpdate = True
 
 class Scraper(ABCScraper):
+
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '문경시청'
-        self.post_board_name = '새소식'
-        self.channel_main_url = 'https://www.gbmg.go.kr'
-        self.post_url = 'https://www.gbmg.go.kr/portal/bbs/view.do?mId=0301010000&bIdx={}&ptIdx=73'
+        self.channel_name = '무안군청'
+        self.post_board_name = '공지사항'
+        self.channel_main_url = 'https://www.muan.go.kr'
         
     def scraping_process(self, channel_code, channel_url, date_range):
         super().scraping_process(channel_code, channel_url, date_range)
@@ -43,6 +40,7 @@ class Scraper(ABCScraper):
         while True :
             self.channel_url = self.channel_url_frame.format(self.page_count)
             self.post_list_scraping()
+            print(self.scraping_target)
             if self.scraping_target :
                 self.target_contents_scraping()
                 self.collect_data()

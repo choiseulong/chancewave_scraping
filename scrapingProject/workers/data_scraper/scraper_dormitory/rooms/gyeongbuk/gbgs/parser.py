@@ -48,7 +48,7 @@ def post_content_parsing_process(**params):
         var['contact'] = extract_contact_numbers_from_text(post_text)
     value_list = [var[key] for key in key_list]
     result = convert_merged_list_to_dict(key_list, value_list)
-    print(result)
+    # print(result)
     return result
 
 

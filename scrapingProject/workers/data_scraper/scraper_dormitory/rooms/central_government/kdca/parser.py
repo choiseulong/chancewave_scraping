@@ -53,7 +53,6 @@ def post_content_parsing_process(**params):
     for span in spanList:
         spanText = extract_text(span)
         if '담당부서' in spanText:
-            print(extract_text(find_next_tag(span)))
             var['uploader'] = extract_text(find_next_tag(span))
         elif '연락처' in spanText:
             var['contact'] = extract_contact_numbers_from_text(

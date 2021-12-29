@@ -18,8 +18,8 @@ def set_headers(session, additional_key_value=None, isUpdate=False):
     return session
 
 def get_method_response(session, url, sleep_sec=2):
-    response = session.get(url)
-    # response = session.get(url, verify=False)
+    # response = session.get(url)
+    response = session.get(url, verify=False)
 
     status = 'fail'
     if response.status_code == 200 :

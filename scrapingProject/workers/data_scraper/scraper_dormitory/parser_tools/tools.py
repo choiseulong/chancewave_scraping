@@ -141,8 +141,11 @@ def extract_emails(in_str):
 
 def extract_contact_numbers_from_text(in_str):
     # 텍스트에서 연락처를 찾아 list로 반환
+    contact_list = []
     contact_no_list = re.findall(r'(\d{2,3}[- .]?\d{3,4}[- .]?\d{4})', in_str)
-    return contact_no_list
+    if contact_list:
+        contact_list = list(set(contact_no_list))
+    return contact_list
 
 def convert_merged_list_to_dict(key_list, value_list):
     result = {}
@@ -168,8 +171,8 @@ def parse_onclick(text, idx=1):
 def convert_text_to_tuple(text):
     return ast.literal_eval(str(text))
 
-def extract_text_from_single_tag(soup, tag, attrs):
-    tag = extract_children_tag(soup, tag, attrs, is_child_multiple=False)
+def extract_text_from_single_tag(soup, tag, child_tag_attrs):
+    tag = extract_children_tag(soup, tag, child_tag_attrs=child_tag_attrs, is_child_multiple=False)
     text = extract_text(tag)
     return text
 

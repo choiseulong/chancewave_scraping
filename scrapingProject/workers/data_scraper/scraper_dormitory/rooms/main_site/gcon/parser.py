@@ -84,7 +84,6 @@ def postContentParsingProcess_other(**params):
     aTagList = extract_children_tag(view_content, 'a', {'target' : True}, is_child_multiple=True)
     if aTagList:
         for a_tag in aTagList:
-            print(a_tag)
             href = extract_attrs(a_tag, 'href')
             if href :
                 var['linked_post_url'] += href

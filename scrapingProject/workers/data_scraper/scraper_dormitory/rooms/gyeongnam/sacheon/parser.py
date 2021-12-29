@@ -60,7 +60,6 @@ def post_content_parsing_process(**params):
     dtList = extract_children_tag(info1, 'dt', child_tag_attrs={}, is_child_multiple=True)
     for dt in dtList :
         dtText = extract_text(dt)
-        print(dtText)
         if '연락처' in dtText:
             var['contact'] = dtText.split(':')[1].strip()
             break

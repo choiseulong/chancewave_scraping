@@ -43,7 +43,7 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['post_text', 'post_title', 'contact'],
+        'single_type' : ['post_text', 'contact'],
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)

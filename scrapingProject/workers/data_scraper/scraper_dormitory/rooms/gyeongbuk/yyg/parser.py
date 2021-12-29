@@ -15,7 +15,6 @@ def post_list_parsing_process(**params):
             if td_idx == 1 :
                 a_tag = extract_children_tag(td, 'a', child_tag_attrs={}, is_child_multiple=False)
                 href = extract_attrs(a_tag, 'href')
-                # print(href)
                 var['post_url'].append(
                     var['channel_main_url'] + href
                 )
@@ -57,7 +56,7 @@ def post_content_parsing_process(**params):
     var['post_image_url'] = search_img_list_in_contents(cont, var['channel_main_url'])
     value_list = [var[key] for key in key_list]
     result = convert_merged_list_to_dict(key_list, value_list)
-    print(result)
+    # print(result)
     return result
 
 

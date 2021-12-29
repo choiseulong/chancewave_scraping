@@ -47,8 +47,7 @@ class ScrapingManager:
             room_name, channel_code = extract_room_name_and_channel_code(channel_code)
             # job.delay(group_name, room_name, channel_code, channel_url, self.date_range)
 
-
-            if channel_code != 'nssc_0':
+            if channel_code != 'muan_0':
                 continue
             print(channel_code, 'init')
             print(group_name, room_name)

@@ -50,7 +50,6 @@ class MongoServer:
                     self.update_checkTime(post_url, before_data)
                     continue
                 elif before_data['crc'] - new_data['crc']:
-                    # print(f'{post_url}\n@@ 문서 업데이트 @@')
                     self.update_data_process(new_data, before_data)
             else :
                 bulk_insert_data_list.append(new_data)

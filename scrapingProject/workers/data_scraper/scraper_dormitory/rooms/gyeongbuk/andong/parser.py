@@ -43,7 +43,6 @@ def post_content_parsing_process(**params):
     for li in liList:
         liText = extract_text(li)
         liTextSplited = liText.split(':')[1].strip()
-        print(liText)
         if '연락처' in liText:
             var['contact'] = liTextSplited
         elif '작성자' in liText or '담당자' in liText:
@@ -64,7 +63,6 @@ def post_content_parsing_process(**params):
     var['post_image_url'] = search_img_list_in_contents(view_cont, var['channel_main_url'])
     value_list = [var[key] for key in key_list]
     result = convert_merged_list_to_dict(key_list, value_list)
-    # print(result)
     return result
 
 

@@ -7,7 +7,6 @@ def post_list_parsing_process(**params):
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
 
     tbody = extract_children_tag(soup, 'tbody', child_tag_attrs={}, is_child_multiple=False)
-    print
     tr_list = extract_children_tag(tbody, 'tr', child_tag_attrs={}, is_child_multiple=True)
     for tr in tr_list:
         viewBox = extract_children_tag(tr, 'div', {'class' : 'viewbox'}, is_child_multiple=False)
@@ -56,7 +55,6 @@ def post_content_parsing_process(**params):
     for span in spanList:
         spanText = extract_text(span)
         if '작성자' in spanText or '담당부서' in spanText:
-            # spanText = spanText.split(': ')[1]
             var['uploader'] += spanText + ' '
         elif '전화번호' in spanText:
             var['contact'] = extract_contact_numbers_from_text(spanText)
@@ -65,8 +63,6 @@ def post_content_parsing_process(**params):
         pText = extract_text(p)
         if pText:
             var['post_text'] += pText + ' '
-
-
     value_list = [var[key] for key in key_list]
     result = convert_merged_list_to_dict(key_list, value_list)
     return result
