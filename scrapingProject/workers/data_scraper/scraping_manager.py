@@ -19,6 +19,7 @@ FIDDLER_PEM_PATH = os.path.join(os.path.dirname(__file__), 'scraper_dormitory', 
 
 checker = ErrorChecker()
 
+
 class ScrapingManager:
     def __init__(self):
         self.channel_url_list = []
@@ -60,7 +61,7 @@ class ScrapingManager:
             # job.delay(group_name, room_name, channel_code, channel_url, self.date_range)
 
 
-            if channel_code != 'damyang_0':
+            if channel_code != 'suncheon_0':
                 continue
             print(channel_code, 'init')
             print(group_name, room_name)
@@ -76,13 +77,17 @@ class ScrapingManager:
         return self.date_range
 
 
+def combine_group_room_num_str(group_name, room_name, room_num):
+    return group_name + '__' + room_name + '_' + room_num
+
+
 if __name__ == '__main__':
 
     tmp_group_name = 'gyeonggi'
     tmp_room_name = 'gyeonggido'
     tmp_room_num = '0'
 
-    URL_CODE = combine_group_room_num(tmp_group_name, tmp_room_name, tmp_room_num)
+    URL_CODE = combine_group_room_num_str(tmp_group_name, tmp_room_name, tmp_room_num)
 
     config = ConfigParser()
     config.read(URL_CONFIG_INI_PATH, encoding='utf-8')
