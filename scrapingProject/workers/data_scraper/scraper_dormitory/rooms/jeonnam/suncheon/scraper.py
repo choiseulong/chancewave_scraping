@@ -34,7 +34,7 @@ class Scraper(ABCScraper):
         super().__init__(session)
         self.channel_name = '순천시청'
         self.post_board_name = '공지사항'
-        self.channel_main_url = 'https://www.suncheon.go.kr/kr/'
+        self.channel_main_url = 'https://www.suncheon.go.kr'
         self.post_url = 'https://www.suncheon.go.kr/kr/news/0001/0001'
         
     def scraping_process(self, channel_code, channel_url, date_range):
@@ -52,7 +52,7 @@ class Scraper(ABCScraper):
                 self.page_count += 1
             else :
                 break
-            
+
     def post_list_scraping(self):
         super().post_list_scraping(post_list_parsing_process, 'get', sleep_sec)
 

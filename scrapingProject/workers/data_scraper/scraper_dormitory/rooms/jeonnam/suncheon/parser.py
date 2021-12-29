@@ -43,8 +43,8 @@ def post_list_parsing_process(**params):
         var['uploader'].append(uploader)
     value_list = [var[key] for key in key_list]
     result = merge_var_to_dict(key_list, value_list)
-    print(result)
-    # return result
+    # print(result)
+    return result
 
 def post_content_parsing_process(**params):
     target_key_info = {
@@ -63,11 +63,10 @@ def post_content_parsing_process(**params):
 
     cont = extract_children_tag(soup, 'td', {'class' : 'content'}, DataStatus.not_multiple)
     var['post_text'] = extract_text(cont)
-    var['contact'] = extract_contact_numbers_from_text(extract_text(cont))
     var['post_image_url'] = search_img_list_in_contents(cont, var['channel_main_url'])
     value_list = [var[key] for key in key_list]
     result = convert_merged_list_to_dict(key_list, value_list)
-    print(result)
+    # print(result)
     return result
 
 

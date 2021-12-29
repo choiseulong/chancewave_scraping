@@ -1,4 +1,4 @@
-from workers.data_server.MongoServer import MongoServer
+from workers.data_server.mongo_server import MongoServer
 from workers.data_scraper.scraping_manager import ScrapingManager 
 
 class ProjectManager:
