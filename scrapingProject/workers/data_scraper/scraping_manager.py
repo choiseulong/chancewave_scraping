@@ -1,11 +1,11 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 from workers.scraping_scheduler.scheduler import job
 from configparser import ConfigParser
-from workers.error_checker.checker import error_checker
+from workers.error_checker.checker import ErrorChecker
 import requests as req
 import importlib
 
-checker = error_checker()
+checker = ErrorChecker()
 
 class ScrapingManager:
     def __init__(self):

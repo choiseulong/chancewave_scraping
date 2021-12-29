@@ -1,4 +1,4 @@
-from workers.data_server.mongo_server import mongo_server
+from workers.data_server.mongo_server import MongoServer
 from .scraper_tools.tools import *
 from .parser_tools.tools import *
 import json
@@ -36,7 +36,7 @@ class Scraper(metaclass=ABCMeta):
         '''
             스크래핑 진행의 틀을 작성함
         '''
-        self.mongo = mongo_server()
+        self.mongo = MongoServer()
         self.date_range = date_range
         self.channel_code = channel_code
         self.channel_url = channel_url

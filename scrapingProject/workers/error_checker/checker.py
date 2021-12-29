@@ -1,7 +1,7 @@
 from enum import Enum
 from requests.exceptions import *
 
-class ERROR_CODE(Enum):
+class ErrorCode(Enum):
     SUCCESS = 0x000000
     CRITICAL_ERROR = 0xFFFFFF
 
@@ -13,34 +13,34 @@ class ERROR_CODE(Enum):
     DOCUMENT_TOO_LARGE = 0xE0102
     DUPLICATE_KEY_ERROR = 0xE0103
 
-class error_checker:
+class ErrorChecker:
     def __init__(self):
         self.exceptionFullText = ''
     
     def is_handling(self, exceptionFullText, exceptionClass):
         self.exceptionFullText = exceptionFullText
 
-        if exceptionClass in dir(ERROR_CODE):
+        if exceptionClass in dir(ErrorCode):
             something = globals()[exceptionClass].say.value
         else :
-            something = globals()[UNCHECKED_ERROR].say.value
+            something = globals()[UnchecedError].say.value
         return something
 
-class UNCHECKED_ERROR(Enum):
+class UnchecedError(Enum):
     say = '** Unidentified ERROR : {} **'
 
-class CONNECTION_ERROR(Enum):
+class ConnectionError(Enum):
     say = 'Request Connection Error : {}'
 
-class BULK_WRITE_ERROR(Enum):
+class BulkWriteError(Enum):
     say = 'DB Bulk Insert Error : {}'
 
-class DOCUMENT_TOO_LARGE(Enum):
+class DocumentTooLargeError(Enum):
     say = 'DB Document Size Error : {}'
 
-class DUPLICATE_KEY_ERROR(Enum):
+class DuplicateKeyError(Enum):
     say = 'DB Duplicate Key Error : {}'
 
-class PARSINNG_ATTRIBUTE_ERROR(Enum):
+class ParsingAttributeError(Enum):
     say = 'Parser Attribute Error : {}'
     

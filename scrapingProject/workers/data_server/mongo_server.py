@@ -4,14 +4,14 @@ from .tools import *
 from datetime import datetime
 import traceback
 
-class mongo_server:
+class MongoServer:
+
     def __init__(self):
         self.url = 'mongodb://admin:mysterico@k8s.mysterico.com:31489'
         # self.url = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/'
         self.connection = MongoClient(self.url)
         self.db = self.connection.get_database('scraping')
         self.collection = self.db.get_collection('data')
-
     
     def fine_one(self, query):
         return self.collection.find_one(query)
@@ -57,11 +57,11 @@ class mongo_server:
 
     def update_data_process(self, newData, beforeData):
         now = datetime.now(timezone('Asia/Seoul')).isoformat()
-        isUpdateCheck = beforeData['is_update_check_time		']
-        isUpdateCheck.append(now)
+        is_update_check = beforeData['is_update_check_time		']
+        is_update_check.append(now)
         updated_time = beforeData['updated_time']
         updated_time.append(now)
-        newData['is_update_check_time		'] = isUpdateCheck
+        newData['is_update_check_time		'] = is_update_check
         newData['updated_time'] = updated_time
         beforeDocId = beforeData['_id']
         targetQuery = {'_id' : beforeDocId}
@@ -69,10 +69,10 @@ class mongo_server:
     
     def update_checkTime(self, post_url, beforeData):
         now = datetime.now(timezone('Asia/Seoul')).isoformat()
-        isUpdateCheck = beforeData['is_update_check_time		']
-        isUpdateCheck.append(now)
+        is_update_check = beforeData['is_update_check_time		']
+        is_update_check.append(now)
         target_query = {'post_url' : post_url}
-        update_query= {'$set' : {'is_update_check_time		' : isUpdateCheck}}
+        update_query= {'$set' : {'is_update_check_time		' : is_update_check}}
         self.update_one(target_query, update_query)
 
     def get_data(self, channel_code):

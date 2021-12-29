@@ -29,6 +29,7 @@ sleep_sec = 2
 isUpdate = True
 
 class Scraper(ABCScraper):
+
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '순천시청'
@@ -51,13 +52,7 @@ class Scraper(ABCScraper):
                 self.page_count += 1
             else :
                 break
-    
-    # def set_jsessionid(self):
-    #     status, response = get_method_response(self.session, self.channel_main_url)
-    #     cookies = response.cookies.get_dict()
-    #     JSESSIONID = cookies['JSESSIONID']
-    #     self.channel_url_frame = self.channel_url_frame.format(JSESSIONID, '{}')
-
+            
     def post_list_scraping(self):
         super().post_list_scraping(post_list_parsing_process, 'get', sleep_sec)
 
