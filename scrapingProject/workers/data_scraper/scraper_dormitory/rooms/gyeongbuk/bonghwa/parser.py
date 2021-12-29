@@ -12,11 +12,6 @@ def post_list_parsing_process(**params):
         uploader = ''
         for td_idx, td in enumerate(td_list):
             td_text = extract_text(td)
-            # if '공지' in td_text and td_idx == 0:
-            #     if var['page_count'] == 1 :
-            #         pass
-            #     else :
-            #         continue
             if td_idx == 2 :
                 a_tag = extract_children_tag(td, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
                 href = extract_attrs(a_tag, 'href')

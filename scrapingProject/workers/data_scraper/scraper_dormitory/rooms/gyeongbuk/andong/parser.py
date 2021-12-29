@@ -18,7 +18,7 @@ def post_list_parsing_process(**params):
                 if var['page_count'] == 1 :
                     pass
                 else :
-                    continue
+                    break
             if td_idx == 1 :
                 a_tag = extract_children_tag(td, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
                 href = extract_attrs(a_tag, 'data-action')

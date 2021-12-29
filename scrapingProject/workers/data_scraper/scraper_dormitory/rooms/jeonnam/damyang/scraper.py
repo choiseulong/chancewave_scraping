@@ -2,17 +2,15 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 순천시청
-
-# 타겟 : 모든 공고
-# 중단 시점 : 마지막 페이지 도달시
+# 채널 이름 : 담양군청
 
 #HTTP Request
 '''
     @post list
 
     method : GET
-    url = https://www.mokpo.go.kr/www/open_administration/city_news/notice?page={page_count}
+    url = http://www.damyang.go.kr/board/list.damyang?boardId=BBS_0000001&listRow=10&\
+        listCel=1&menuCd=DOM_000000104001000000&paging=ok&startPage={pageCount}
     header :
         None
 
@@ -20,22 +18,21 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : self.channel_main_url + {href}
+    url : self.channel_main_url + href
     header :
         None
 
 '''
-sleep_sec = 2
+sleep_sec = 4
 isUpdate = True
 
 class Scraper(ABCScraper):
 
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '순천시청'
+        self.channel_name = '담양군청'
         self.post_board_name = '공지사항'
-        self.channel_main_url = 'https://www.suncheon.go.kr'
-        self.post_url = 'https://www.suncheon.go.kr/kr/news/0001/0001'
+        self.channel_main_url = 'http://www.damyang.go.kr'
         
     def scraping_process(self, channel_code, channel_url, date_range):
         super().scraping_process(channel_code, channel_url, date_range)

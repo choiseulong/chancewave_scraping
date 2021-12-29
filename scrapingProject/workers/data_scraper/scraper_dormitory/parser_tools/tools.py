@@ -6,13 +6,8 @@ import json
 import xmltodict
 import re
 from w3lib.html import remove_tags
-from enum import Enum
 
-class StrEnum(str, Enum):
-    def __str__(self):
-        return self.value
-
-class DataStatus(StrEnum):
+class DataStatus():
     not_multiple = False
     multiple = True
     unique = 'solo'
@@ -25,14 +20,11 @@ def change_to_soup(reponse_text):
     except UnboundLocalError as e :
         return remove_tags(reponse_text)
 
-def select_one(soup, tag):
-    return soup.select_one(tag)
-
 def extract_text(tag, is_multiple=False):
     try :
         return [clean_text(_.text) for _ in tag] if is_multiple else clean_text(tag.text)
     except AttributeError as e :
-        print(e)
+        print(e, '\n', tag)
         return ''
 
 def extract_contents(tag, is_multiple=False):

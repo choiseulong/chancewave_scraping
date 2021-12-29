@@ -10,13 +10,14 @@ def post_list_parsing_process(**params):
     for tr in tr_list :
         td_list = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple)
         uploader = ''
+        td_text = ''
         for td_idx, td in enumerate(td_list):
             td_text = extract_text(td)
             if '공지' in td_text and td_idx == 0:
                 if var['page_count'] == 1 :
                     pass
                 else :
-                    continue
+                    break
             if td_idx == 1 :
                 a_tag = extract_children_tag(td, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
                 onclick = extract_attrs(a_tag, 'onclick')
@@ -39,7 +40,8 @@ def post_list_parsing_process(**params):
                 var['uploaded_time'].append(
                     convert_datetime_string_to_isoformat_datetime(td_text)
                 )
-        var['uploader'].append(uploader)
+        if '공지' not in td_text:
+            var['uploader'].append(uploader)
     value_list = [var[key] for key in key_list]
     result = merge_var_to_dict(key_list, value_list)
     # print(result)

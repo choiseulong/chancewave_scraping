@@ -1,4 +1,4 @@
-from workers.data_server.mongo_server import mongo_server
+from workers.data_server.mongo_server import MongoServer
 from workers.data_scraper.scraping_manager import ScrapingManager 
 
 class ProjectManager:
@@ -11,7 +11,7 @@ class ProjectManager:
         self.scraping_manager.scraping_worker_job_init()
     
     def get_data(self, channel_code=''):
-        mongo = mongo_server()
+        mongo = MongoServer()
         if channel_code:
             data = mongo.get_data(channel_code)
         else :
