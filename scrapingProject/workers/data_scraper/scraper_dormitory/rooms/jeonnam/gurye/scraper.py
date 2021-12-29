@@ -2,14 +2,15 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 곡성군청
+# 채널 이름 : 구례군청
 
 #HTTP Request
 '''
     @post list
 
     method : GET
-    url = https://www.gokseong.go.kr/main/?pid=435&page={pageCount}
+    url = https://www.gurye.go.kr/board/list.do;gurye.go.kr=2BDDE38561D7B54E4DEC94C93860235A?\
+        bbsId=BBS_0000000000000056&menuNo=115004001000&pageIndex={pageCount}
     header :
         None
 
@@ -29,9 +30,9 @@ class Scraper(ABCScraper):
 
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '곡성군청'
+        self.channel_name = '구례군청'
         self.post_board_name = '공지사항'
-        self.channel_main_url = 'https://www.gokseong.go.kr'
+        self.channel_main_url = 'https://www.gurye.go.kr'
         
     def scraping_process(self, channel_code, channel_url, date_range):
         super().scraping_process(channel_code, channel_url, date_range)
