@@ -7,6 +7,7 @@ import re
 from w3lib.html import remove_tags
 
 def change_to_soup(reponse_text):
+    # response.text 를 soup로 변환
     try :
         soup = bs(reponse_text, 'html.parser')
         return soup
@@ -98,14 +99,13 @@ def convert_datetime_string_to_isoformat_datetime(datetime_string):
     return time
 
 def extract_numbers_in_text(text):
+    # 텍스트에서 숫자만 추출해서 숫자를 반환
     num = re.sub('[^0-9]', '', text)
     return int(num)
 
 def erase_html_tags(text):
+    # 텍스트에서 html 태그를 제거하고 텍스트를 반환
     return re.sub('(<([^>]+)>)', '', text)
-
-def extract_group_code(text):
-    return '_'.join(text.split('_')[:-1])
 
 def clean_text(text):
     try :
@@ -140,6 +140,7 @@ def extract_emails(in_str):
         return []
 
 def extract_contact_numbers_from_text(in_str):
+    # 텍스트에서 연락처를 찾아 list로 반환
     contact_no_list = re.findall(r'(\d{2,3}[- .]?\d{3,4}[- .]?\d{4})', in_str)
     return contact_no_list
 
@@ -180,6 +181,8 @@ def extract_values_list_in_both_sides_bracket_text(text):
     return value_list
 
 def merge_var_to_dict(key_list, value_list, channel_code=''):
+    # parser.py에서 포스트에 대한 정보를 key:value 꼴로 맵핑하는 기능
+    # 수집된 데이터의 개수가 상이할 경우 빈 리스트를 반환하고 해당 데이터별 개수를 print 함 
     lenth_list = [len(_) for _ in value_list]
     if len(list(set(lenth_list))) == 1:
         pass
@@ -198,10 +201,13 @@ def merge_var_to_dict(key_list, value_list, channel_code=''):
 
 def extract_group_code(text):
     # text = main_site__youthcenter_0
-    return text.split('__')[0]
+    # scraping_manager.py 에서 폴더 경로를 찾기위한 기능의 일부
+    group_code = text.split('__')[0]
+    return group_code
 
 def extract_room_name_and_channel_code(text):
     # text = main_site__youthcenter_0
+    # scraping_manager.py 에서 폴더 경로를 찾기위한 기능의 일부
     channel_code = text.split('__')[1]
     room_name = channel_code.split('_')[0]
     return room_name, channel_code
@@ -212,6 +218,20 @@ def reflect_params(var, params):
     return var
 
 def reflect_key(var, target_key_info):
+    # 데이터를 담을 빈 리스트 혹은 공백 문자열을 만드는 기능
+    # 더미 데이터와 key list 를 함께 반환
+    '''
+        target_key_info = {
+            'single_type' : ['post_text', 'post_title', 'contact'],
+            'multiple_type' : ['post_image_url']
+        }
+        인 경우 
+        var['post_text'] = ''
+        var['post_title'] = ''
+        var['contact'] = ''
+        var['post_image_url'] = []
+        를 var 에 포함시킴
+    '''
     key_list = []
     for Type in target_key_info.keys():
         for key in target_key_info[Type]:
@@ -223,6 +243,13 @@ def reflect_key(var, target_key_info):
     return var, key_list
 
 def html_type_default_setting(params, target_key_info):
+    # 데이터가 제공되는 방식이 html인 경우에 사용함
+    # 해당 요청 데이터에서 어떤 key값을 찾을지를 넘겨받아
+    # 해당 key 값의 더미데이터 형식을 var 에 담아 반환함
+    # soup 는 BeautifulSoup 객체
+    # key_list 는 수집할 대상이 될 key list 
+    # text 의 경우 response.text 를 그대로 반환하며, 
+    # BeautifulSoup 객체에서 데이터를 파싱할 수 없을 경우 사용함
     var = reflect_params(locals(), params)
     var, key_list = reflect_key(var, target_key_info)
     # text = var['response'].text
@@ -239,9 +266,15 @@ def json_type_default_setting(params, target_key_info):
     return var, json_data, key_list
 
 def extract_text_between_prefix_and_suffix(prefix, suffix, text):
+    # 주로 post_url 구성시 post_id 를 찾기위해서 href를 parsing할 경우에 사용함
+    # text 에서 prefix 문자와 suffix 문자 사이의 값을 반환함
     return text[text.find(prefix)+len(prefix):text.find(suffix)]
 
 def search_img_list_in_contents(contents, channel_main_url):
+    # 흔히 사용되는 이미지 리스트 추출 로직
+    # 포스트 내용('post_text')이 담긴 tag 내부에서 img tag를 찾아서 반환함
+    # channle의 url이 포함되지 않은 src Attrs 인 경우 
+    # channel_main_url + src 로 반영함
     img_list = extract_children_tag(contents, 'img', {'src' : True}, is_child_multiple=True)
     imgs = []
     if img_list:
