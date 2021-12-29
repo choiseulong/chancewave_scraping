@@ -6,8 +6,6 @@ import requests as req
 import importlib
 from datetime import datetime, timedelta
 from pytz import timezone
-from datetime import datetime, timedelta
-from pytz import timezone
 
 import os
 print(os.path.dirname(__file__))
