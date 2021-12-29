@@ -5,21 +5,21 @@ def post_list_parsing_process(**params):
         'multiple_type' : ['view_count', 'post_title', 'uploader', 'uploaded_time', 'contents_req_params']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    tbody = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.multiple)
+    tbody = extract_children_tag(soup, 'tbody', child_tag_attrs={}, is_child_multiple=True)
     if len(tbody):
         tbody = tbody[1]
     else :
         return
-    contentsBox = extract_children_tag(tbody, 'tr', DataStatus.empty_attrs, DataStatus.multiple)
+    contentsBox = extract_children_tag(tbody, 'tr', child_tag_attrs={}, is_child_multiple=True)
     for contents in contentsBox:
-        td_list = extract_children_tag(contents, 'td', DataStatus.empty_attrs, DataStatus.multiple)
+        td_list = extract_children_tag(contents, 'td', child_tag_attrs={}, is_child_multiple=True)
         for td_idx, td in enumerate(td_list):
             td_text = extract_text(td)
             if td_idx == 1:
                 var['post_title'].append(td_text) 
                 nttId = parse_href(
                     extract_attrs(
-                        extract_children_tag(td, 'a', DataStatus.empty_attrs, DataStatus.not_multiple),
+                        extract_children_tag(td, 'a', child_tag_attrs={}, is_child_multiple=False),
                         'onclick'
                     )
                 )
@@ -48,7 +48,7 @@ def post_list_parsing_process(**params):
                 continue
 
     value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     return result
 
 def parse_href(text):
@@ -64,12 +64,12 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url', 'contact']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    contents = extract_children_tag(soup, 'td', {'class' : 'bbs_content'}, DataStatus.not_multiple)
+    contents = extract_children_tag(soup, 'td', {'class' : 'bbs_content'}, is_child_multiple=False)
     post_text = extract_text(contents)
     if post_text:
         var['post_text'] = clean_text(post_text)
         var['contact'] = extract_contact_numbers_from_text(post_text)
-    img_list = extract_children_tag(contents, 'img', DataStatus.empty_attrs, DataStatus.multiple)
+    img_list = extract_children_tag(contents, 'img', child_tag_attrs={}, is_child_multiple=True)
     if img_list :
         for img in img_list:
             href = extract_attrs(img, 'href')

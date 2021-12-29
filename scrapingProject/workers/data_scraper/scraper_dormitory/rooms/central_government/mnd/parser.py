@@ -6,12 +6,12 @@ def post_list_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
 
-    contents = extract_children_tag(soup, 'ul', {'class' : 'list_post'}, DataStatus.not_multiple)
-    liList = extract_children_tag(contents, 'li', DataStatus.empty_attrs, DataStatus.multiple)
+    contents = extract_children_tag(soup, 'ul', {'class' : 'list_post'}, is_child_multiple=False)
+    liList = extract_children_tag(contents, 'li', child_tag_attrs={}, is_child_multiple=True)
     if not liList :
         return
     for li in liList :
-        a_tag = extract_children_tag(li, 'a', {'title' : True}, DataStatus.not_multiple)
+        a_tag = extract_children_tag(li, 'a', {'title' : True}, is_child_multiple=False)
         postId = extract_text_between_prefix_and_suffix(
             'boardSeq=',
             '&amp',
@@ -26,7 +26,7 @@ def post_list_parsing_process(**params):
         var['post_title'].append(
             extract_text(a_tag)
         )
-        postInfoList = extract_children_tag(li, 'div', {'class' : 'post_info'}, DataStatus.multiple)
+        postInfoList = extract_children_tag(li, 'div', {'class' : 'post_info'}, is_child_multiple=True)
         for infoIdx, postInfo in enumerate(postInfoList):
             infoText = extract_text(postInfo).split(':')[-1].strip()
             if infoIdx == 0 :
@@ -40,7 +40,7 @@ def post_list_parsing_process(**params):
                     extract_numbers_in_text(infoText)
                 )
     value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     # print(result)
     return result
 
@@ -56,7 +56,7 @@ def post_content_parsing_process(**params):
         fullText = fullText.replace('[data-hwpjson]', '')
         soup = change_to_soup(fullText)
 
-    post_content = extract_children_tag(soup, 'div', {'class' : 'post_content'}, DataStatus.not_multiple)
+    post_content = extract_children_tag(soup, 'div', {'class' : 'post_content'}, is_child_multiple=False)
     post_text = extract_text(post_content)
     var['contact'] = extract_contact_numbers_from_text(post_text)
     var['post_text'] = clean_text(post_text)

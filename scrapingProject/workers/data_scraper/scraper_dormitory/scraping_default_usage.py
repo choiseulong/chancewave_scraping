@@ -79,6 +79,7 @@ class Scraper(metaclass=ABCMeta):
                 self.scraping_target_contents.append(post_content)
 
     def target_scraping(self, post_content_parsing_process, target, sleep_sec):
+        status = ''
         if 'contents_req_params' in target.keys():
             data = target['contents_req_params']
             status, response = post_method_response(self.session, self.post_url, data, sleep_sec)

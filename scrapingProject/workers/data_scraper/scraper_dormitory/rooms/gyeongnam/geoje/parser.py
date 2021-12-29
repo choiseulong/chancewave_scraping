@@ -5,15 +5,15 @@ def post_list_parsing_process(**params):
         'multiple_type' : ['post_url', 'post_title', 'uploaded_time', 'view_count', 'uploader']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    tbody = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.not_multiple)
-    tr_list = extract_children_tag(tbody, 'tr', DataStatus.empty_attrs, DataStatus.multiple)
+    tbody = extract_children_tag(soup, 'tbody', child_tag_attrs={}, is_child_multiple=False)
+    tr_list = extract_children_tag(tbody, 'tr', child_tag_attrs={}, is_child_multiple=True)
     for tr in tr_list:
-        td_list = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple)
+        td_list = extract_children_tag(tr, 'td', child_tag_attrs={}, is_child_multiple=True)
         for td_idx, td in enumerate(td_list):
             td_text = extract_text(td)
             if td_idx == 1 : 
                 var['post_title'].append(td_text)
-                a_tag = extract_children_tag(td, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
+                a_tag = extract_children_tag(td, 'a', child_tag_attrs={}, is_child_multiple=False)
                 href = extract_attrs(a_tag, 'href')
                 var['post_url'].append(
                     var['channel_main_url'] + href
@@ -30,7 +30,7 @@ def post_list_parsing_process(**params):
                 )
 
     value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     # print(result)
     return result
 
@@ -40,8 +40,8 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    info = extract_children_tag(soup, 'div', {'class' : 'info'}, DataStatus.not_multiple)
-    strongList = extract_children_tag(info, 'strong', DataStatus.empty_attrs, DataStatus.multiple)
+    info = extract_children_tag(soup, 'div', {'class' : 'info'}, is_child_multiple=False)
+    strongList = extract_children_tag(info, 'strong', child_tag_attrs={}, is_child_multiple=True)
     for strong in strongList:
         strongText = extract_text(strong)
         if '연락처' in strongText:
@@ -51,7 +51,7 @@ def post_content_parsing_process(**params):
                 )
             )
             break
-    substan = extract_children_tag(soup, 'div', {'class' : 'substan'}, DataStatus.not_multiple)
+    substan = extract_children_tag(soup, 'div', {'class' : 'substan'}, is_child_multiple=False)
     var['post_text'] = clean_text(extract_text(substan))
     var['post_image_url'] = search_img_list_in_contents(substan, var['channel_main_url'])
     value_list = [var[key] for key in key_list]

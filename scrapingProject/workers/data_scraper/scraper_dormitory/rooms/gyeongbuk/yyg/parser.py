@@ -5,15 +5,15 @@ def post_list_parsing_process(**params):
         'multiple_type' : ['post_url', 'view_count', 'uploader']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    tbody = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.not_multiple)
-    tr_list = extract_children_tag(tbody, 'tr', DataStatus.empty_attrs, DataStatus.multiple)
+    tbody = extract_children_tag(soup, 'tbody', child_tag_attrs={}, is_child_multiple=False)
+    tr_list = extract_children_tag(tbody, 'tr', child_tag_attrs={}, is_child_multiple=True)
     for tr in tr_list :
-        td_list = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple)
+        td_list = extract_children_tag(tr, 'td', child_tag_attrs={}, is_child_multiple=True)
         uploader = ''
         for td_idx, td in enumerate(td_list):
             td_text = extract_text(td)
             if td_idx == 1 :
-                a_tag = extract_children_tag(td, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
+                a_tag = extract_children_tag(td, 'a', child_tag_attrs={}, is_child_multiple=False)
                 href = extract_attrs(a_tag, 'href')
                 # print(href)
                 var['post_url'].append(
@@ -27,7 +27,7 @@ def post_list_parsing_process(**params):
                 )
         var['uploader'].append(uploader)
     value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     # print(result)
     return result
 
@@ -37,11 +37,11 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    news_tit = extract_children_tag(soup, 'div', {'class' : 'news_tit'}, DataStatus.not_multiple)
+    news_tit = extract_children_tag(soup, 'div', {'class' : 'news_tit'}, is_child_multiple=False)
     var['post_title'] = extract_text(
-        extract_children_tag(news_tit, 'h3', DataStatus.empty_attrs, DataStatus.not_multiple)
+        extract_children_tag(news_tit, 'h3', child_tag_attrs={}, is_child_multiple=False)
     )
-    dtList = extract_children_tag(news_tit, 'dt', DataStatus.empty_attrs, DataStatus.multiple)
+    dtList = extract_children_tag(news_tit, 'dt', child_tag_attrs={}, is_child_multiple=True)
     for dt in dtList:
         dtText = extract_text(dt)
         if '작성일' in dtText:
@@ -51,7 +51,7 @@ def post_content_parsing_process(**params):
                 )
             )
             break
-    cont = extract_children_tag(soup, 'div', {'class' : 'board_cont'}, DataStatus.not_multiple)
+    cont = extract_children_tag(soup, 'div', {'class' : 'board_cont'}, is_child_multiple=False)
     var['post_text'] = extract_text(cont)
     var['contact'] = extract_contact_numbers_from_text(extract_text(cont))
     var['post_image_url'] = search_img_list_in_contents(cont, var['channel_main_url'])

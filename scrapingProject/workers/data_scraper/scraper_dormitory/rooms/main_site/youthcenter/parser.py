@@ -12,20 +12,20 @@ def post_list_parsing_process(**params):
     #     var['response'].text
     # )
 
-    postCountBox = extract_children_tag(soup, 'div', {'class' : ['sch-result-wrap compare-result-list']}, DataStatus.not_multiple)
+    postCountBox = extract_children_tag(soup, 'div', {'class' : ['sch-result-wrap compare-result-list']}, is_child_multiple=False)
     postCount = extract_numbers_in_text(
             extract_text(
-            extract_children_tag(postCountBox, 'div', {'class' : 'l'}, DataStatus.not_multiple)
+            extract_children_tag(postCountBox, 'div', {'class' : 'l'}, is_child_multiple=False)
         )
     )
     if postCount < var['page_count'] * 12 :
         return 'endpoint'
 
-    post_list_box = extract_children_tag(soup, "div", {"class" : "result-list-box"}, DataStatus.not_multiple)
-    post_list = extract_children_tag(post_list_box, "li", DataStatus.empty_attrs, DataStatus.multiple)
+    post_list_box = extract_children_tag(soup, "div", {"class" : "result-list-box"}, is_child_multiple=False)
+    post_list = extract_children_tag(post_list_box, "li", child_tag_attrs={}, is_child_multiple=True)
     
     var['_csrf'] = extract_attrs(
-        extract_children_tag(soup, "meta", {"name" : "_csrf"}, DataStatus.not_multiple),
+        extract_children_tag(soup, "meta", {"name" : "_csrf"}, is_child_multiple=False),
         "content"
     )
     labelColorList = []
@@ -86,20 +86,20 @@ def post_content_parsing_process(**params):
     info_title = [
         extract_text(h5) \
         for h5 \
-        in extract_children_tag(soup, 'h5', {"class" : "view_tit"}, DataStatus.multiple)
+        in extract_children_tag(soup, 'h5', {"class" : "view_tit"}, is_child_multiple=True)
     ]
-    infoTable = [table for table in extract_children_tag(soup, 'div', {"class" : "table_wrap"}, DataStatus.multiple)]
+    infoTable = [table for table in extract_children_tag(soup, 'div', {"class" : "table_wrap"}, is_child_multiple=True)]
     for tableIdx, table in enumerate(infoTable) :
         var['extra_info'].append({'info_title' : info_title[tableIdx]}) 
         contentsTitle = [
             extract_text(_) \
             for _ \
-            in extract_children_tag(table, 'div', {"class" : "list_tit"}, DataStatus.multiple)
+            in extract_children_tag(table, 'div', {"class" : "list_tit"}, is_child_multiple=True)
         ]
         contents = [
             extract_text(_) \
             for _ \
-            in extract_children_tag(table, 'div', {"class" : "list_cont"}, DataStatus.multiple)
+            in extract_children_tag(table, 'div', {"class" : "list_cont"}, is_child_multiple=True)
         ]
         for title, cont in zip(contentsTitle, contents):
             infoNum = len(var['extra_info'][tableIdx])

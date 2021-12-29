@@ -6,22 +6,22 @@ def post_list_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
 
-    tbody = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.not_multiple)
+    tbody = extract_children_tag(soup, 'tbody', child_tag_attrs={}, is_child_multiple=False)
     print
-    tr_list = extract_children_tag(tbody, 'tr', DataStatus.empty_attrs, DataStatus.multiple)
+    tr_list = extract_children_tag(tbody, 'tr', child_tag_attrs={}, is_child_multiple=True)
     for tr in tr_list:
-        viewBox = extract_children_tag(tr, 'div', {'class' : 'viewbox'}, DataStatus.not_multiple)
+        viewBox = extract_children_tag(tr, 'div', {'class' : 'viewbox'}, is_child_multiple=False)
         var['post_title'].append(extract_text(viewBox))
         params = parse_onclick_params(
             extract_attrs(
-                extract_children_tag(viewBox, 'a', DataStatus.empty_attrs, DataStatus.not_multiple),
+                extract_children_tag(viewBox, 'a', child_tag_attrs={}, is_child_multiple=False),
                 'onclick'
             )
         )
         var['post_url'].append(
             var['post_url_frame'].format(params)
         )
-        td_list = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple)
+        td_list = extract_children_tag(tr, 'td', child_tag_attrs={}, is_child_multiple=True)
         for td_idx, td in enumerate(td_list):
             td_text = extract_text(td)
             if td_idx == 4 :
@@ -36,7 +36,7 @@ def post_list_parsing_process(**params):
                 )
 
     value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     # print(result)
     return result
 
@@ -50,9 +50,9 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    table = extract_children_tag(soup, 'table', {'class' : 'board_view'}, DataStatus.not_multiple)
-    title_sp = extract_children_tag(table, 'div', {'class' : 'title_sp'}, DataStatus.not_multiple)
-    spanList = extract_children_tag(title_sp, 'span', DataStatus.empty_attrs, DataStatus.multiple)
+    table = extract_children_tag(soup, 'table', {'class' : 'board_view'}, is_child_multiple=False)
+    title_sp = extract_children_tag(table, 'div', {'class' : 'title_sp'}, is_child_multiple=False)
+    spanList = extract_children_tag(title_sp, 'span', child_tag_attrs={}, is_child_multiple=True)
     for span in spanList:
         spanText = extract_text(span)
         if '작성자' in spanText or '담당부서' in spanText:
@@ -60,7 +60,7 @@ def post_content_parsing_process(**params):
             var['uploader'] += spanText + ' '
         elif '전화번호' in spanText:
             var['contact'] = extract_contact_numbers_from_text(spanText)
-    pList = extract_children_tag(table, 'p', DataStatus.empty_attrs, DataStatus.multiple)
+    pList = extract_children_tag(table, 'p', child_tag_attrs={}, is_child_multiple=True)
     for p in pList:
         pText = extract_text(p)
         if pText:

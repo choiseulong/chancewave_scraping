@@ -12,6 +12,8 @@ class MongoServer:
         self.connection = MongoClient(self.url)
         self.db = self.connection.get_database('scraping')
         self.collection = self.db.get_collection('data')
+        # self.collection = self.db.get_collection('checkpoint3')
+
     
     def fine_one(self, query):
         return self.collection.find_one(query)
@@ -20,9 +22,9 @@ class MongoServer:
         cursor = self.collection.find(query, projection)
         return [i for i in cursor]
     
-    def delete_and_insert(self, targetQuery, newData):
-        self.collection.remove(targetQuery)
-        self.collection.insert_one(newData)
+    def delete_and_insert(self, target_query, new_data):
+        self.collection.remove(target_query)
+        self.collection.insert_one(new_data)
     
     def insert_many(self, data):
         result = self.collection.insert_many(data)
@@ -35,41 +37,41 @@ class MongoServer:
         self.collection.remove({'channel_code' : channel_code})
     
     def reflect_scraped_data(self, collected_data_list):
-        bulkInsertDataList = []
-        for newData in collected_data_list:
-            post_url = newData['post_url']
-            channel_code = newData['channel_code']
-            crc32 = make_crc(newData)
-            newData['crc'] = crc32
-            beforeData = self.fine_one({'post_url' : post_url, "channel_code" : channel_code})
-            if beforeData and post_url != None :
-                if beforeData['crc'] == newData['crc']:
-                    post_url = beforeData['post_url']
-                    self.update_checkTime(post_url, beforeData)
+        bulk_insert_data_list = []
+        for new_data in collected_data_list:
+            post_url = new_data['post_url']
+            channel_code = new_data['channel_code']
+            crc32 = make_crc(new_data)
+            new_data['crc'] = crc32
+            before_data = self.fine_one({'post_url' : post_url, "channel_code" : channel_code})
+            if before_data and post_url != None :
+                if before_data['crc'] == new_data['crc']:
+                    post_url = before_data['post_url']
+                    self.update_checkTime(post_url, before_data)
                     continue
-                elif beforeData['crc'] - newData['crc']:
+                elif before_data['crc'] - new_data['crc']:
                     # print(f'{post_url}\n@@ 문서 업데이트 @@')
-                    self.update_data_process(newData, beforeData)
+                    self.update_data_process(new_data, before_data)
             else :
-                bulkInsertDataList.append(newData)
-        if bulkInsertDataList:
-            self.insert_many(bulkInsertDataList)
+                bulk_insert_data_list.append(new_data)
+        if bulk_insert_data_list:
+            self.insert_many(bulk_insert_data_list)
 
-    def update_data_process(self, newData, beforeData):
+    def update_data_process(self, new_data, before_data):
         now = datetime.now(timezone('Asia/Seoul')).isoformat()
-        is_update_check = beforeData['is_update_check_time']
+        is_update_check = before_data['is_update_check_time']
         is_update_check.append(now)
-        updated_time = beforeData['updated_time']
+        updated_time = before_data['updated_time']
         updated_time.append(now)
-        newData['is_update_check_time'] = is_update_check
-        newData['updated_time'] = updated_time
-        beforeDocId = beforeData['_id']
-        targetQuery = {'_id' : beforeDocId}
-        self.delete_and_insert(targetQuery, newData)
+        new_data['is_update_check_time'] = is_update_check
+        new_data['updated_time'] = updated_time
+        before_doc_id = before_data['_id']
+        target_query = {'_id' : before_doc_id}
+        self.delete_and_insert(target_query, new_data)
     
-    def update_checkTime(self, post_url, beforeData):
+    def update_checkTime(self, post_url, before_data):
         now = datetime.now(timezone('Asia/Seoul')).isoformat()
-        is_update_check = beforeData['is_update_check_time']
+        is_update_check = before_data['is_update_check_time']
         is_update_check.append(now)
         target_query = {'post_url' : post_url}
         update_query= {'$set' : {'is_update_check_time' : is_update_check}}

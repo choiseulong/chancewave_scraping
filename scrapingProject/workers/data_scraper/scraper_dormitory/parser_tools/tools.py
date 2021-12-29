@@ -3,71 +3,77 @@ from jsonpath_ng import parse as jsonpath_parse
 from datetime import datetime
 import ast
 import json
-import xmltodict
 import re
 from w3lib.html import remove_tags
 
-class DataStatus():
-    not_multiple = False
-    multiple = True
-    unique = 'solo'
-    not_recursive = False
-    empty_attrs = {}
-
 def change_to_soup(reponse_text):
     try :
-        return bs(reponse_text, 'html.parser')
+        soup = bs(reponse_text, 'html.parser')
+        return soup
     except UnboundLocalError as e :
+        # parser.py soup 변수에 Tag가 삭제된 response.text 를 반환함
         return remove_tags(reponse_text)
 
-def extract_text(tag, is_multiple=False):
-    try :
-        return [clean_text(_.text) for _ in tag] if is_multiple else clean_text(tag.text)
-    except AttributeError as e :
-        print(e, '\n', tag)
-        return ''
+def extract_text(tag, is_child_multiple=False):
+    # Tag 내의 Text를 반환함
+    if is_child_multiple:
+        tag_list = tag
+        text_list = [clean_text(tag.text) for tag in tag_list]
+        return text_list
+    else :
+        text = clean_text(tag.text)
+        return text
 
-def extract_contents(tag, is_multiple=False):
-    return [_.contents for _ in tag] if is_multiple else tag.contents
+def extract_attrs(tag, attrs_name, is_child_multiple=False):
+    # Tag의 Attrs를 반환함
+    if is_child_multiple:
+        tag_list = tag
+        attrs_list = [tag[attrs_name] for tag in tag_list]
+        return attrs_list
+    else :
+        return tag[attrs_name]
 
-def extract_attrs(tag, attrs_name, is_multiple=False):
-    return [_[attrs_name] for _ in tag] if is_multiple else tag[attrs_name]
-
-def extract_children_tag(parents_tag, children_tag, children_tag_attrs={}, child_is_multiple=False, Recursive=True):
-    return parents_tag.find_all(children_tag, attrs=children_tag_attrs, recursive=Recursive) \
-        if child_is_multiple \
-        else parents_tag.find(children_tag, attrs=children_tag_attrs, recursive=Recursive)
+def extract_children_tag(parents_tag, child_tag, child_tag_attrs={}, is_child_multiple=False, is_recursive=True):
+    # 자식 태그의 attrs 가 없고, 개수가 1개인 설정이 기본값
+    # bs4.Tag 를 반환함
+    # 여러개의 자식태그를 찾고 싶다면 
+    # is_child_multiple=True 로 선언
+    # 결과는 bs4.Tag 가 아닌 bs4.tag List 를 반환
+    if is_child_multiple :
+        child_tag_list = parents_tag.find_all(child_tag, attrs=child_tag_attrs, recursive=is_recursive)
+        return child_tag_list
+    else :
+        child_tag = parents_tag.find(child_tag, attrs=child_tag_attrs, recursive=is_recursive)
+        return child_tag
 
 def find_next_tag(tag):
-    return tag.find_next_siblings()[0]
-
+    # 기준 Tag 다음 위치에 등장하는 Tag를 반환함
+    next_tag = tag.find_next_siblings()[0]
+    return next_tag
+    
 def find_parent_tag(tag):
-    return tag.parent
+    # 부모 Tag를 반환함
+    parent_tag = tag.parent
+    return parent_tag
 
-def decompose_tag(parents_tag, children_tag, attrs, multiple=False):
-    # 유일한 attrs 를 가지는 자식 태그 삭제 기능
-    if multiple:
-        target_tag = parents_tag.find_all(children_tag, attrs)
-        if target_tag:
-            for tag in target_tag:
+def decompose_tag(parents_tag, child_tag, child_tag_attrs, is_child_multiple=False):
+    # child tag를 삭제한 parent tag를 반환함
+    if is_child_multiple:
+        target_tag_list = parents_tag.find_all(child_tag, child_tag_attrs)
+        if target_tag_list:
+            for tag in target_tag_list:
                 tag.decompose()
     else :
-        target_tag = parents_tag.find(children_tag, attrs)
+        target_tag = parents_tag.find(child_tag, child_tag_attrs)
         target_tag.decompose()
     return parents_tag
 
-def split_value_list_based_on_key(key_list, value_list):
-    return {
-        {key : value_list[keyIdx]} \
-        for keyIdx, key \
-        in enumerate(key_list)
-    }
-
 def convert_datetime_string_to_isoformat_datetime(datetime_string):
+    # 날짜 텍스트를 isoformat datetime으로 반환함
     special_word = re.sub(r'[^\.|\-|\:|\/]', '', datetime_string)
     special_word_count = {word:special_word.count(word) for word in special_word}
     if not special_word_count and len(datetime_string) == 8:
-        # 20210101처럼 구분 특수문자가 없는 형식일 경우
+        # 20210101처럼 구분 특수문자가 없는 날짜 형식일 경우
         year, month, days = datetime_string[:4], datetime_string[4:6], datetime_string[6:]
         datetime_string = year + "-" + month + "-" + days
         strptime_format = "%Y-%m-%d"
@@ -91,24 +97,15 @@ def convert_datetime_string_to_isoformat_datetime(datetime_string):
         time = datetime.strptime(datetime_string, strptime_format.strip()).isoformat()
     return time
 
-def convert_datetime_to_isoformat(date):
-    return date.isoformat()
-
 def extract_numbers_in_text(text):
     num = re.sub('[^0-9]', '', text)
     return int(num)
-
-def extract_korean_in_text(text):
-    return ' '.join(re.compile('[가-힣]+').findall(text))
 
 def erase_html_tags(text):
     return re.sub('(<([^>]+)>)', '', text)
 
 def extract_group_code(text):
     return '_'.join(text.split('_')[:-1])
-
-def convert_multiple_empty_erea_to_one_erea(text):
-    return re.sub('\s+', ' ', text).strip()
 
 def clean_text(text):
     try :
@@ -118,23 +115,20 @@ def clean_text(text):
             text = text.replace(_, '')
         for _ in leave_space:
             text = text.replace(_, ' ')
-        text = convert_multiple_empty_erea_to_one_erea(text)
+        text = re.sub('\s+', ' ', text).strip()
         return text
     except :
         return ''
 
-def convert_response_contents_to_dict(contents):
-    return xmltodict.parse(contents)
-
-def search_value_in_json_data_using_path(json_data, path, number_of_data='multiple', reverse = False):
+def search_value_in_json_data_using_path(json_data, path, is_data_multiple=True, find_from_the_end=False):
     tartget_data = jsonpath_parse(path).find(json_data)
     result = []
-    if tartget_data and number_of_data == 'solo':
+    if tartget_data and not is_data_multiple:
         result = tartget_data[0].value
-        if reverse :
+        if find_from_the_end :
             result = tartget_data[-1].value
-    elif tartget_data and number_of_data == 'multiple':
-        result = [ _.value for _ in tartget_data]
+    elif tartget_data and is_data_multiple:
+        result = [_.value for _ in tartget_data]
     return result
 
 def extract_emails(in_str):
@@ -148,11 +142,6 @@ def extract_emails(in_str):
 def extract_contact_numbers_from_text(in_str):
     contact_no_list = re.findall(r'(\d{2,3}[- .]?\d{3,4}[- .]?\d{4})', in_str)
     return contact_no_list
-
-def add_empty_list(local_var, key_list):
-    for key in key_list:
-        local_var[key] = []
-    return local_var
 
 def convert_merged_list_to_dict(key_list, value_list):
     result = {}
@@ -172,31 +161,22 @@ def check_date_range_availability(date_range, date):
     else :
         return 'not valid'
 
-def parse_onclick(text, order = 1):
-    return re.findall("'(.+?)'", text)[order]
+def parse_onclick(text, idx=1):
+    return re.findall("'(.+?)'", text)[idx]
 
 def convert_text_to_tuple(text):
     return ast.literal_eval(str(text))
 
 def extract_text_from_single_tag(soup, tag, attrs):
-    tag = extract_children_tag(soup, tag, attrs, DataStatus.not_multiple)
+    tag = extract_children_tag(soup, tag, attrs, is_child_multiple=False)
     text = extract_text(tag)
     return text
-
-def extract_attrs_from_single_tag(soup, tag, attrs, targetAttrs):
-    tag = extract_children_tag(soup, tag, attrs, DataStatus.not_multiple)
-    attrs = extract_attrs(tag, targetAttrs)
-    return attrs
 
 def extract_values_list_in_both_sides_bracket_text(text):
     start_idx = text.find('(')
     end_idx = text.rfind(')')
     text = text[start_idx+1 : end_idx]
     value_list = [i.replace("'", "") for i in text.split(',')]
-    return value_list
-
-def multiple_appends(value_list, *element):
-    value_list.extend(element)
     return value_list
 
 def merge_var_to_dict(key_list, value_list, channel_code=''):
@@ -262,7 +242,7 @@ def extract_text_between_prefix_and_suffix(prefix, suffix, text):
     return text[text.find(prefix)+len(prefix):text.find(suffix)]
 
 def search_img_list_in_contents(contents, channel_main_url):
-    img_list = extract_children_tag(contents, 'img', {'src' : True}, DataStatus.multiple)
+    img_list = extract_children_tag(contents, 'img', {'src' : True}, is_child_multiple=True)
     imgs = []
     if img_list:
         for img in img_list:

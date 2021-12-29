@@ -5,8 +5,8 @@ def post_list_parsing_process(**params):
         'multiple_type' : ['is_going_on', 'post_title', 'post_url', 'post_thumbnail', 'uploader', 'start_date', 'end_date', 'post_subject']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    dataList = extract_children_tag(soup, 'div', {"class" : "multi_cont"}, DataStatus.not_multiple) # tag
-    competitionList = extract_children_tag(dataList, 'a', {"class" : "goCompetitionDetail"}, DataStatus.multiple) # list
+    dataList = extract_children_tag(soup, 'div', {"class" : "multi_cont"}, is_child_multiple=False) # tag
+    competitionList = extract_children_tag(dataList, 'a', {"class" : "goCompetitionDetail"}, is_child_multiple=True) # list
     for data in competitionList :
         status = extract_text(extract_children_tag(data, 'span', {"class" : "flag_md"}))
         if status == '진행중': 
@@ -58,7 +58,7 @@ def post_list_parsing_process(**params):
         )
 
     value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     return result
 
 def parsing_date(text): 
@@ -71,13 +71,13 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url']
     } 
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    table = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs) # return default -> tag
-    tr_list = extract_children_tag(table, 'tr', DataStatus.empty_attrs, DataStatus.multiple) # list
+    table = extract_children_tag(soup, 'tbody', child_tag_attrs={}) # return default -> tag
+    tr_list = extract_children_tag(table, 'tr', child_tag_attrs={}, is_child_multiple=True) # list
     for tr in tr_list :
-        th = extract_children_tag(tr, 'th', DataStatus.empty_attrs, DataStatus.multiple) # list
-        td = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple) # list
-        th_text = extract_text(th, DataStatus.multiple)
-        td_text = extract_text(td, DataStatus.multiple)
+        th = extract_children_tag(tr, 'th', child_tag_attrs={}, is_child_multiple=True) # list
+        td = extract_children_tag(tr, 'td', child_tag_attrs={}, is_child_multiple=True) # list
+        th_text = extract_text(th, is_child_multiple=True)
+        td_text = extract_text(td, is_child_multiple=True)
 
         info = {'조회수' : 'view_count', '문의':'contact', '홈페이지':'linked_post_url', '응모대상' : 'post_content_target'}
         for key in info :
@@ -86,7 +86,7 @@ def post_content_parsing_process(**params):
                 var[info[key]] = td_text[th_idx]
 
     detail_content = extract_children_tag(soup, 'div', {'class' : 'detail'}) # return default -> tag
-    detail_img = extract_children_tag(detail_content, 'img', DataStatus.empty_attrs, DataStatus.multiple)
+    detail_img = extract_children_tag(detail_content, 'img', child_tag_attrs={}, is_child_multiple=True)
     if detail_img :
         for img in detail_img :
             var['post_image_url'].append(

@@ -5,13 +5,13 @@ def post_list_parsing_process(**params):
         'multiple_type' : ['view_count', 'post_title', 'uploader', 'post_url', 'uploaded_time']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    mainDiv = extract_children_tag(soup, 'div', {'class' : 'bbs_list01'}, DataStatus.not_multiple)
+    mainDiv = extract_children_tag(soup, 'div', {'class' : 'bbs_list01'}, is_child_multiple=False)
     if '0' in var['channel_code']:
-        ulList = extract_children_tag(mainDiv, 'ul', DataStatus.empty_attrs, DataStatus.multiple, DataStatus.not_recursive)
+        ulList = extract_children_tag(mainDiv, 'ul', child_tag_attrs={}, is_child_multiple=True, is_recursive=False)
         if len(ulList):
             ulList = ulList[1]
     else :
-        ulList = extract_children_tag(mainDiv, 'ul', DataStatus.empty_attrs, DataStatus.not_multiple)
+        ulList = extract_children_tag(mainDiv, 'ul', child_tag_attrs={}, is_child_multiple=False)
 
     if not ulList :
         return
@@ -20,10 +20,10 @@ def post_list_parsing_process(**params):
             extract_text(i)
         )
         for i \
-        in extract_children_tag(ulList, 'div', {'class' : 'right_column'}, DataStatus.multiple)
+        in extract_children_tag(ulList, 'div', {'class' : 'right_column'}, is_child_multiple=True)
     ]
     aTagList = [
-        a_tag for a_tag in extract_children_tag(ulList, 'a', DataStatus.empty_attrs, DataStatus.multiple) \
+        a_tag for a_tag in extract_children_tag(ulList, 'a', child_tag_attrs={}, is_child_multiple=True) \
         if 'title' in extract_attrs(a_tag, 'class')
     ]
     for a_tag in aTagList:
@@ -34,9 +34,9 @@ def post_list_parsing_process(**params):
         var['post_url'].append(href)
         var['post_title'].append(extract_text(a_tag))
 
-    winfoList = extract_children_tag(ulList, 'div', {"class" : "winfo"}, DataStatus.multiple)
+    winfoList = extract_children_tag(ulList, 'div', {"class" : "winfo"}, is_child_multiple=True)
     for winfo in winfoList:
-        pTagList = extract_children_tag(winfo, 'p', DataStatus.empty_attrs, DataStatus.multiple)
+        pTagList = extract_children_tag(winfo, 'p', child_tag_attrs={}, is_child_multiple=True)
         for pTag in pTagList:
             pText = extract_text(pTag)
             if '담당부서' in pText:
@@ -46,7 +46,7 @@ def post_list_parsing_process(**params):
                     extract_numbers_in_text(pText)
                 )
     value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     return result
 
 def parse_href(text):
@@ -60,16 +60,16 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    contentBox = extract_children_tag(soup, 'div', {'class' : 'bv_cont'}, DataStatus.not_multiple)
-    contactBox = extract_children_tag(soup, 'div', {'class' : 'bbs_sat_header'}, DataStatus.not_multiple)
+    contentBox = extract_children_tag(soup, 'div', {'class' : 'bv_cont'}, is_child_multiple=False)
+    contactBox = extract_children_tag(soup, 'div', {'class' : 'bbs_sat_header'}, is_child_multiple=False)
     if contactBox:
-        spanList = extract_children_tag(contactBox, 'span', DataStatus.empty_attrs, DataStatus.multiple)
+        spanList = extract_children_tag(contactBox, 'span', child_tag_attrs={}, is_child_multiple=True)
         if spanList:
             for span in spanList:
                 spanText = extract_text(span)
                 var['contact'] += spanText + ' '
     var['post_text'] = extract_text(contentBox)
-    imgBox = extract_children_tag(contentBox, 'img', DataStatus.empty_attrs, DataStatus.multiple)
+    imgBox = extract_children_tag(contentBox, 'img', child_tag_attrs={}, is_child_multiple=True)
     if imgBox:
         for img in imgBox:
             src = extract_attrs(img,'src')
