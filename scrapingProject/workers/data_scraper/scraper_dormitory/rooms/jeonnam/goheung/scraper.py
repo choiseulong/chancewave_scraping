@@ -9,7 +9,7 @@ from .parser import *
     @post list
 
     method : GET
-    url = https://www.goheung.go.kr/boardList.do?pageId=www96&movePage={pageCount}&boardId=BD_00018&searchTp=TM
+    url = https://www.goheung.go.kr/boardList.do?pageId=www96&movePage={page_count}&boardId=BD_00018&searchTp=TM
     header :
         None
 

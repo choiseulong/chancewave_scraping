@@ -10,7 +10,7 @@ from .parser import *
 
     method : GET
     url = http://www.damyang.go.kr/board/list.damyang?boardId=BBS_0000001&listRow=10&\
-        listCel=1&menuCd=DOM_000000104001000000&paging=ok&startPage={pageCount}
+        listCel=1&menuCd=DOM_000000104001000000&paging=ok&startPage={page_count}
     header :
         None
 

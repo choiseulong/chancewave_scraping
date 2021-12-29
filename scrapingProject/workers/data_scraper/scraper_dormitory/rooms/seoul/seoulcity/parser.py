@@ -90,10 +90,10 @@ def post_content_parsing_process(**params):
     return result
 
 def search_total_post_count(result):
-    postNumberIdx = result['post_title'].find(']')
-    postNumber = extract_numbers_in_text(result['post_title'][:postNumberIdx])
-    totalPageCount = divmod(int(postNumber), 10)[0] + 1
-    return totalPageCount
+    post_number_idx = result['post_title'].find(']')
+    post_number = extract_numbers_in_text(result['post_title'][:post_number_idx])
+    total_page_count = divmod(int(post_number), 10)[0] + 1
+    return total_page_count
     
 
 

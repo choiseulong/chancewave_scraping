@@ -9,7 +9,7 @@ from .parser import *
     @post list
 
     method : GET
-    url = https://www.muan.go.kr/www/openmuan/new/notice?page={pageCount}
+    url = https://www.muan.go.kr/www/openmuan/new/notice?page={page_count}
     header :
         None
 

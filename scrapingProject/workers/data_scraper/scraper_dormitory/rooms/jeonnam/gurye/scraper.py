@@ -10,7 +10,7 @@ from .parser import *
 
     method : GET
     url = https://www.gurye.go.kr/board/list.do;gurye.go.kr=2BDDE38561D7B54E4DEC94C93860235A?\
-        bbsId=BBS_0000000000000056&menuNo=115004001000&pageIndex={pageCount}
+        bbsId=BBS_0000000000000056&menuNo=115004001000&pageIndex={page_count}
     header :
         None
 

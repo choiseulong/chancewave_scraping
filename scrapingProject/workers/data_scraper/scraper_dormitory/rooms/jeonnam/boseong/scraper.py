@@ -2,14 +2,14 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 곡성군청
+# 채널 이름 : 보성군청
 
 #HTTP Request
 '''
     @post list
 
     method : GET
-    url = https://www.gokseong.go.kr/main/?pid=435&page={page_count}
+    url = https://www.boseong.go.kr/www/open_administration/city_news/notice?page={page_count}
     header :
         None
 
@@ -22,25 +22,25 @@ from .parser import *
         None
 
 '''
-sleep_sec = 2
+sleep_sec = 4
 isUpdate = True
 
 class Scraper(ABCScraper):
 
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '곡성군청'
+        self.channel_name = '보성군청'
         self.post_board_name = '공지사항'
-        self.channel_main_url = 'https://www.gokseong.go.kr'
+        self.channel_main_url = 'https://www.boseong.go.kr'
         
     def scraping_process(self, channel_code, channel_url, date_range):
         super().scraping_process(channel_code, channel_url, date_range)
         self.session = set_headers(self.session)
-        # self.set_jsessionid()
         self.page_count = 1
         while True :
             self.channel_url = self.channel_url_frame.format(self.page_count)
             self.post_list_scraping()
+            print(self.scraping_target)
             if self.scraping_target :
                 self.target_contents_scraping()
                 self.collect_data()
