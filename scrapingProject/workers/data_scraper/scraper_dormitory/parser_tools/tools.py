@@ -143,7 +143,7 @@ def extract_contact_numbers_from_text(in_str):
     # 텍스트에서 연락처를 찾아 list로 반환
     contact_list = []
     contact_no_list = re.findall(r'(\d{2,3}[- .]?\d{3,4}[- .]?\d{4})', in_str)
-    if contact_list:
+    if contact_no_list:
         contact_list = list(set(contact_no_list))
     return contact_list
 
