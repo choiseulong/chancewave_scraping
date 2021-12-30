@@ -39,7 +39,6 @@ def post_content_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     reg_info_text = extract_text_from_single_tag(soup, 'div', child_tag_attrs={'class':'reg_info'})
-    print(reg_info_text)
     var['contact'] = extract_contact_numbers_from_text(reg_info_text)
     show_info = extract_children_tag(soup, 'div', child_tag_attrs={'class':'show_info'})
     var['post_title'] = extract_text(
