@@ -4,6 +4,7 @@ from datetime import datetime
 import ast
 import json
 import re
+from pytz import timezone
 from w3lib.html import remove_tags
 
 def change_to_soup(reponse_text):
@@ -73,6 +74,10 @@ def convert_datetime_string_to_isoformat_datetime(datetime_string):
     # 날짜 텍스트를 isoformat datetime으로 반환함
     special_word = re.sub(r'[^\.|\-|\:|\/]', '', datetime_string)
     special_word_count = {word:special_word.count(word) for word in special_word}
+    if len(special_word_count) == 1 and ':' in special_word_count.keys():
+        # 당일 업로드 되어 날짜가 아닌 시간:분:초로 제공될 경우.
+        today = datetime.now(timezone('Asia/Seoul')).isoformat()
+        return today
     if not special_word_count and len(datetime_string) == 8:
         # 20210101처럼 구분 특수문자가 없는 날짜 형식일 경우
         year, month, days = datetime_string[:4], datetime_string[4:6], datetime_string[6:]
