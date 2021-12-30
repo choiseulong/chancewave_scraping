@@ -42,7 +42,7 @@ def post_content_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     board_content = extract_children_tag(soup, 'div', {'class' : 'board_content'}, is_child_multiple=False)
-    post_text = extract_text(board_content)
+    post_text = erase_html_tags(extract_text(board_content))
     var['post_text'] = clean_text(post_text)
     var['contact'] = extract_contact_numbers_from_text(post_text)
     var['post_image_url'] = search_img_list_in_contents(board_content, var['channel_main_url'])
