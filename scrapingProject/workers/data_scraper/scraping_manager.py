@@ -13,10 +13,7 @@ print(os.path.dirname(__file__))
 URL_CONFIG_INI_PATH = os.path.join(os.path.dirname(__file__), 'scraper_dormitory', 'scraper_tools', 'url.ini')
 FIDDLER_PEM_PATH = os.path.join(os.path.dirname(__file__), 'scraper_dormitory', 'scraper_tools', 'FiddlerRoot.pem')
 
-# import traceback
-
 checker = ErrorChecker()
-
 
 class ScrapingManager:
     def __init__(self):
@@ -58,7 +55,7 @@ class ScrapingManager:
             room_name, channel_code = extract_room_name_and_channel_code(channel_code)
             # job.delay(group_name, room_name, channel_code, channel_url, self.date_range)
 
-            if channel_code != 'gyeonggido_0':
+            if channel_code != 'usc_0':
                 continue
             print(channel_code, 'init')
             print(group_name, room_name)
