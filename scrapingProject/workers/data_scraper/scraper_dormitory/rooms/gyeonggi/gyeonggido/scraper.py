@@ -12,7 +12,7 @@ from .parser import *
     @post list
 
     method : GET
-    url = https://www.gg.go.kr/bbs/board.do?bsIdx=570&menuId=1590#page={pageCount}
+    url = https://www.gg.go.kr/bbs/board.do?bsIdx=570&menuId=1590#page={page_count}
     header :
         None
 

@@ -171,8 +171,8 @@ def parse_onclick(text, idx=1):
 def convert_text_to_tuple(text):
     return ast.literal_eval(str(text))
 
-def extract_text_from_single_tag(soup, tag, child_tag_attrs):
-    tag = extract_children_tag(soup, tag, child_tag_attrs=child_tag_attrs, is_child_multiple=False)
+def extract_text_from_single_tag(parent_tag, child_tag, child_tag_attrs={}):
+    tag = extract_children_tag(parent_tag, child_tag, child_tag_attrs=child_tag_attrs, is_child_multiple=False)
     text = extract_text(tag)
     return text
 

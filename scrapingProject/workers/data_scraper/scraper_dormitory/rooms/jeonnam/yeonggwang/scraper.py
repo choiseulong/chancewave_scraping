@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 신안군청
+# 채널 이름 : 영광군청
 
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
@@ -12,7 +12,7 @@ from .parser import *
     @post list
 
     method : GET
-    url = https://gnews.gg.go.kr/briefing/competition.do?page={page_count}&stateCode=ALL
+    url = https://www.yeonggwang.go.kr/bbs/?b_id=news_notice&site=headquarter_new&mn=9054&offset={(page_count -1) * 15}
     header :
         None
 
@@ -20,7 +20,7 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : self.channel_main_url + href
+    url : self.post_url + href
     header :
         None
 
@@ -31,16 +31,17 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '신안군청'
+        self.channel_name = '영광군청'
         self.post_board_name = '공지사항'
-        self.channel_main_url = 'http://www.shinan.go.kr'
+        self.channel_main_url = 'https://www.yeonggwang.go.kr'
+        self.post_url = 'https://www.yeonggwang.go.kr/bbs/'
         
     def scraping_process(self, channel_code, channel_url, date_range):
         super().scraping_process(channel_code, channel_url, date_range)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :
-            self.channel_url = self.channel_url_frame.format(self.page_count)
+            self.channel_url = self.channel_url_frame.format((self.page_count-1) * 15)
             self.post_list_scraping()
             if self.scraping_target :
                 self.target_contents_scraping()
