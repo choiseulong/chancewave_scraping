@@ -283,6 +283,8 @@ def search_img_list_in_contents(contents, channel_main_url):
     if img_list:
         for img in img_list:
             src = extract_attrs(img, 'src')
+            if src.startswith('./'):
+                src = src[1:]
             if 'http' not in src and 'base64' not in src :
                 src = channel_main_url + src
             imgs.append(src)

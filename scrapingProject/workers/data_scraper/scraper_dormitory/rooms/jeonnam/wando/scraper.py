@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 영암군청
+# 채널 이름 : 완도군청
 
 # 타겟 : 모든 공고
 # 중단 시점 : 마지막 페이지 도달시
@@ -12,7 +12,7 @@ from .parser import *
     @post list
 
     method : GET
-    url = https://www.yeongam.go.kr/home/www/open_information/yeongam_news/notice/yeongam.go?page={page_count}
+    url = https://www.wando.go.kr/www/administration/news/notice?page={page_count}
     header :
         None
 
@@ -20,7 +20,7 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : self.post_url + href
+    url : self.channel_main_url + href
     header :
         None
 
@@ -31,10 +31,9 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '영암군청'
+        self.channel_name = '완도군청'
         self.post_board_name = '공지사항'
-        self.channel_main_url = 'https://www.yeongam.go.kr'
-        self.post_url = 'https://www.yeonggwang.go.kr/bbs/'
+        self.channel_main_url = 'https://www.wando.go.kr'
         
     def scraping_process(self, channel_code, channel_url, date_range):
         super().scraping_process(channel_code, channel_url, date_range)
