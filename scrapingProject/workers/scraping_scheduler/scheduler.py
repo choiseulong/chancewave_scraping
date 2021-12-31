@@ -13,8 +13,8 @@ schedule.conf.update(
     result_backend = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/?authSource=admin',
     timezone = 'Asia/Seoul',
 )
-
-@schedule.task
+# 10시간 time limit
+@schedule.task(time_limit=36000)
 def job(group_name, room_name, channel_code, channel_url, date_range):
     startTime = datetime.now(timezone('Asia/Seoul')).isoformat()
     session = req.session()

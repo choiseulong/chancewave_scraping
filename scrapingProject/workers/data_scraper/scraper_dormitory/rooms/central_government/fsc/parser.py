@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type' : ['view_count', 'post_title', 'uploader', 'uploaded_time', 'post_url']
+        'multiple_type' : ['view_count', 'post_title', 'uploaded_time', 'post_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     contetnsBox = extract_children_tag(soup, 'div', {'class' : 'board-list-wrap'}, is_child_multiple=False)
