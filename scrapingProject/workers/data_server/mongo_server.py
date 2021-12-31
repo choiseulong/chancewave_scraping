@@ -14,7 +14,6 @@ class MongoServer:
         self.collection = self.db.get_collection('data')
         # self.collection = self.db.get_collection('checkpoint3')
 
-    
     def fine_one(self, query):
         return self.collection.find_one(query)
     
