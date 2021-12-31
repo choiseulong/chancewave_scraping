@@ -15,7 +15,10 @@ def post_list_parsing_process(**params):
             if td_idx == 1 :
                 a_tag = extract_children_tag(td, 'a', child_tag_attrs={}, is_child_multiple=False)
                 href = extract_attrs(a_tag, 'href')
-                postId = extract_numbers_in_text(href)
+                if '&p=' in href :
+                    postId = extract_text_between_prefix_and_suffix('?i=', '&p=', href)
+                else :
+                    postId = extract_numbers_in_text(href)
                 var['post_url'].append(
                     var['post_url_frame'].format(postId)
                 )
@@ -35,7 +38,7 @@ def post_list_parsing_process(**params):
         var['uploader'].append(uploader)
     value_list = [var[key] for key in key_list]
     result = merge_var_to_dict(key_list, value_list, var['channel_code'])
-    # print(result)
+    print(result)
     return result
 
 def post_content_parsing_process(**params):
