@@ -22,8 +22,8 @@ def post_list_parsing_process(**params):
             elif td_idx == 2:
                 var['uploader'].append(td_text)
             elif td_idx == 4:
-                if spanText[-1] == '.':
-                    spanText = spanText[:-1]
+                if td_text[-1] == '.':
+                    td_text = td_text[:-1]
                 var['uploaded_time'].append(
                     convert_datetime_string_to_isoformat_datetime(td_text)
                 )
@@ -46,7 +46,6 @@ def post_content_parsing_process(**params):
     thList = extract_children_tag(soup, 'th', child_tag_attrs={}, is_child_multiple=True)
     for th in thList:
         thText = extract_text(th)
-        # print(thText)
         if '내용' in thText:
             subject = find_next_tag(th)
             post_text = extract_text(subject)
@@ -56,7 +55,6 @@ def post_content_parsing_process(**params):
             break
     value_list = [var[key] for key in key_list]
     result = convert_merged_list_to_dict(key_list, value_list)
-    # print(result)
     return result
 
 

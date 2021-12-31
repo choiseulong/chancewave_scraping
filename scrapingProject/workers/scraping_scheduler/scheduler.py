@@ -12,6 +12,9 @@ schedule.conf.update(
     broker_url = 'amqp://CHANCEWAVE:MYSTERICO@message_broker_container//',
     result_backend = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/?authSource=admin',
     timezone = 'Asia/Seoul',
+    
+    # 2021-12-31 추가
+    broker_heartbeat=None
 )
 # 10시간 time limit
 @schedule.task(time_limit=36000)
