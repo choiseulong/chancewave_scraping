@@ -10,6 +10,7 @@ def post_list_parsing_process(**params):
     for tr in tr_list:
         td_list = extract_children_tag(tr, 'td', is_child_multiple=True)
         uploader = ''
+        # 2021-
         for td_idx, td in enumerate(td_list):
             td_text = extract_text(td)
             if not td_text and td_idx == 0:
