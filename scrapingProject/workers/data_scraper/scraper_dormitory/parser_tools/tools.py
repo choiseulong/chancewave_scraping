@@ -4,6 +4,7 @@ from datetime import datetime
 import ast
 import json
 import re
+from pytz import timezone
 from w3lib.html import remove_tags
 
 def change_to_soup(reponse_text):
@@ -73,6 +74,10 @@ def convert_datetime_string_to_isoformat_datetime(datetime_string):
     # 날짜 텍스트를 isoformat datetime으로 반환함
     special_word = re.sub(r'[^\.|\-|\:|\/]', '', datetime_string)
     special_word_count = {word:special_word.count(word) for word in special_word}
+    if len(special_word_count) == 1 and ':' in special_word_count.keys():
+        # 당일 업로드 되어 날짜가 아닌 시간:분:초로 제공될 경우.
+        today = datetime.now(timezone('Asia/Seoul')).isoformat()
+        return today
     if not special_word_count and len(datetime_string) == 8:
         # 20210101처럼 구분 특수문자가 없는 날짜 형식일 경우
         year, month, days = datetime_string[:4], datetime_string[4:6], datetime_string[6:]
@@ -143,8 +148,7 @@ def extract_contact_numbers_from_text(in_str):
     # 텍스트에서 연락처를 찾아 list로 반환
     contact_list = []
     contact_no_list = re.findall(r'(\d{2,3}[- .]?\d{3,4}[- .]?\d{4})', in_str)
-    if contact_list:
-        contact_list = list(set(contact_no_list))
+    contact_list = list(set(contact_no_list))
     return contact_list
 
 def convert_merged_list_to_dict(key_list, value_list):
@@ -171,8 +175,8 @@ def parse_onclick(text, idx=1):
 def convert_text_to_tuple(text):
     return ast.literal_eval(str(text))
 
-def extract_text_from_single_tag(soup, tag, child_tag_attrs):
-    tag = extract_children_tag(soup, tag, child_tag_attrs=child_tag_attrs, is_child_multiple=False)
+def extract_text_from_single_tag(parent_tag, child_tag, child_tag_attrs={}):
+    tag = extract_children_tag(parent_tag, child_tag, child_tag_attrs=child_tag_attrs, is_child_multiple=False)
     text = extract_text(tag)
     return text
 
@@ -283,6 +287,8 @@ def search_img_list_in_contents(contents, channel_main_url):
     if img_list:
         for img in img_list:
             src = extract_attrs(img, 'src')
+            if src.startswith('./'):
+                src = src[1:]
             if 'http' not in src and 'base64' not in src :
                 src = channel_main_url + src
             imgs.append(src)
