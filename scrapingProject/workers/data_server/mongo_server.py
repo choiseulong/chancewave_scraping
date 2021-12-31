@@ -2,7 +2,6 @@ from pymongo.errors import *
 from pymongo import MongoClient
 from .tools import *
 from datetime import datetime
-import traceback
 
 class MongoServer:
 
