@@ -22,8 +22,8 @@ def post_list_parsing_process(**params):
             elif td_idx == 2:
                 var['uploader'].append(td_text)
             elif td_idx == 4:
-                if spanText[-1] == '.':
-                    spanText = spanText[:-1]
+                if td_text[-1] == '.':
+                    td_text = td_text[:-1]
                 var['uploaded_time'].append(
                     convert_datetime_string_to_isoformat_datetime(td_text)
                 )
