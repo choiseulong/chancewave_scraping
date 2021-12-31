@@ -27,7 +27,7 @@ from .parser import *
     required data searching point :
         header_1 : 메인페이지에서 쿠키 받아옴
 '''
-sleep_sec = 2
+sleep_sec = 4
 isUpdate = True
 
 class Scraper(ABCScraper):

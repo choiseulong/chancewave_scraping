@@ -38,7 +38,7 @@ from .parser import *
 '''
 
 isUpdate = True
-sleep_sec = 3
+sleep_sec = 4
 jsonize = True
 
 class Scraper(ABCScraper):

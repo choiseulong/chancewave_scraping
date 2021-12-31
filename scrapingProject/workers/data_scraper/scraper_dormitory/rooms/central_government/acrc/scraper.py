@@ -24,7 +24,7 @@ from .parser import *
     url : post_url
 '''
 
-sleep_sec = 3
+sleep_sec = 4
 isUpdate = True
 
 class Scraper(ABCScraper):

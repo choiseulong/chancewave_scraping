@@ -46,7 +46,7 @@ from .parser import *
         body_1 = {nttId}
 '''
 
-sleep_sec = 3
+sleep_sec = 4
 isUpdate = True
 
 class Scraper(ABCScraper):

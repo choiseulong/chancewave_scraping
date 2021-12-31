@@ -39,7 +39,7 @@ from .parser import *
         None
 
 '''
-sleep_sec = 2
+sleep_sec = 4
 isUpdate = True
 
 class Scraper(ABCScraper):
