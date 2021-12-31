@@ -30,7 +30,7 @@ def get_method_response(session, url, sleep_sec=2):
 def post_method_response(session, url, data={}, sleep_sec=2, jsonize=False):
     if jsonize :
         data = json.dumps(data)
-    response = session.post(url, data=data)
+    response = session.post(url, data=data, verify=False)
     status = 'fail'
     if response.status_code == 200 :
         status = 'ok'
