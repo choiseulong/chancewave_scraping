@@ -16,7 +16,7 @@ def post_list_parsing_process(**params):
                 if var['page_count'] == 1 :
                     pass
                 else :
-                    continue
+                    break
 
             if td_idx == 1 : 
                 var['post_title'].append(td_text)
