@@ -10,12 +10,15 @@ def post_list_parsing_process(**params):
     if not liList :
         return 
     for li in liList:
-        post_thumbnail = extract_children_tag(li, 'img', child_tag_attrs={}, is_child_multiple=False)
-        src = extract_attrs(post_thumbnail, 'src')
-        if 'image.do?' in src:
-            var['post_thumbnail'].append(
-                var['channel_main_url'] + src
-            )
+        post_thumbnail = extract_children_tag(li, 'img')
+        if post_thumbnail:
+            src = extract_attrs(post_thumbnail, 'src')
+            if 'image.do?' in src:
+                var['post_thumbnail'].append(
+                    var['channel_main_url'] + src
+                )
+            else :
+                var['post_thumbnail'].append(None)
         else :
             var['post_thumbnail'].append(None)
         a_tag = extract_children_tag(li, 'a', {'class' : 'a1'}, is_child_multiple=False)

@@ -46,7 +46,6 @@ def post_content_parsing_process(**params):
     thList = extract_children_tag(soup, 'th', child_tag_attrs={}, is_child_multiple=True)
     for th in thList:
         thText = extract_text(th)
-        # print(thText)
         if '내용' in thText:
             subject = find_next_tag(th)
             post_text = extract_text(subject)
@@ -56,7 +55,6 @@ def post_content_parsing_process(**params):
             break
     value_list = [var[key] for key in key_list]
     result = convert_merged_list_to_dict(key_list, value_list)
-    # print(result)
     return result
 
 
