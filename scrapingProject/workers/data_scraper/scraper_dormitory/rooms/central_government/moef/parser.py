@@ -22,7 +22,6 @@ def post_list_parsing_process(**params):
         a_tag = extract_children_tag(li, 'a')
         if not a_tag:
             continue
-            # print(li)
         MOSF, MOSFBBS = parse_href(
             extract_attrs(
                 a_tag,
