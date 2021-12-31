@@ -11,6 +11,8 @@ def post_list_parsing_process(**params):
     for tr in tr_list:
         td_list = extract_children_tag(tr, 'td', child_tag_attrs={}, is_child_multiple=True)
         for td_idx, td in enumerate(td_list):
+            if len(td_list) != 6 :
+                break
             if td_idx == 1 :
                 var['post_title'].append(extract_text(td))
                 var['post_url'].append(
