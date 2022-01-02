@@ -111,4 +111,5 @@ if __name__ == '__main__':
 
     scraper = importlib.import_module(scraperRoomAddress).Scraper(session)
     scraper.scraping_process(URL_CODE, TARGET_URL, [start_date, end_date])
+    print('END')
 
