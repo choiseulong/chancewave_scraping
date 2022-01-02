@@ -17,7 +17,6 @@ def post_list_parsing_process(**params):
                     pass
                 else :
                     break
-
             if td_idx == 1 : 
                 var['post_title'].append(td_text)
                 a_tag = extract_children_tag(td, 'a', child_tag_attrs={}, is_child_multiple=False)

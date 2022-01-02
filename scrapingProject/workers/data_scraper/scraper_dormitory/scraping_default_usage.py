@@ -48,9 +48,9 @@ class Scraper(metaclass=ABCMeta):
         '''
             채널 메인에서 게시글의 기본정보를 가져오기 위한 요청을 처리함
         '''
-        # 최대 20 요청까지만 처리하게끔 테스트 처리
+        # 최대 10 페이지까지만 처리하게끔 테스트
         # 추후 제한 방향 결정시 수정
-        if self.page_count == 20 :
+        if self.page_count == 10 :
             self.scraping_target = []
             return
 

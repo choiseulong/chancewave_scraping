@@ -3,6 +3,11 @@ import importlib
 import requests as req
 from datetime import datetime
 from pytz import timezone
+import logging
+
+# 로깅 레벨 CRITICAL로 선언 
+urllib3_logger = logging.getLogger('urllib3')
+urllib3_logger.setLevel(logging.CRITICAL)
 
 schedule = Celery('scheduler')
 
@@ -12,7 +17,7 @@ schedule.conf.update(
     broker_url = 'amqp://CHANCEWAVE:MYSTERICO@message_broker_container//',
     result_backend = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/?authSource=admin',
     timezone = 'Asia/Seoul',
-    
+
     # 2021-12-31 추가
     broker_heartbeat=None
 )
