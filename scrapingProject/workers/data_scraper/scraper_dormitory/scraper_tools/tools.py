@@ -6,6 +6,7 @@ from ..parser_tools.tools import *
 import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+urllib3.disable_warnings(urllib3.exceptions.HeaderParsingError)
 
 def set_headers(session, additional_key_value=None, isUpdate=False):
     headers = {
