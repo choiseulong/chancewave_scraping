@@ -271,3 +271,39 @@ def search_img_list_in_contents(contents, channel_main_url):
                 src = channel_main_url + src
             imgs.append(src)
     return imgs
+
+
+def make_absolute_img_src(img_src, channel_main_url):
+    """
+    img 태그의 src가 상대 경로인 경우 절대경로로 변환
+    :param img_src: img 태그의 src
+    :param channel_main_url: host
+    :return: 이미지 절대경로 or base64 인코딩 파일
+    """
+    if 'http' in img_src or 'base64' in img_src:
+        return img_src
+
+    host_url = channel_main_url
+
+    if host_url[-1] == '/':
+        host_url = host_url[:-1]
+
+    return host_url + img_src
+
+
+def make_absolute_url(in_url, channel_main_url):
+    """
+    url이 상대경로이면 절대로 변환하여 리턴, 절대 경로이면 그대로 리턴
+    :param in_url: 변환 대상 url
+    :param channel_main_url: host
+    :return: url의 절대경로
+    """
+    if 'http' in in_url:
+        return in_url
+
+    host_url = channel_main_url
+
+    if host_url[-1] == '/':
+        host_url = host_url[:-1]
+
+    return host_url + in_url
