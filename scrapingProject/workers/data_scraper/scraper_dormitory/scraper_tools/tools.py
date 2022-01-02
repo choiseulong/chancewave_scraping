@@ -71,42 +71,42 @@ def return_key_value(data):
 
 
 def get_post_data_frame(
-        channelCode='', 
-        channelUrl='', 
-        postUrlCanUse=True, 
-        channelName='', 
-        postBoardName=''
+        channel_code='',
+        channel_url='',
+        post_url_can_use=True,
+        channel_name='',
+        post_board_name=''
     ):
     now = datetime.now(timezone('Asia/Seoul'))
     return {
-        'channelName' : channelName,
-        'postBoardName' : postBoardName,
-        'channelCode' : channelCode,
-        'channelUrl' : channelUrl,
-        'postUrl' : None,
-        'postUrlCanUse' : postUrlCanUse,
-        'linkedPostUrl': None,
-        'createdTime' : now.isoformat(),
-        'postTitle' : None,
-        'postSubject' : None,
-        'postText' : None,
-        'postContentTarget' : None,
-        'postTextType' : 'onlyPostText',
+        'channel_name' : channel_name,
+        'post_board_name' : post_board_name,
+        'channel_code' : channel_code,
+        'channel_url' : channel_url,
+        'post_url' : None,
+        'post_url_can_use' : post_url_can_use,
+        'linked_post_url': None,
+        'created_time' : now.isoformat(),
+        'post_title' : None,
+        'post_subject' : None,
+        'post_text' : None,
+        'post_content_target' : None,
+        'post_text_type' : 'only_post_text',
         'contact': None,
-        'postImageUrl': None,
-        'postThumbnail' : '',
-        'viewCount' : None,
-        'uploadedTime' : None,
+        'post_image_url': None,
+        'post_thumbnail' : '',
+        'view_count' : None,
+        'uploaded_time' : None,
         'uploader' : None,
-        'startDate' : None,
-        'endDate' : None,
-        'startDate2' : None,
-        'endDate2' : None,
-        'isUpdateCheckTime' : [],
-        'updatedTime' : [],
-        'isGoingOn' : None,
+        'start_date' : None,
+        'end_date' : None,
+        'start_date2' : None,
+        'end_date2' : None,
+        'is_update_check_time' : [],
+        'updated_time' : [],
+        'is_going_on' : None,
         'crc' : None,
-        'extraInfo' : []
+        'extra_info' : []
     }
 
 
@@ -114,7 +114,7 @@ def find_key_root(key_name) :
     frame = get_post_data_frame()
     value = frame.get(key_name)
     if value is not None:
-        return 
+        return
     else :
         for key in frame.keys():
             if type(frame[key]) == dict:
