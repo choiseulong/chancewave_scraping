@@ -6,6 +6,7 @@ import requests as req
 import importlib
 from datetime import datetime, timedelta
 from pytz import timezone
+import random
 
 import os
 print(os.path.dirname(__file__))
@@ -50,19 +51,21 @@ class ScrapingManager:
 
     def scraping_worker_job_init(self):
         self.get_channel_url()
+        # 셔플 테스트
+        random.shuffle(self.channel_url_list)
         for channel_code, channel_url in self.channel_url_list:
             group_name = extract_group_code(channel_code)
             room_name, channel_code = extract_room_name_and_channel_code(channel_code)
-            # job.delay(group_name, room_name, channel_code, channel_url, self.date_range)
+            job.delay(group_name, room_name, channel_code, channel_url, self.date_range)
 
-            if channel_code != 'gg_0':
-                continue
-            print(channel_code, 'init')
-            print(group_name, room_name)
-            session = self.get_requests_session()
-            scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'
-            scraper = importlib.import_module(scraper_room_address).Scraper(session)
-            scraper.scraping_process(channel_code, channel_url, self.date_range)
+            # if channel_code != 'gg_0':
+            #     continue
+            # print(channel_code, 'init')
+            # print(group_name, room_name)
+            # session = self.get_requests_session()
+            # scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'
+            # scraper = importlib.import_module(scraper_room_address).Scraper(session)
+            # scraper.scraping_process(channel_code, channel_url, self.date_range)
     
     def get_date_range(self, targetDate):
         start_date = convert_datetime_string_to_isoformat_datetime(targetDate['start_date'])

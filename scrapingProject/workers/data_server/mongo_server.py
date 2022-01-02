@@ -6,12 +6,11 @@ from datetime import datetime
 class MongoServer:
 
     def __init__(self):
-        self.url = 'mongodb://admin:mysterico@k8s.mysterico.com:31489'
-        # self.url = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/'
+        # self.url = 'mongodb://admin:mysterico@k8s.mysterico.com:31489'
+        self.url = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/'
         self.connection = MongoClient(self.url)
         self.db = self.connection.get_database('scraping')
         self.collection = self.db.get_collection('data')
-        # self.collection = self.db.get_collection('checkpoint3')
 
     def fine_one(self, query):
         return self.collection.find_one(query)
