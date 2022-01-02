@@ -9,6 +9,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def set_headers(session, additional_key_value=None, isUpdate=False):
     headers = {
+        "Connection": "keep-alive",
         "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36"
     }
     if additional_key_value and isUpdate:

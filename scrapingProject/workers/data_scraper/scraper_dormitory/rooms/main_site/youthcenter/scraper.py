@@ -2,10 +2,8 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# SCRAPER
 # youthcenter_0 : 청년정책 통합검색
 # 타겟 : 모든 포스트
-# 중단 시점 : 유효 포스트가 0개인 경우가 5번 연속 나올 경우
 
 # HTTP Request
 '''
