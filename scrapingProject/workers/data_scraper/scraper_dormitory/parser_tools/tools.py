@@ -21,7 +21,7 @@ def extract_text(tag, is_child_multiple=False):
     # Tag 내의 Text를 반환함
     if not isinstance(tag, bs4.element.Tag):
         return ''
-        
+
     if is_child_multiple:
         tag_list = tag
         text_list = [clean_text(tag.text) for tag in tag_list]
@@ -289,6 +289,9 @@ def search_img_list_in_contents(contents, channel_main_url):
     # 포스트 내용('post_text')이 담긴 tag 내부에서 img tag를 찾아서 반환함
     # channle의 url이 포함되지 않은 src Attrs 인 경우 
     # channel_main_url + src 로 반영함
+    if not contents :
+        print(f'{channel_main_url} contents is empty')
+        return
     img_list = extract_children_tag(contents, 'img', {'src' : True}, is_child_multiple=True)
     imgs = []
     if img_list:

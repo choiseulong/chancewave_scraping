@@ -39,11 +39,14 @@ def post_content_parsing_process(**params):
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     content_body = extract_children_tag(soup, 'div', {'class' : 'view_synap'}, is_child_multiple=False)
     dtList = extract_children_tag(content_body, 'dt', child_tag_attrs={}, is_child_multiple=True)
-    for dt in dtList:
-        dtText = extract_text(dt)
-        if '담당부서' in dtText:
-            var['contact'] = dtText
-            break
+    if dtList :
+        for dt in dtList:
+            dtText = extract_text(dt)
+            if '담당부서' in dtText:
+                var['contact'] = dtText
+                break
+    else :
+        var['contact'] = ''
     post_text = extract_text(content_body)
     var['post_text'] = clean_text(post_text)
     var['post_image_url'] = search_img_list_in_contents(content_body, var['channel_main_url'])

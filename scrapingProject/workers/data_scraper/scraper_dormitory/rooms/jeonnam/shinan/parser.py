@@ -54,11 +54,12 @@ def post_content_parsing_process(**params):
         info_div_list = extract_children_tag(tmp_uploader_info, 'div', is_child_multiple=True)
         for div in info_div_list:
             div_text = extract_text(div)
-            div_text_splited = div_text.split(' : ')[1] + ' '
-            if '부서' in div_text or '담당자' in div_text:
-                uploader += div_text_splited
-            elif '연락처' in div_text:
-                var['contact'] = div_text_splited
+            if div_text :
+                div_text_splited = div_text.split(' : ')[1] + ' '
+                if '부서' in div_text or '담당자' in div_text:
+                    uploader += div_text_splited
+                elif '연락처' in div_text:
+                    var['contact'] = div_text_splited
         tmp_content = decompose_tag(tmp_content, 'div', {'class':'staff_info'})
     else :
         var['contact'] = ''

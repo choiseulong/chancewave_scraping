@@ -30,7 +30,6 @@ def post_list_parsing_process(**params):
             elif td_idx == 4 :
                 if td_text:
                     td_text = parse_date(td_text)
-                    print(td_text)
                     try :
                         var['uploaded_time'].append(
                             convert_datetime_string_to_isoformat_datetime(td_text)

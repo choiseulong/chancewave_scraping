@@ -8,6 +8,9 @@ def post_list_parsing_process(**params):
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     tbody = extract_children_tag(soup, 'tbody', child_tag_attrs={}, is_child_multiple=False)
     tr_list = extract_children_tag(tbody, 'tr', {"class" : True}, is_child_multiple=True)
+    if not tr_list :
+        print(f'empty contetns : {var["channel_main_url"]}')
+        return 
     for tr in tr_list:
         td_list = extract_children_tag(tr, 'td', child_tag_attrs={}, is_child_multiple=True)
         for td_idx, td in enumerate(td_list):
@@ -73,6 +76,9 @@ def postListParsingProcess_other(**params):
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     tbody = extract_children_tag(soup, 'tbody', child_tag_attrs={}, is_child_multiple=False)
     tr_list = extract_children_tag(tbody, 'tr', child_tag_attrs={}, is_child_multiple=True)
+    if not tr_list :
+        print(f'empty contetns : {var["channel_main_url"]}')
+        return
     for tr in tr_list:
         var['post_url'].append(
             var['post_url_frame'].format(
