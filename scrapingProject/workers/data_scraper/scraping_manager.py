@@ -7,8 +7,14 @@ import importlib
 from datetime import datetime, timedelta
 from pytz import timezone
 import random
-
 import os
+
+from requests import session
+from requests.adapters import HTTPAdapter
+from requests.sessions import Session
+from urllib3.util import Retry
+
+
 print(os.path.dirname(__file__))
 
 URL_CONFIG_INI_PATH = os.path.join(os.path.dirname(__file__), 'scraper_dormitory', 'scraper_tools', 'url.ini')
@@ -29,6 +35,32 @@ class ScrapingManager:
             }
         ):
         session = req.Session()
+        session.verify = FIDDLER_PEM_PATH
+        session.proxies = proxies
+        return session
+
+    def make_session(
+            self, 
+            proxies = {
+                "http": "http://127.0.0.1:8889", 
+                "https":"http:127.0.0.1:8889"
+            }
+        ):
+        retries_num = 3 
+        backoff_factor = 0.3
+        status_forcelist = (500, 400)
+
+        retry = Retry(
+            total = retries_num,
+            read = retries_num,
+            connect = retries_num,
+            backoff_factor = backoff_factor,
+            status_forcelist = status_forcelist
+        )
+
+        session = Session()
+        session.mount("http://", HTTPAdapter(max_retries=retry))
+        session.mount("https://", HTTPAdapter(max_retries=retry))
         session.verify = FIDDLER_PEM_PATH
         session.proxies = proxies
         return session
@@ -56,16 +88,17 @@ class ScrapingManager:
         for channel_code, channel_url in self.channel_url_list:
             group_name = extract_group_code(channel_code)
             room_name, channel_code = extract_room_name_and_channel_code(channel_code)
-            # job.delay(group_name, room_name, channel_code, channel_url, self.date_range)
+            job.delay(group_name, room_name, channel_code, channel_url, self.date_range)
 
-            if channel_code != 'shinan_0':
-                continue
-            print(channel_code, 'init')
-            print(group_name, room_name)
-            session = self.get_requests_session()
-            scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'
-            scraper = importlib.import_module(scraper_room_address).Scraper(session)
-            scraper.scraping_process(channel_code, channel_url, self.date_range)
+            # if channel_code != 'gbgs_0':
+            #     continue
+            # print(channel_code, 'init')
+            # print(group_name, room_name)
+            # # session = self.get_requests_session()
+            # session = self.make_session()
+            # scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'
+            # scraper = importlib.import_module(scraper_room_address).Scraper(session)
+            # scraper.scraping_process(channel_code, channel_url, self.date_range)
     
     def get_date_range(self, targetDate):
         start_date = convert_datetime_string_to_isoformat_datetime(targetDate['start_date'])

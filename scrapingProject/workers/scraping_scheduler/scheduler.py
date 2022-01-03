@@ -1,6 +1,9 @@
 from celery import Celery
 import importlib
-import requests as req
+from requests import session
+from requests.adapters import HTTPAdapter
+from requests.sessions import Session
+from urllib3.util import Retry
 from datetime import datetime
 from pytz import timezone
 import logging
@@ -21,11 +24,31 @@ schedule.conf.update(
     # 2021-12-31 추가
     broker_heartbeat=None
 )
+
+def make_session():
+    retries_num = 3 
+    backoff_factor = 0.3
+    status_forcelist = (500, 400)
+
+    retry = Retry(
+        total = retries_num,
+        read = retries_num,
+        connect = retries_num,
+        backoff_factor = backoff_factor,
+        status_forcelist = status_forcelist
+    )
+
+    session = Session()
+    session.mount("http://", HTTPAdapter(max_retries=retry))
+    session.mount("https://", HTTPAdapter(max_retries=retry))
+    return session
+
+
 # 10시간 time limit
 @schedule.task(time_limit=36000)
 def job(group_name, room_name, channel_code, channel_url, date_range):
     startTime = datetime.now(timezone('Asia/Seoul')).isoformat()
-    session = req.session()
+    session = make_session()
     scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'
     scraper = importlib.import_module(scraper_room_address).Scraper(session)
     scraper.scraping_process(channel_code, channel_url, date_range)
