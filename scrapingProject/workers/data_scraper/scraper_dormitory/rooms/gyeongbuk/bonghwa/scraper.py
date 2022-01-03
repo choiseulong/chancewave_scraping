@@ -25,7 +25,7 @@ from .parser import *
         None
 
 '''
-sleep_sec = 4
+sleep_sec = 1
 isUpdate = True
 
 class Scraper(ABCScraper):
@@ -43,14 +43,13 @@ class Scraper(ABCScraper):
         while True :
             self.channel_url = self.channel_url_frame.format(self.page_count)
             self.post_list_scraping()
-            self.page_count += 1
-            # if self.scraping_target :
-            #     self.target_contents_scraping()
-            #     self.collect_data()
-            #     self.mongo.reflect_scraped_data(self.collected_data_list)
-            #     self.page_count += 1
-            # else :
-            #     break
+            if self.scraping_target :
+                self.target_contents_scraping()
+                self.collect_data()
+                self.mongo.reflect_scraped_data(self.collected_data_list)
+                self.page_count += 1
+            else :
+                break
 
     def post_list_scraping(self):
         super().post_list_scraping(post_list_parsing_process, 'get', sleep_sec)

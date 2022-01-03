@@ -2,10 +2,8 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# SCRAPER
 # youthcenter_0 : 청년정책 통합검색
 # 타겟 : 모든 포스트
-# 중단 시점 : 유효 포스트가 0개인 경우가 5번 연속 나올 경우
 
 # HTTP Request
 '''
@@ -58,6 +56,10 @@ class Scraper(ABCScraper):
             self.session = set_headers(self.session)
             self.channel_url = self.channel_url_frame.format(self.page_count)
             self.post_list_scraping()
+
+            if not self.scraping_target:
+                break
+            
             if isinstance(self.scraping_target, list):
                 self.additional_key_value.extend(find_request_params(self.scraping_target, ['Cookie'])) 
                 for i in range(len(self.additional_key_value)):

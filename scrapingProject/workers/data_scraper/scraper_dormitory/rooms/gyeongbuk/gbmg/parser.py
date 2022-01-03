@@ -26,7 +26,7 @@ def post_list_parsing_process(**params):
                 )
                 var['post_title'].append(td_text)
             elif td_idx == 3 :
-                uploader += td_text + ' '
+                var['uploader'].append(uploader)
             elif td_idx == 5:
                 var['view_count'].append(
                     extract_numbers_in_text(td_text)
@@ -35,7 +35,6 @@ def post_list_parsing_process(**params):
                 var['uploaded_time'].append(
                     convert_datetime_string_to_isoformat_datetime(td_text)
                 )
-        var['uploader'].append(uploader)
     value_list = [var[key] for key in key_list]
     result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     # print(result)

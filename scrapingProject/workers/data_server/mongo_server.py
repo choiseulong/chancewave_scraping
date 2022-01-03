@@ -2,6 +2,7 @@ from pymongo.errors import *
 from pymongo import MongoClient
 from .tools import *
 from datetime import datetime
+from time import sleep
 
 class MongoServer:
 
@@ -11,7 +12,6 @@ class MongoServer:
         self.connection = MongoClient(self.url)
         self.db = self.connection.get_database('scraping')
         self.collection = self.db.get_collection('data')
-        # self.collection = self.db.get_collection('checkpoint3')
 
     def fine_one(self, query):
         return self.collection.find_one(query)
@@ -53,6 +53,7 @@ class MongoServer:
                 bulk_insert_data_list.append(new_data)
         if bulk_insert_data_list:
             self.insert_many(bulk_insert_data_list)
+        sleep(2)
 
     def update_data_process(self, new_data, before_data):
         now = datetime.now(timezone('Asia/Seoul')).isoformat()

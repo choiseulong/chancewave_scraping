@@ -43,15 +43,18 @@ class Scraper(metaclass=ABCMeta):
         self.channel_url_frame = channel_url #page_count 적용이 필요한 경우 사용
         self.post_url_frame = self.post_url
         # 추가 로직 작성 必
+    
+    def __is_continue(self, check_num):
+        if self.page_count == check_num:
+            self.scraping_target = []
+            return True
 
     def post_list_scraping(self, post_list_parsing_process, method, data='', sleep_sec=2, jsonize = False):
         '''
             채널 메인에서 게시글의 기본정보를 가져오기 위한 요청을 처리함
         '''
-        # 최대 20 요청까지만 처리하게끔 테스트 처리
-        # 추후 제한 방향 결정시 수정
-        if self.page_count == 20 :
-            self.scraping_target = []
+        if self.__is_continue(4):
+            self.session.close()
             return
 
         self.collected_data_list = []

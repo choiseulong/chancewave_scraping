@@ -69,13 +69,7 @@ def post_content_parsing_process(**params):
                 )
     bv_content_wrap = extract_children_tag(soup, 'div', {'class' : 'bv_content_wrap'}, is_child_multiple=False)
     var['post_text'] = extract_text(bv_content_wrap)
-    img_list = extract_children_tag(bv_content_wrap, 'img', {'src' : True}, is_child_multiple=True)
-    for img in img_list:
-        src = extract_attrs(img, 'src')
-        if 'http' not in src and 'base64' not in src :
-            src = var['channel_main_url'] + src
-        var['post_image_url'].append(src)
-
+    var['post_image_url'] = search_img_list_in_contents(bv_content_wrap, var['channel_main_url'])
     value_list = [var[key] for key in key_list]
     result = convert_merged_list_to_dict(key_list, value_list)
     return result

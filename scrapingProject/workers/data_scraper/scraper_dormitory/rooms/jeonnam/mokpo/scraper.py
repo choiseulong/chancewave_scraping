@@ -25,7 +25,7 @@ from .parser import *
         None
 
 '''
-sleep_sec = 4
+sleep_sec = 5
 isUpdate = True
 
 class Scraper(ABCScraper):
@@ -38,7 +38,7 @@ class Scraper(ABCScraper):
     def scraping_process(self, channel_code, channel_url, date_range):
         super().scraping_process(channel_code, channel_url, date_range)
         self.session = set_headers(self.session)
-        self.page_count = 1
+        self.page_count = 16
         while True :
             self.channel_url = self.channel_url_frame.format(self.page_count)
             self.post_list_scraping()

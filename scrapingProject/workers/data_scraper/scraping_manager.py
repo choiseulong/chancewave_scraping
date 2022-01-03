@@ -6,8 +6,15 @@ import requests as req
 import importlib
 from datetime import datetime, timedelta
 from pytz import timezone
-
+import random
 import os
+
+from requests import session
+from requests.adapters import HTTPAdapter
+from requests.sessions import Session
+from urllib3.util import Retry
+
+
 print(os.path.dirname(__file__))
 
 URL_CONFIG_INI_PATH = os.path.join(os.path.dirname(__file__), 'scraper_dormitory', 'scraper_tools', 'url.ini')
@@ -50,12 +57,13 @@ class ScrapingManager:
 
     def scraping_worker_job_init(self):
         self.get_channel_url()
+        random.shuffle(self.channel_url_list)
         for channel_code, channel_url in self.channel_url_list:
             group_name = extract_group_code(channel_code)
             room_name, channel_code = extract_room_name_and_channel_code(channel_code)
             # job.delay(group_name, room_name, channel_code, channel_url, self.date_range)
 
-            if channel_code != 'bonghwa_0':
+            if channel_code not in ['mcst_0']:
                 continue
             print(channel_code, 'init')
             print(group_name, room_name)

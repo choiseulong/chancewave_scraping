@@ -22,7 +22,7 @@ from .parser import *
         None
 
 '''
-sleep_sec = 4
+sleep_sec = 1
 isUpdate = True
 
 class Scraper(ABCScraper):
@@ -40,7 +40,6 @@ class Scraper(ABCScraper):
         while True :
             self.channel_url = self.channel_url_frame.format(self.page_count)
             self.post_list_scraping()
-            print(self.scraping_target)
             if self.scraping_target :
                 self.target_contents_scraping()
                 self.collect_data()

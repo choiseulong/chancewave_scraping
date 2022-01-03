@@ -36,6 +36,7 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    # post_title
     tbody = extract_children_tag(soup, 'tbody')
     th_list = extract_children_tag(tbody, 'th', is_child_multiple=True)
     for th in th_list:
@@ -45,22 +46,30 @@ def post_content_parsing_process(**params):
                 find_next_tag(th)
             )
             break
-    tmp_content = extract_children_tag(soup, 'td', {'class' : 'content'})
+    # contact, uploader
     tmp_uploader_info = extract_children_tag(soup, 'div', child_tag_attrs={'class':'staff_info'})
-    info_div_list = extract_children_tag(tmp_uploader_info, 'div', is_child_multiple=True)
+    tmp_content = extract_children_tag(soup, 'td', {'class' : 'content'})
     uploader = ''
-    for div in info_div_list:
-        div_text = extract_text(div)
-        div_text_splited = div_text.split(' : ')[1] + ' '
-        if '부서' in div_text or '담당자' in div_text:
-            uploader += div_text_splited
-        elif '연락처' in div_text:
-            var['contact'] = div_text_splited
-    tmp_content = decompose_tag(tmp_content, 'div', {'class':'staff_info'})
-    post_text = extract_text(tmp_content)
-    var['post_text'] = clean_text(post_text)
-    var['post_image_url'] = search_img_list_in_contents(tmp_content, var['channel_main_url'])
+    if tmp_uploader_info:
+        info_div_list = extract_children_tag(tmp_uploader_info, 'div', is_child_multiple=True)
+        for div in info_div_list:
+            div_text = extract_text(div)
+            if div_text :
+                div_text_splited = div_text.split(' : ')[1] + ' '
+                if '부서' in div_text or '담당자' in div_text:
+                    uploader += div_text_splited
+                elif '연락처' in div_text:
+                    var['contact'] = div_text_splited
+        tmp_content = decompose_tag(tmp_content, 'div', {'class':'staff_info'})
+    else :
+        var['contact'] = ''
     var['uploader'] = uploader
+    
+    # contact, post_text, post_image_url
+    var['post_text'] = extract_text(tmp_content)
+    if not var['contact']:
+        var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_content))
+    var['post_image_url'] = search_img_list_in_contents(tmp_content, var['channel_main_url'])
     value_list = [var[key] for key in key_list]
     result = convert_merged_list_to_dict(key_list, value_list)
     return result

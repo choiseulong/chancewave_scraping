@@ -5,7 +5,6 @@ from .parser import *
 # 채널 이름 : 복지로
 
 # 타겟 : 모든 포스트
-# 중단 시점 : 포스트가 존재하지 않는 마지막 지점 도달 시
 
 #HTTP Request
 '''
@@ -38,7 +37,7 @@ from .parser import *
 '''
 
 isUpdate = True
-sleep_sec = 4
+sleep_sec = 1
 jsonize = True
 
 class Scraper(ABCScraper):
@@ -55,12 +54,15 @@ class Scraper(ABCScraper):
         for i in range(1,4):
             self.tabId = i
             while True :
-                self.page_count += 1 
                 self.post_list_scraping()
+                if not self.scraping_target:
+                    break
                 if self.scraping_target :
                     self.target_contents_scraping()
                     self.collect_data()
                     self.mongo.reflect_scraped_data(self.collected_data_list)
+                    self.page_count += 1 
+
                 else:
                     break
 

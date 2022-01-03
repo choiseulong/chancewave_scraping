@@ -58,6 +58,7 @@ def post_list_parsing_process(**params):
                 )
     value_list = [var[key] for key in key_list]
     result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    # print(result)
     return result
 
 def post_content_parsing_process(**params):

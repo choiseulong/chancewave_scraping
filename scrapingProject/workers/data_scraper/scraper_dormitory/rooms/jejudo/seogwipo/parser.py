@@ -7,6 +7,8 @@ def post_list_parsing_process(**params):
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     tbody = extract_children_tag(soup, 'tbody', {}, is_child_multiple=False)
     trList_all = extract_children_tag(tbody, 'tr', child_tag_attrs={}, is_child_multiple=True)
+    if not trList_all: 
+        return
     trList_info = extract_children_tag(tbody, 'tr', {'class' : 'info'}, is_child_multiple=True)
     validTrList = list(set(trList_all) - set(trList_info))
     for tr in validTrList :
