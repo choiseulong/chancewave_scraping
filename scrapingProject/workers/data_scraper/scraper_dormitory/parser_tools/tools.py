@@ -6,6 +6,8 @@ import json
 import xmltodict
 import re
 from w3lib.html import remove_tags
+from urllib.parse import urljoin
+
 
 class DataStatus():
     not_multiple = False
@@ -261,6 +263,7 @@ def json_type_default_setting(params, target_key_info):
 def extract_text_between_prefix_and_suffix(prefix, suffix, text):
     return text[text.find(prefix)+len(prefix):text.find(suffix)]
 
+
 def search_img_list_in_contents(contents, channel_main_url):
     img_list = extract_children_tag(contents, 'img', {'src' : True}, DataStatus.multiple)
     imgs = []
@@ -268,7 +271,7 @@ def search_img_list_in_contents(contents, channel_main_url):
         for img in img_list:
             src = extract_attrs(img, 'src')
             if 'http' not in src and 'base64' not in src :
-                src = channel_main_url + src
+                src = urljoin(channel_main_url, src)
             imgs.append(src)
     return imgs
 
@@ -283,12 +286,7 @@ def make_absolute_img_src(img_src, channel_main_url):
     if 'http' in img_src or 'base64' in img_src:
         return img_src
 
-    host_url = channel_main_url
-
-    if host_url[-1] == '/':
-        host_url = host_url[:-1]
-
-    return host_url + img_src
+    return urljoin(channel_main_url, img_src)
 
 
 def make_absolute_url(in_url, channel_main_url):
@@ -301,9 +299,4 @@ def make_absolute_url(in_url, channel_main_url):
     if 'http' in in_url:
         return in_url
 
-    host_url = channel_main_url
-
-    if host_url[-1] == '/':
-        host_url = host_url[:-1]
-
-    return host_url + in_url
+    return urljoin(channel_main_url, in_url)

@@ -28,7 +28,6 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 sleepSec = 0
 isUpdate = True
 
-POST_URL_FORMAT = '/bbs/boardView.do?bIdx={bIdx}&bsIdx={bsIdx}&bcIdx={bcIdx}&menuId=1590&isManager=false&isCharge=false&page=1'
 
 class Scraper(ABCScraper):
     def __init__(self, session):
@@ -36,7 +35,6 @@ class Scraper(ABCScraper):
         self.channel_name = '구리시'
         self.post_board_name = '문화행사'
         self.channel_main_url = 'https://www.guri.go.kr'
-        self.post_url = 'https://www.guri.go.kr/brd/board/1026/L/CATEGORY/2525/menu/1669?brdType=R&thisPage=1&bbIdx=MTM1OTM0NTc=&searchField=&searchText='
         print(f'SCRAP {self.channel_name} - {self.post_board_name}')
 
     def scraping_process(self, channel_code, channel_url, date_range):
@@ -84,6 +82,7 @@ def post_list_parsing_process(**params):
         for post_info_idx, tmp_td in enumerate(tmp_post_row.find_all('td')):
             # 게시물이 없는 경우 & 페이지 끝
             if tmp_td.text.find('현재 게시글이 없습니다.') > -1:
+                print('PAGE END')
                 return
 
             if post_info_idx == 0:
