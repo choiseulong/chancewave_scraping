@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup as bs
+import bs4
 from jsonpath_ng import parse as jsonpath_parse
 from datetime import datetime
 import ast
@@ -18,6 +19,9 @@ def change_to_soup(reponse_text):
 
 def extract_text(tag, is_child_multiple=False):
     # Tag 내의 Text를 반환함
+    if not isinstance(tag, bs4.element.Tag):
+        return ''
+        
     if is_child_multiple:
         tag_list = tag
         text_list = [clean_text(tag.text) for tag in tag_list]
@@ -41,12 +45,15 @@ def extract_children_tag(parents_tag, child_tag, child_tag_attrs={}, is_child_mu
     # 여러개의 자식태그를 찾고 싶다면 
     # is_child_multiple=True 로 선언
     # 결과는 bs4.Tag 가 아닌 bs4.tag List 를 반환
-    if is_child_multiple :
-        child_tag_list = parents_tag.find_all(child_tag, attrs=child_tag_attrs, recursive=is_recursive)
-        return child_tag_list
+    if parents_tag.find(child_tag, child_tag_attrs):
+        if is_child_multiple :
+            child_tag_list = parents_tag.find_all(child_tag, attrs=child_tag_attrs, recursive=is_recursive)
+            return child_tag_list
+        else :
+            child_tag = parents_tag.find(child_tag, attrs=child_tag_attrs, recursive=is_recursive)
+            return child_tag
     else :
-        child_tag = parents_tag.find(child_tag, attrs=child_tag_attrs, recursive=is_recursive)
-        return child_tag
+        return 
 
 def find_next_tag(tag):
     # 기준 Tag 다음 위치에 등장하는 Tag를 반환함

@@ -1,6 +1,6 @@
 from celery import Celery
 import importlib
-from requests import session
+from requests import Session
 from requests.adapters import HTTPAdapter
 from requests.sessions import Session
 from urllib3.util import Retry
@@ -12,8 +12,10 @@ import logging
 urllib3_logger = logging.getLogger('urllib3')
 urllib3_logger.setLevel(logging.CRITICAL)
 
+#celery app
 schedule = Celery('scheduler')
 
+# celery app env
 schedule.conf.update(
     # broker_url = 'amqp://username:password@localhost//',
     # result_backend = 'mongodb://admin:mysterico@k8s.mysterico.com:31489/?authSource=admin',
@@ -25,9 +27,10 @@ schedule.conf.update(
     broker_heartbeat=None
 )
 
+# session
 def make_session():
     retries_num = 3 
-    backoff_factor = 0.3
+    backoff_factor = 1.5
     status_forcelist = (500, 400)
 
     retry = Retry(
@@ -43,9 +46,12 @@ def make_session():
     session.mount("https://", HTTPAdapter(max_retries=retry))
     return session
 
+# 
 
-# 10시간 time limit
-@schedule.task(time_limit=36000)
+# job
+# 10시간 time limit 
+# retry 간격 3분 디폴트
+@schedule.task(time_limit=36000, retries=3)
 def job(group_name, room_name, channel_code, channel_url, date_range):
     startTime = datetime.now(timezone('Asia/Seoul')).isoformat()
     session = make_session()

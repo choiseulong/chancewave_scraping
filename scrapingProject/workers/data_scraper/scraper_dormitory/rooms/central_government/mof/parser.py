@@ -29,11 +29,16 @@ def post_list_parsing_process(**params):
                 var['uploader'].append(td_text)
             elif td_idx == 4 :
                 if td_text:
-                    td_text = td_text[:-1].strip()
-                    td_text = td_text.replace(' ', '0')
-                    var['uploaded_time'].append(
-                        convert_datetime_string_to_isoformat_datetime(td_text[:-1])
-                    )
+                    td_text = parse_date(td_text)
+                    print(td_text)
+                    try :
+                        var['uploaded_time'].append(
+                            convert_datetime_string_to_isoformat_datetime(td_text)
+                        )
+                    except ValueError as e :
+                        var['uploaded_time'].append(
+                            None
+                        )
                 else :
                     var['uploaded_time'].append(None)
             elif td_idx == 5 :
@@ -45,6 +50,12 @@ def post_list_parsing_process(**params):
     result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     # print(result)
     return result
+
+def parse_date(date):
+    if date[-1] == '.':
+        date = date[:-1]
+    date = date.replace(' ', '0').strip()
+    return date
 
 def post_content_parsing_process(**params):
     target_key_info = {

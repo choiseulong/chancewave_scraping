@@ -2,6 +2,7 @@ from pymongo.errors import *
 from pymongo import MongoClient
 from .tools import *
 from datetime import datetime
+from time import sleep
 
 class MongoServer:
 
@@ -52,6 +53,7 @@ class MongoServer:
                 bulk_insert_data_list.append(new_data)
         if bulk_insert_data_list:
             self.insert_many(bulk_insert_data_list)
+        sleep(2)
 
     def update_data_process(self, new_data, before_data):
         now = datetime.now(timezone('Asia/Seoul')).isoformat()
