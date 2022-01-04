@@ -37,7 +37,15 @@ def extract_attrs(tag, attrs_name, is_child_multiple=False):
         attrs_list = [tag[attrs_name] for tag in tag_list]
         return attrs_list
     else :
-        return tag[attrs_name]
+        attrs_value = tag[attrs_name]
+        if attrs_name == 'href' and attrs_value:
+            attrs_value = parse_href_in_tools(attrs_value)
+        return attrs_value
+
+def parse_href_in_tools(attrs):
+    if './' == attrs[:2]:
+        attrs = attrs[1:]
+    return attrs
 
 def extract_children_tag(parents_tag, child_tag, child_tag_attrs={}, is_child_multiple=False, is_recursive=True):
     # 자식 태그의 attrs 가 없고, 개수가 1개인 설정이 기본값

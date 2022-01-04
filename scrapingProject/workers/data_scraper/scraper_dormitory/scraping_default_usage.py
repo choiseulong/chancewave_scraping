@@ -42,6 +42,8 @@ class Scraper(metaclass=ABCMeta):
         self.channel_url = channel_url
         self.channel_url_frame = channel_url #page_count 적용이 필요한 경우 사용
         self.post_url_frame = self.post_url
+        if not self.channel_main_url:
+            self.channel_main_url = extract_channel_main_url_from_channel_url(channel_url)
         # 추가 로직 작성 必
     
     def __is_continue(self, check_num):
@@ -53,7 +55,7 @@ class Scraper(metaclass=ABCMeta):
         '''
             채널 메인에서 게시글의 기본정보를 가져오기 위한 요청을 처리함
         '''
-        if self.__is_continue(4):
+        if self.__is_continue(6):
             self.session.close()
             return
 

@@ -9,19 +9,22 @@ def post_list_parsing_process(**params):
     tr_list = extract_children_tag(tbody, 'tr', is_child_multiple=True)
     for tr in tr_list:
         td_list = extract_children_tag(tr, 'td', is_child_multiple=True)
-        # 2022-01-04 header [번호, 제목, 담당부서, 작성일, 파일, 조회]
+        # 2022-01-04 header [번호, 제목, 첨부, 작성자, 등록일, 조회]
         for td_idx, td in enumerate(td_list):
             td_text = extract_text(td)
+            if 'NOTICE' in td_text and td_idx == 0:# 공지는 한번만 수집
+                if var['page_count'] != 1 :
+                    break
             if td_idx == 1:
                 a_tag = extract_children_tag(td, 'a')
                 href = extract_attrs(a_tag, 'href')
                 var['post_url'].append(
                     var['channel_main_url'] + href
                 )
-                var['post_title'].append(extract_attrs(a_tag, 'title'))
-            elif td_idx in [2]:
+                var['post_title'].append(td_text)
+            elif td_idx in [3]:
                 var['uploader'].append(td_text)
-            elif td_idx == 3:
+            elif td_idx == 4:
                 var['uploaded_time'].append(
                     convert_datetime_string_to_isoformat_datetime(td_text)
                 )
@@ -39,16 +42,9 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    th_list = extract_children_tag(soup, 'th', child_tag_attrs={'scope' : 'row'}, is_child_multiple=True)
-    for th in th_list :
-        th_text = extract_text(th)
-        if '전화번호' in th_text:
-            var['contact'] = extract_text(find_next_tag(th))
-            break
-    tmp_contents = extract_children_tag(soup, 'td', child_tag_attrs={'colspan' : '2'})
+    tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'class' : 'bbsview-con'})
     var['post_text'] = extract_text(tmp_contents)
-    if not var['contact'] :
-        var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents))
+    var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents))
     var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
     value_list = [var[key] for key in key_list]
     result = convert_merged_list_to_dict(key_list, value_list)
