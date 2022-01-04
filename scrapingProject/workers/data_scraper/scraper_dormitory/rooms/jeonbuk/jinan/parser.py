@@ -9,9 +9,10 @@ def post_list_parsing_process(**params):
     li_list = extract_children_tag(bbs_list, 'li', is_child_multiple=True)
     for li in li_list:
         notice_img = extract_children_tag(li, 'img')
-        if '공지' in extract_attrs(notice_img, 'alt'):
-            if var['page_count'] != 1 :
-                continue
+        if notice_img :
+            if '공지' in extract_attrs(notice_img, 'alt'):
+                if var['page_count'] != 1 :
+                    continue
         a_tag = extract_children_tag(li, 'a')
         href = extract_attrs(a_tag, 'href')
         var['post_url'].append(

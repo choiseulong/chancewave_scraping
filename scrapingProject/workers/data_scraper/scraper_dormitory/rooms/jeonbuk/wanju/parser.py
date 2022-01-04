@@ -22,7 +22,7 @@ def post_list_parsing_process(**params):
                 var['post_url'].append(
                     var['channel_main_url'] + href
                 )
-                var['post_title'].append(td_text)
+                var['post_title'].append(extract_attrs(a_tag, 'title'))
             elif td_idx == 2:
                 var['uploader'].append(td_text)
             elif td_idx == 5:
