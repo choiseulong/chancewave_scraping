@@ -116,3 +116,12 @@ def find_request_params(data, paramsKey):
         if P:
             params.append((key,P[0][key]))
     return params
+
+def extract_channel_main_url_from_channel_url(channel_url):
+    # input : 'https://www.wando.go.kr/www/administration/news/notice?page={}'
+    # output : 'https://www.wando.go.kr'
+    slash_idx_list = []
+    for word_idx, word in enumerate(channel_url):
+        if word == '/':
+            slash_idx_list.append(word_idx)
+    return channel_url[:slash_idx_list[2]]

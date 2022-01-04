@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from .tools import *
 from datetime import datetime
 from time import sleep
+from pytz import timezone
 
 class MongoServer:
 
@@ -53,7 +54,6 @@ class MongoServer:
                 bulk_insert_data_list.append(new_data)
         if bulk_insert_data_list:
             self.insert_many(bulk_insert_data_list)
-        sleep(2)
 
     def update_data_process(self, new_data, before_data):
         now = datetime.now(timezone('Asia/Seoul')).isoformat()
@@ -61,6 +61,7 @@ class MongoServer:
         is_update_check.append(now)
         updated_time = before_data['updated_time']
         updated_time.append(now)
+        new_data['created_time'] = before_data['created_time']
         new_data['is_update_check_time'] = is_update_check
         new_data['updated_time'] = updated_time
         before_doc_id = before_data['_id']
