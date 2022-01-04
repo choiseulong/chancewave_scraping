@@ -7,6 +7,8 @@ def post_list_parsing_process(**params):
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     tbody = extract_children_tag(soup, 'tbody')
     tr_list = extract_children_tag(tbody, 'tr', is_child_multiple=True)
+    if not tr_list :
+        return
     # 2021-01-04 header [번호, 제목, 작성자, 작성일, 첨부, 조회수]
     for tr in tr_list :
         td_list = extract_children_tag(tr, 'td', is_child_multiple=True)
