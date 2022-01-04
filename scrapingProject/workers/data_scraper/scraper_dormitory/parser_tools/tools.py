@@ -300,3 +300,44 @@ def make_absolute_url(in_url, channel_main_url):
         return in_url
 
     return urljoin(channel_main_url, in_url)
+
+
+def str_grab(input_str, start_str, end_str, index=1, from_back=False):
+    """
+    String에서 시작, 끝 String으로 String 추출
+    ex)
+    sample = '강현 이 만든 코드'
+    str_grab(sample, '이 ', ' 코드') == '만든'
+    :param input_str: 전체 String
+    :param start_str: 추출 대상 앞 String
+    :param end_str: 추출 대상 뒷 String
+    :param index: 추출 대상 앞 String이 전체에서 여러 개일 경우 숫자만큼 넘기기 가능
+    :param from_back: 추출 대상 앞 String이 전체에서 여러 개일 경우 뒤에서부터 추출
+    :return: String
+    """
+    result = ''
+
+    while index > 0:
+        index = index - 1
+
+        if not from_back:
+            start_idx = input_str.find(start_str)
+        else:
+            start_idx = input_str.rfind(start_str)
+        if start_idx == -1:
+            return ''
+        input_str = input_str[start_idx + len(start_str):]
+
+        if end_str == '':
+            end_idx = len(input_str)
+        else:
+            end_idx = input_str.find(end_str)
+        if end_idx == -1:
+            return ''
+
+        if index != 0:
+            continue
+        input_str = input_str[:end_idx]
+        result = input_str
+
+    return result

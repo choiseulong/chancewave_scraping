@@ -12,7 +12,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
     @post list
 
     method : GET
-    url = https://www.hanam.go.kr/www/selectBbsNttList.do?key=170&bbsNo=30&searchCtgry=&pageUnit=10&searchCnd=all&searchKrwd=&integrDeptCode=&pageIndex={page_count}
+    url = 
     header :
         None
 
@@ -20,7 +20,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 '''
     @post info
     method : GET
-    url : https://www.hanam.go.kr/www/selectBbsNttView.do?key=170&bbsNo=30&nttNo={postId}&searchCtgry=&searchCnd=all&searchKrwd=&pageIndex=525&integrDeptCode=
+    url : 
     header :
         None
 
