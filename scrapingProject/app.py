@@ -17,7 +17,8 @@ app = FastAPI()
 @app.get("/scraping-start")
 async def scraping_with_target_date():
     manager = ProjectManager()
-    manager.job_init()
+    message = manager.job_init()
+    return message
 
 # def check_input_date_vaildation(inputDate):
 #     start_date = inputDate["start_date"]

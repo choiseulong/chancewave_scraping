@@ -50,7 +50,6 @@ class ScrapingManager:
 
     def scraping_dev_test(self, channel_code):
         # ulsansi_0 등의 채널코드를 받아 테스트 스크래핑을 시작한다
-
         if not self.channel_url_info_dict :
             self.get_channel_url()
         channel_code_with_location = self.find_channel_code_with_location(channel_code)
