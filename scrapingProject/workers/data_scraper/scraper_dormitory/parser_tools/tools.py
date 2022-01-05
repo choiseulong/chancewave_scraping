@@ -82,7 +82,8 @@ def decompose_tag(parents_tag, child_tag, child_tag_attrs, is_child_multiple=Fal
                 tag.decompose()
     else :
         target_tag = parents_tag.find(child_tag, child_tag_attrs)
-        target_tag.decompose()
+        if target_tag :
+            target_tag.decompose()
     return parents_tag
 
 def convert_datetime_string_to_isoformat_datetime(datetime_string):
