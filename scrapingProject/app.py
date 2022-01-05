@@ -42,13 +42,13 @@ def test(channel_code:str=''):
     manager = ProjectManager()
     manager.scraping_dev_test(channel_code)
 
-@app.get('/getChannelData/')
+@app.get('/get-channel-data/')
 def get_channel_data(channel_code:str=''):
     manager = ProjectManager()
     data = manager.get_data(channel_code)
     return data
 
-@app.get('/getTotalData')
+@app.get('/get-total-channel-data')
 def get_total_data():
     manager = ProjectManager()
     data = manager.get_data()
