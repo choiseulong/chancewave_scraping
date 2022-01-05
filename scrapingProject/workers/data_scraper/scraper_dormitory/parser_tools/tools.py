@@ -173,18 +173,6 @@ def convert_merged_list_to_dict(key_list, value_list):
         result.update({key : value_list[idx]})
     return result
 
-def check_date_range_availability(date_range, date):
-    try :
-        converted_date = convert_datetime_string_to_isoformat_datetime(date)
-    except ValueError :
-        converted_date = date
-    start_date = date_range[0]
-    end_date = date_range[1]
-    if end_date <= converted_date <= start_date:
-        return 'vaild'
-    else :
-        return 'not valid'
-
 def parse_onclick(text, idx=1):
     return re.findall("'(.+?)'", text)[idx]
 

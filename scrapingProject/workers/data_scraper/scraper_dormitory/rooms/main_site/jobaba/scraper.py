@@ -48,8 +48,8 @@ class Scraper(ABCScraper):
         self.post_url =  'https://www.jobaba.net/fntn/dtl2020.do?seq={}'
         self.channel_main_url = 'https://www.jobaba.net'
     
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url):
+        super().scraping_process(channel_code, channel_url)
         self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded"))
         self.session = set_headers(self.session, self.additional_key_value, isUpdate)
         self.page_count = 1 

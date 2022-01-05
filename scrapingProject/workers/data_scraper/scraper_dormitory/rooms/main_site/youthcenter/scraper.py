@@ -48,8 +48,8 @@ class Scraper(ABCScraper):
         self.post_board_name = '청년정책 통합검색'
         self.post_url = 'https://www.youthcenter.go.kr/youngPlcyUnif/youngPlcyUnifDtl.do'
 
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url):
+        super().scraping_process(channel_code, channel_url)
         # self.mongo.remove_channel_data(channel_code)
         self.page_count = 1
         while True :

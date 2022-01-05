@@ -37,8 +37,8 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'http://www.haenam.go.kr'
         self.post_url = 'http://www.haenam.go.kr/planweb/board'
         
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url):
+        super().scraping_process(channel_code, channel_url)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :

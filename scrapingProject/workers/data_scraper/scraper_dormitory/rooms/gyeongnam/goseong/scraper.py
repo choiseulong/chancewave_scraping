@@ -36,8 +36,8 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://www.goseong.go.kr'
         self.post_url = 'https://www.goseong.go.kr/board/view.goseong?boardId=BBS_0000070&menuCd=DOM_000000104001001001&startPage=1&dataSid={}'
         
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url):
+        super().scraping_process(channel_code, channel_url)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :

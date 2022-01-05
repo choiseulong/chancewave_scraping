@@ -37,8 +37,8 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://www.gg.go.kr/'
         self.post_url = 'https://www.gg.go.kr/bbs/boardView.do?bIdx={}&bsIdx=570&bcIdx=0&menuId=1590&isManager=false&isCharge=false&page=1'
 
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url):
+        super().scraping_process(channel_code, channel_url)
         self.session = set_headers(self.session)
         self.page_count = 0
         while True:

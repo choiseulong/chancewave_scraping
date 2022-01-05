@@ -20,7 +20,6 @@ def post_list_parsing_process(**params):
         for date \
         in em_date
     ]
-    checkedDateRange = [check_date_range_availability(var['date_range'], date) for date in var["uploaded_time"]]
     var['post_subject'] = [
         extract_text(
             extract_children_tag(div, 'i')
@@ -28,11 +27,7 @@ def post_list_parsing_process(**params):
         for div \
         in item_div
     ]
-    value_list = [
-        [_ for idx, _ in enumerate(var[key]) if checkedDateRange[idx] == 'vaild'] \
-        for key \
-        in key_list
-    ]
+    value_list = [var[key] for key in key_list]
     result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     return result
  

@@ -39,8 +39,8 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://kostat.go.kr'
         self.post_url = 'https://kostat.go.kr/portal/korea/kor_nw/6/1/index.board?bmode=read&aSeq={}'
         
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url):
+        super().scraping_process(channel_code, channel_url)
         self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded"))
         self.session = set_headers(self.session, self.additional_key_value, isUpdate)
 

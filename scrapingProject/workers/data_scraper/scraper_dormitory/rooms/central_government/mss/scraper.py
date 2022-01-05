@@ -37,8 +37,8 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://www.mss.go.kr'
         self.post_url = 'https://www.mss.go.kr/site/smba/ex/bbs/View.do?cbIdx=81&bcIdx={}'
         
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url):
+        super().scraping_process(channel_code, channel_url)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :

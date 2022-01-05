@@ -33,8 +33,8 @@ class Scraper(ABCScraper):
         self.post_board_name = '공지사항'
         self.channel_main_url = 'https://www.gangjin.go.kr'
         
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url):
+        super().scraping_process(channel_code, channel_url)
         self.session = set_headers(self.session)
         # self.set_jsessionid()
         self.page_count = 1

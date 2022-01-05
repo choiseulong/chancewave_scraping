@@ -38,8 +38,8 @@ class Scraper(ABCScraper):
         self.post_board_name = '사업공고'
         self.channel_main_url = "https://www.gcon.or.kr"
     
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url):
+        super().scraping_process(channel_code, channel_url)
         self.session = set_headers(self.session)
 
         self.page_count = 1

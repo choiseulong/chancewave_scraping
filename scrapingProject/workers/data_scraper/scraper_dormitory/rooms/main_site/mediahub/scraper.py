@@ -44,8 +44,8 @@ class Scraper(ABCScraper):
         self.post_url =  'https://mediahub.seoul.go.kr/gongmo/{}'
         self.channel_main_url = 'https://mediahub.seoul.go.kr'
 
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url):
+        super().scraping_process(channel_code, channel_url)
         self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"))
         self.session = set_headers(self.session, self.additional_key_value, isUpdate)
         self.page_count = 1

@@ -35,8 +35,8 @@ class Scraper(ABCScraper):
         self.post_board_name = '일반장학금'
         self.channel_main_url = 'https://www.dreamspon.com'
     
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url):
+        super().scraping_process(channel_code, channel_url)
         self.page_count = 1
         status = self.login_process()
         if status :

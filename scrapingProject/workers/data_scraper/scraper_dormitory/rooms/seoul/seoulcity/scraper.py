@@ -44,8 +44,8 @@ class Scraper(ABCScraper):
         }
         return data
     
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url):
+        super().scraping_process(channel_code, channel_url)
         
         self.page_count = 1
         while True :
