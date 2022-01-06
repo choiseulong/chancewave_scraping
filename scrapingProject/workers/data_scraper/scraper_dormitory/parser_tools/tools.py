@@ -73,7 +73,7 @@ def find_parent_tag(tag):
     parent_tag = tag.parent
     return parent_tag
 
-def decompose_tag(parents_tag, child_tag, child_tag_attrs, is_child_multiple=False):
+def decompose_tag(parents_tag, child_tag, child_tag_attrs={}, is_child_multiple=False):
     # child tag를 삭제한 parent tag를 반환함
     if is_child_multiple:
         target_tag_list = parents_tag.find_all(child_tag, child_tag_attrs)
@@ -296,6 +296,10 @@ def search_img_list_in_contents(contents, channel_main_url):
             src = extract_attrs(img, 'src')
             if src.startswith('./'):
                 src = src[1:]
+            if src.startswith('//www.'):
+                src = src[2:]
+                imgs.append(src)
+                continue
             if 'http' not in src and 'base64' not in src :
                 src = channel_main_url + src
             imgs.append(src)
