@@ -2,35 +2,34 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 울산광역시청
+# 채널 이름 : 부산사하구청
 
 #HTTP Request
 '''
     @post list
     method : GET
-    url_0 = https://www.ulsan.go.kr/u/rep/bbs/list.do?bbsId=BBS_0000000000000003\
-        &mId=001004001001000000&page={page_count}
+    url_0 =   http://www.saha.go.kr/portal/bbs/list.do?ptIdx=22&mId=0301010000&page={page_count}\
+        &backUrl=/portal/bbs/write.do&backResetUrl=/portal/bbs/list.do
     header :
         None
-
 '''
 '''
     @post info
     method : GET
-    url : self.post_url + href
+    url : 
+        self.post_url.format(post_id, ptIdx)
     header :
         None
 
 '''
 sleep_sec = 1
-isUpdate = True
 
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '울산광역시청'
-        self.post_board_name = '울산소식'
-        self.post_url ='https://www.ulsan.go.kr/u/rep/bbs'
+        self.channel_name = '부산사하구청'
+        self.post_board_name = '공지사항'
+        self.post_url = 'http://www.saha.go.kr/portal/bbs/view.do?mId=0301010000&bIdx={}&ptIdx={}'
 
     def scraping_process(self, channel_code, channel_url):
         super().scraping_process(channel_code, channel_url)

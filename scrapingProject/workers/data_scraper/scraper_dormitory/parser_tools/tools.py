@@ -174,7 +174,13 @@ def convert_merged_list_to_dict(key_list, value_list):
     return result
 
 def parse_onclick(text, idx=1):
-    return re.findall("'(.+?)'", text)[idx]
+    if type(idx) == list :
+        result = []
+        for i in idx:
+            result.append(re.findall("'(.+?)'", text)[i])
+    else :
+        result = re.findall("'(.+?)'", text)[idx]
+    return result
 
 def convert_text_to_tuple(text):
     return ast.literal_eval(str(text))
