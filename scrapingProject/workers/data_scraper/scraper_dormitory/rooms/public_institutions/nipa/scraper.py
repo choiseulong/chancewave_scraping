@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 한국과학창의재단
+# 채널 이름 : 정보통신산업진흥원
 
 #HTTP Request
 '''
@@ -14,7 +14,7 @@ from .parser import *
 '''
 '''
     @post info
-    method : POST
+    method : GET
     url : 
         self.post_url + href
     header :
@@ -26,7 +26,7 @@ is_update = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '한국과학창의재단'
+        self.channel_name = '정보통신산업진흥원'
         self.post_board_name = '공지사항'
 
     def scraping_process(self, channel_code, channel_url, dev):

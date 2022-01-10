@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type' : ['uploaded_time', 'view_count', 'uploader', 'post_url']
+        'multiple_type' : ['uploaded_time', 'view_count', 'uploader', 'post_url', 'post_title']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     tbody = extract_children_tag(soup, 'tbody')
@@ -21,6 +21,7 @@ def post_list_parsing_process(**params):
                 var['post_url'].append(
                     var['post_url_frame'] + href
                 )
+                var['post_title'].append(td_text)
             elif td_idx == 5:
                 var['view_count'].append(
                     extract_numbers_in_text(td_text)

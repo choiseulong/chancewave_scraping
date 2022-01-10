@@ -14,7 +14,7 @@ from .parser import *
 '''
 '''
     @post info
-    method : POST
+    method : GET
     url : 
         self.post_url.format(post_id)
     header :

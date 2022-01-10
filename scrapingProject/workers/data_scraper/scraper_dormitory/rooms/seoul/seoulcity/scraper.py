@@ -26,7 +26,6 @@ from .parser import *
 '''
 '''
     @post info
-
     method : get
     url : 'post_url'
     header :
@@ -44,8 +43,8 @@ class Scraper(ABCScraper):
         }
         return data
     
-    def scraping_process(self, channel_code, channel_url):
-        super().scraping_process(channel_code, channel_url)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         
         self.page_count = 1
         while True :

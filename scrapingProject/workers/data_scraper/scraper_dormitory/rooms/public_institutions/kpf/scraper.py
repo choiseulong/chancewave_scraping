@@ -2,34 +2,33 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 완주군청
+# 채널 이름 : 한국언론진흥재단
 
 #HTTP Request
 '''
     @post list
     method : GET
-    url_0 = https://www.wanju.go.kr/board/list.wanju?boardId=BBS_0000107\
-        &menuCd=DOM_000000102001001000&startPage={page_count}
+    url_0 =  https://www.kpf.or.kr/front/board/boardContentsList.do?miv_pageNo={page_count}&mode=W&board_id=245
     header :
         None
-
 '''
 '''
     @post info
     method : GET
-    url : self.post_url + href
+    url : 
+        href
     header :
         None
-
 '''
+
 sleep_sec = 1
-is_update = True
 
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '완주군청'
-        self.post_board_name = '공지사항'
+        self.channel_name = '한국언론진흥재단'
+        self.post_board_name = '-'
+        self.post_url = 'https://www.kpf.or.kr/front/board/boardContentsView.do?board_id=245&contents_id={}'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)

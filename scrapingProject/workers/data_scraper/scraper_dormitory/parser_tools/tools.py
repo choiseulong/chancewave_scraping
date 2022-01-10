@@ -1,4 +1,3 @@
-from typing_extensions import ParamSpecKwargs
 from bs4 import BeautifulSoup as bs
 import bs4
 from jsonpath_ng import parse as jsonpath_parse
@@ -444,12 +443,12 @@ def parse_post_url(**params):
     a_tag = extract_children_tag(td, 'a')
     href = extract_attrs(a_tag, 'href') if a_tag.has_attr('href') else ''
     onclick = extract_attrs(a_tag, 'onclick') if a_tag.has_attr('onclick') else ''
-    if onclick: 
-        onclick_value_idx = var['onclick_idx']
-        if type(onclick_value_idx) == int:
-            post_id = parse_onclick(onclick, onclick_value_idx)
-        else :
-            post_id = parse_onclick(onclick)
+    print(onclick)
+    if type(var['onclick_idx']) == int: 
+        if onclick :
+            post_id = parse_onclick(onclick, var['onclick_idx'])
+        elif href :
+            post_id = parse_onclick(href, var['onclick_idx'])
         result = post_url_frame.format(post_id)
         return result
     else :
@@ -461,8 +460,7 @@ def parse_post_url(**params):
             return result
 
 def return_raw_text(**params):
-    text = params['text']
-    return text
+    return params['text']
 
 parse_post_subject = parse_post_title = parse_uploader = return_raw_text
 

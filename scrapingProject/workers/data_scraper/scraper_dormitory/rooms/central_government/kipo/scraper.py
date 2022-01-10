@@ -34,8 +34,8 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://www.kipo.go.kr'
         self.post_url = 'https://www.kipo.go.kr/kpo/BoardApp/UnewNotiApp?board_id=notice&catmenu=m03_01_01&c=1003&seq={}'
 
-    def scraping_process(self, channel_code, channel_url):
-        super().scraping_process(channel_code, channel_url)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :

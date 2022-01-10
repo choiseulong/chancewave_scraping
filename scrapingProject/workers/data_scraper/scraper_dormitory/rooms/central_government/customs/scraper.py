@@ -18,7 +18,7 @@ from .parser import *
 '''
 '''
     @post info
-    method : GET
+    method : POST
     url : https://www.moef.go.kr/nw/nes/detailNesDtaView.do?searchBbsId1={MOSFBBS}&searchNttId1={MOSF}
     header :
         None
@@ -35,8 +35,8 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://www.customs.go.kr/'
         self.post_url = 'https://www.customs.go.kr/kcs/na/ntt/selectNttInfo.do'
         
-    def scraping_process(self, channel_code, channel_url):
-        super().scraping_process(channel_code, channel_url)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded"))
         self.session = set_headers(self.session, self.additional_key_value, is_update)
         self.page_count = 1

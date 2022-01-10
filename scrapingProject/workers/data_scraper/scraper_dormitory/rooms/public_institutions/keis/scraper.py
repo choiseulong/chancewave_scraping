@@ -14,13 +14,11 @@ from .parser import *
 '''
 '''
     @post info
-    method : POST
+    method : GET
     url : 
         self.post_url + href
     header :
         None
-
-
 '''
 sleep_sec = 1
 
