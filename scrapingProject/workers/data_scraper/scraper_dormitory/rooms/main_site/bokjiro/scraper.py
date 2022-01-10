@@ -36,7 +36,7 @@ from .parser import *
         None
 '''
 
-isUpdate = True
+is_update = True
 sleep_sec = 1
 jsonize = True
 
@@ -50,7 +50,7 @@ class Scraper(ABCScraper):
     def scraping_process(self, channel_code, channel_url):
         super().scraping_process(channel_code, channel_url)
         self.additional_key_value.append(("Content-Type", "application/json; charset=UTF-8"))
-        self.session = set_headers(self.session, self.additional_key_value, isUpdate)
+        self.session = set_headers(self.session, self.additional_key_value, is_update)
         for i in range(1,4):
             self.tabId = i
             while True :

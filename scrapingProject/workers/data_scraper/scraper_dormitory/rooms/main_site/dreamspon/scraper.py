@@ -26,7 +26,7 @@ from .parser import *
 '''
 
 sleep_sec = 1
-isUpdate = True
+is_update = True
 
 class Scraper(ABCScraper):
     def __init__(self, session):
@@ -67,7 +67,7 @@ class Scraper(ABCScraper):
             "userpw" : "mysterico"
         }
         self.additional_key_value.append(['Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8'])
-        self.session = set_headers(self.session, self.additional_key_value, isUpdate)
+        self.session = set_headers(self.session, self.additional_key_value, is_update)
         _, response = post_method_response(self.session, url, data)
         if response.json()['checkyn'] == 'Y' :
             return True

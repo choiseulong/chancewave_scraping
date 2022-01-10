@@ -59,7 +59,7 @@ class ScrapingManager:
         session = self.get_requests_session()
         scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'
         scraper = importlib.import_module(scraper_room_address).Scraper(session)
-        scraper.scraping_process(channel_code, channel_url)
+        scraper.scraping_process(channel_code, channel_url, dev=True)
     
     def scraping_init_with_celery(self):
         # celery 에게 스크래핑 진행을 위임한다

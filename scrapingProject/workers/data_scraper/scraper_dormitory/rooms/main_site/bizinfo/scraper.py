@@ -29,7 +29,7 @@ from .parser import *
         None
 '''
 
-isUpdate = True
+is_update = True
 sleep_sec = 1
 
 class Scraper(ABCScraper):
@@ -42,7 +42,7 @@ class Scraper(ABCScraper):
     def scraping_process(self, channel_code, channel_url):
         super().scraping_process(channel_code, channel_url)
         self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded"))
-        self.session = set_headers(self.session, self.additional_key_value, isUpdate)
+        self.session = set_headers(self.session, self.additional_key_value, is_update)
         while True :
             self.page_count += 1 
             self.post_list_scraping()

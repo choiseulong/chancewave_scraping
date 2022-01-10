@@ -1,3 +1,4 @@
+from typing_extensions import ParamSpecKwargs
 from bs4 import BeautifulSoup as bs
 import bs4
 from jsonpath_ng import parse as jsonpath_parse
@@ -269,8 +270,9 @@ def html_type_default_setting(params, target_key_info):
     # BeautifulSoup 객체에서 데이터를 파싱할 수 없을 경우 사용함
     var = reflect_params(locals(), params)
     var, key_list = reflect_key(var, target_key_info)
+    encoding = var['response'].encoding
     # text = var['response'].text
-    text = var['response'].content.decode('utf-8','replace')
+    text = var['response'].content.decode(encoding,'replace')
     soup = change_to_soup(
         text
     )
@@ -302,6 +304,8 @@ def search_img_list_in_contents(contents, channel_main_url):
             src = extract_attrs(img, 'src')
             if src.startswith('./'):
                 src = src[1:]
+            elif src.startswith('../'):
+                src = src[2:]
             if src.startswith('//www.'):
                 src = src[2:]
                 imgs.append(src)
@@ -310,3 +314,156 @@ def search_img_list_in_contents(contents, channel_main_url):
                 src = channel_main_url + src
             imgs.append(src)
     return imgs
+
+def check_table_header_key_name(table_header_list):
+    # 게시물 리스트 스크래핑 진행시 테이블 헤더로 제공되는 항목
+    # api key값과 맵핑함
+    included_key_info = {}
+    header_info = {
+        'post_url' : ["제목"],
+        'post_title' : ["제목"],
+        'uploaded_time' : ["작성일", "등록일", "게시일"],
+        'view_count' : ["조회", "조회수"],
+        'uploader' : ["작성자", "담당부서", "게시자"],
+        'post_subject' : ["분류", "구분"]
+    }
+    for header_idx, header_name in enumerate(table_header_list):
+        for key_name in header_info:
+            if header_name in header_info[key_name]:
+                if header_idx not in included_key_info.keys():
+                    included_key_info.update({header_idx : []})
+                included_key_info[header_idx].append(key_name)
+    return included_key_info
+
+def check_valid_key_info(key_list, included_key_info):
+    # key_list = ['uploaded_time', 'view_count', 'uploader', 'post_url']
+    # included_key_info = {1: ['post_url', 'post_title'], 2: ['uploaded_time'], 3: ['view_count']}
+    # result = {1: ['post_url'], 2: ['uploaded_time'], 3: ['view_count']}
+    result = {}
+    for idx in included_key_info:
+        for key_name in included_key_info[idx]:
+            if key_name in key_list:
+                if idx not in result.keys():
+                    result.update({idx:[]})
+                result[idx].append(key_name)
+    return result
+
+def parse_board_type_html_page(soup, var, key_list, table_header):
+    # thead, tbody 형태로 포스트 리스트가 제공되는 경우에 사용함
+    # 시스템 빌더가 입력한 header를 우선 신뢰하고
+    # 페이지 내에서 제공되는 header와 다를 경우 warning 을 출력하고 진행함
+    # parser.py 내에서 개별적으로 파싱 메서드를 선언하지 않을 경우
+    # tools.py 내에 작성된 파싱 메서드를 사용함
+
+    thead = extract_children_tag(soup, 'thead')
+    table_header_list = [
+        extract_text(th) \
+        for th \
+        in extract_children_tag(thead, 'th', is_child_multiple=True) \
+        if extract_text(th)
+    ]
+    if table_header != table_header_list:
+        if var['dev'] :
+            print(f'Table Header Warning\nCHANNEL_URL : {var["channel_url"]}')
+            print(f'Input Table Header : {table_header}\nPage Table Header : {table_header_list}')
+        else :
+            print(f'Table Header Warning\n{var["channel_main_url"]}')
+    included_key_info = check_table_header_key_name(table_header)
+    included_key_info = check_valid_key_info(key_list, included_key_info)
+    tbody = extract_children_tag(soup, 'tbody')
+    # tbody가 두개인 경우에 첫 번째 등장하는 tbody가 공백이여서 예외 처리
+    if not extract_text(tbody):
+        tbody = extract_children_tag(soup, 'tbody', is_child_multiple=True)
+        if len(tbody) > 1:
+            tbody = tbody[1]
+    # ----
+    tr_list = extract_children_tag(tbody, 'tr', is_child_multiple=True)
+    if not tr_list :
+        return
+    for tr in tr_list :
+        # 입력한 header 순번에 맞춰 해당 값을 파싱하는 함수에 전달함
+        td_list = extract_children_tag(tr, 'td', is_child_multiple=True)
+        td_text = [extract_text(td).strip() for td in td_list]
+        if '공지' in td_text[0] or not td_text[0]: # 공지글 첫 페이지에서만 수집
+            if var['page_count'] != 1 :
+                continue
+        for td_idx in included_key_info:
+            for key_name in included_key_info[td_idx]:
+                fun_name = f'parse_{key_name}'
+                if fun_name in var.keys():
+                    try :
+                        var[key_name].append(
+                            var[fun_name](
+                                var=var,
+                                td=td_list[td_idx], 
+                                text=td_text[td_idx]
+                            )
+                        )
+                    except KeyError as e :
+                        print(fun_name, '미선언')
+                        return
+                else :
+                    globals()[fun_name](var, td_text[td_idx])
+    value_list = [var[key] for key in key_list]
+    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    return result
+
+def parse_uploaded_time(**params):
+    # 기본 등록일 처리.
+    # 예외 케이스로 등록일을 처리할 경우 직접 작성
+    # parse_view_count 를 작성해서 처리하거나 포스트 개별 페이지 파싱에서 처리함
+    text = params['text']
+    if text.endswith('.'):
+        text = text[:-1]
+    result = convert_datetime_string_to_isoformat_datetime(text)
+    return result
+
+def parse_view_count(**params):
+    # 기본 조회수 처리.
+    # parse_view_count 를 작성해서 처리하거나 포스트 개별 페이지 파싱에서 처리함
+    num = params['text']
+    result = extract_numbers_in_text(num)
+    return result
+
+def parse_post_url(**params):
+    # 1. a_tag 에서 'onclick' attrs 가 존재할 경우
+    # var['onclick_idx']를 parser.py에서 작성했으면 해당 번호의 onclick value 를 반환함.
+    # 없을 경우 idx = 1 인 parse_onclick을 그대로 실행
+    # self.post_url 은 'https://www.naver.com/?test_post_id={}' 형태로 post_id 하나만을 사용할 경우임
+    # 나머지 경우는 직접 작성해서 처리함
+
+    # 2. 'onclick'이 없는 경우 
+    # self.post_url 을 선언하여 post_url_frame이 있다면 
+    # var['post_url_frame'] + href 를 사용하고 
+    # 없을경우 var['channel_main_url'] + href 을 사용함.
+    # 이 외의 경우 parser.py 에서 개별 작성해서 처리함. 
+    
+    td = params['td']
+    var = params['var']
+    post_url_frame = var['post_url_frame']
+    a_tag = extract_children_tag(td, 'a')
+    href = extract_attrs(a_tag, 'href') if a_tag.has_attr('href') else ''
+    onclick = extract_attrs(a_tag, 'onclick') if a_tag.has_attr('onclick') else ''
+    if onclick: 
+        onclick_value_idx = var['onclick_idx']
+        if type(onclick_value_idx) == int:
+            post_id = parse_onclick(onclick, onclick_value_idx)
+        else :
+            post_id = parse_onclick(onclick)
+        result = post_url_frame.format(post_id)
+        return result
+    else :
+        if post_url_frame:
+            result = post_url_frame + href
+            return result
+        else :
+            result = var['channel_main_url'] + href
+            return result
+
+def return_raw_text(**params):
+    text = params['text']
+    return text
+
+parse_post_subject = parse_post_title = parse_uploader = return_raw_text
+
+

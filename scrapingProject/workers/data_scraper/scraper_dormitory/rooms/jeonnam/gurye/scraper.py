@@ -24,7 +24,7 @@ from .parser import *
 
 '''
 sleep_sec = 1
-isUpdate = True
+is_update = True
 
 class Scraper(ABCScraper):
 

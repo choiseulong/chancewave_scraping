@@ -8,12 +8,12 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 urllib3.disable_warnings(urllib3.exceptions.HeaderParsingError)
 
-def set_headers(session, additional_key_value=None, isUpdate=False):
+def set_headers(session, additional_key_value=None, is_update=False):
     headers = {
         "Connection": "keep-alive",
         "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36"
     }
-    if additional_key_value and isUpdate:
+    if additional_key_value and is_update:
         for key_value in additional_key_value:
             headers.update({key_value[0]:key_value[1]})
     session.headers = headers
@@ -22,7 +22,6 @@ def set_headers(session, additional_key_value=None, isUpdate=False):
 def get_method_response(session, url, sleep_sec=2):
     # response = session.get(url)
     response = session.get(url, verify=False)
-
     status = 'fail'
     if response.status_code == 200 :
         status = 'ok'

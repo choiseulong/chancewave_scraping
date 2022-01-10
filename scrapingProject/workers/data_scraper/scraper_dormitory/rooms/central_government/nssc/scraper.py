@@ -47,7 +47,7 @@ from .parser import *
 '''
 
 sleep_sec = 1
-isUpdate = True
+is_update = True
 
 class Scraper(ABCScraper):
     def __init__(self, session):
@@ -61,7 +61,7 @@ class Scraper(ABCScraper):
         super().scraping_process(channel_code, channel_url)
         self.post_url_frame = 'https://www.nssc.go.kr/ko/cms/FR_BBS_CON/BoardView.do?MENU_ID=180&CONTENTS_NO=&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ={}'
         self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"))
-        self.session = set_headers(self.session, self.additional_key_value, isUpdate)
+        self.session = set_headers(self.session, self.additional_key_value, is_update)
         self.page_count = 1
         while True :
             self.channel_url = self.channel_url_frame.format(self.page_count)

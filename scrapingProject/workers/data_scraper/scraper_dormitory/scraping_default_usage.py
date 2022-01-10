@@ -30,11 +30,15 @@ class Scraper(metaclass=ABCMeta):
         self.post_url_frame = ''
         self.channel_main_url = ''
 
+        #env
+        self.dev = False
+
     @abstractmethod
-    def scraping_process(self, channel_code, channel_url):
+    def scraping_process(self, channel_code, channel_url, dev=False):
         '''
             스크래핑 진행의 틀을 작성함
         '''
+        self.dev = dev
         self.mongo = MongoServer()
         self.channel_code = channel_code
         self.channel_url = channel_url
@@ -70,6 +74,8 @@ class Scraper(metaclass=ABCMeta):
                 post_url_frame = self.post_url,
                 page_count = self.page_count,
                 channel_main_url = self.channel_main_url,
+                channel_url = self.channel_url,
+                dev = self.dev
             )
 
     def target_contents_scraping(self, post_content_parsing_process, sleep_sec=2):
@@ -95,7 +101,8 @@ class Scraper(metaclass=ABCMeta):
                 response = response, 
                 channel_url = self.channel_url,
                 post_url_frame = self.post_url,
-                channel_main_url = self.channel_main_url
+                channel_main_url = self.channel_main_url,
+                dev = self.dev
             )
             if post_content == 'retry' : 
                 sleep(300)
