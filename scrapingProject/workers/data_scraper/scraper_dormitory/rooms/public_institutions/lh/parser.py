@@ -8,11 +8,12 @@ def post_list_parsing_process(**params):
     for key in key_list :
         var[f'parse_{key}'] = globals()[f'parse_{key}']
     # 2021-01-10
+    var['onclick_idx'] = 1
     table_header = ["번호", "지사", "분류", "제목", "게시일", "조회수"]
     result = parse_board_type_html_page(soup, var, key_list, table_header)
     return result
 
-def parse_post_url(**params):
+def _parse_post_url(**params):
     td = params['td']
     var = params['var']
     a_tag = extract_children_tag(td, 'a')
@@ -21,7 +22,7 @@ def parse_post_url(**params):
     result = var['post_url_frame'].format(post_id)
     return result
 
-def parse_onclick(onclick):
+def _parse_onclick(onclick):
     return extract_values_list_in_both_sides_bracket_text(onclick)[0]
 
 def post_content_parsing_process(**params):

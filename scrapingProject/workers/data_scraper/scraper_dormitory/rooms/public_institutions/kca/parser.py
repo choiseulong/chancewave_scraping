@@ -7,7 +7,6 @@ def post_list_parsing_process(**params):
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     # 2021-01-10 header ["번호", "분류", "제목", "작성자", "작성일", "파일", "조회"]
     post_list = extract_children_tag(soup, 'div', child_tag_attrs={'class':'listBody-row'}, is_child_multiple=True)
-    # 2021-01-10 header ["번호", "분류", "제목", "작성자", "작성일", "파일", "조회"]
     for post in post_list:
         p_list = extract_children_tag(post, 'p', is_child_multiple=True)
         for p_idx, p in enumerate(p_list):
