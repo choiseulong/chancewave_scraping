@@ -12,7 +12,7 @@ def post_list_parsing_process(**params):
     result = parse_board_type_html_page(soup, var, key_list, table_header)
     return result
 
-def _parse_post_url(**params):
+def parse_post_url(**params):
     td = params['td']
     a_tag = extract_children_tag(td, 'a')
     href = extract_attrs(a_tag, 'href')

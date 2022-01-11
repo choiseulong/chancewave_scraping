@@ -142,15 +142,22 @@ def clean_text(text):
         return ''
 
 def search_value_in_json_data_using_path(json_data, path, is_data_multiple=True, find_from_the_end=False):
-    tartget_data = jsonpath_parse(path).find(json_data)
-    result = []
-    if tartget_data and not is_data_multiple:
-        result = tartget_data[0].value
-        if find_from_the_end :
-            result = tartget_data[-1].value
-    elif tartget_data and is_data_multiple:
-        result = [_.value for _ in tartget_data]
-    return result
+    result_list = []
+    if type(path) == dict :
+        for pas in path:
+            result = search_value_in_json_data_using_path(json_data, pas)
+            result_list.append(result)
+        return result_list
+    else :
+        tartget_data = jsonpath_parse(path).find(json_data)
+        result = []
+        if tartget_data and not is_data_multiple:
+            result = tartget_data[0].value
+            if find_from_the_end :
+                result = tartget_data[-1].value
+        elif tartget_data and is_data_multiple:
+            result = [_.value for _ in tartget_data]
+        return result
 
 def extract_emails(in_str):
     pattern = r"([\w\.-]+)@([\w\.-]+)(\.[\w\.]+)"
@@ -165,6 +172,8 @@ def extract_contact_numbers_from_text(in_str):
     contact_list = []
     contact_no_list = re.findall(r'(\d{2,3}[- .]?\d{3,4}[- .]?\d{4})', in_str)
     contact_list = list(set(contact_no_list))
+    if len(contact_list) == 1 :
+        return contact_list[0]
     return contact_list
 
 def convert_merged_list_to_dict(key_list, value_list):
@@ -321,10 +330,11 @@ def _map_key_name_with_table_header(table_header_list):
     header_info = {
         'post_url' : ["제목"],
         'post_title' : ["제목"],
-        'uploaded_time' : ["작성일", "등록일", "게시일"],
+        'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자"],
         'view_count' : ["조회", "조회수"],
         'uploader' : ["작성자", "담당부서", "게시자"],
-        'post_subject' : ["분류", "구분"]
+        'post_subject' : ["분류", "구분"],
+        'contact' : ["연락처"]
     }
     for header_idx, header_name in enumerate(table_header_list):
         for key_name in header_info:
@@ -364,6 +374,9 @@ def _compare_input_header_with_table_header(table_header, table_header_list, var
             print(f'Input Table Header : {table_header}\nPage Table Header : {table_header_list}')
         else :
             print(f'Table Header Warning\n{var["channel_main_url"]}')
+    else :
+        if var['dev'] :
+            print('header pass')
 
 def _search_table_row_list(soup):
     tbody = extract_children_tag(soup, 'tbody')
@@ -404,36 +417,62 @@ def parse_post_url(**params):
     # var['post_url_frame'] + href 를 사용하고 
     # 없을경우 var['channel_main_url'] + href 을 사용함.
     # 이 외의 경우 parser.py 에서 개별 작성해서 처리함. 
-    
     td = params['td']
     var = params['var']
     post_url_frame = var['post_url_frame']
     a_tag = extract_children_tag(td, 'a')
-    href = extract_attrs(a_tag, 'href') if a_tag.has_attr('href') else ''
-    onclick = extract_attrs(a_tag, 'onclick') if a_tag.has_attr('onclick') else ''
-    if type(var['onclick_idx']) == int: 
-        if onclick :
-            post_id = parse_onclick(onclick, var['onclick_idx'])
-        elif href :
-            post_id = parse_onclick(href, var['onclick_idx'])
-        result = post_url_frame.format(post_id)
-        return result
-    elif type(var['onclick_idx']) == list:
-        post_id_list = parse_onclick(onclick, var['onclick_idx'])
-        for post_id in post_id_list:
-            post_url_frame = post_url_frame.replace('{}', post_id, 1)
+    try :
+        href = extract_attrs(a_tag, 'href') if a_tag.has_attr('href') else ''
+        onclick = extract_attrs(a_tag, 'onclick') if a_tag.has_attr('onclick') else ''
+    except AttributeError as e :
+        print(e)
+        print(td)
+        return None
+    if 'onclick_idx' in var.keys() :
+        if type(var['onclick_idx']) == int: 
+            if onclick :
+                post_id = parse_onclick(onclick, var['onclick_idx'])
+            elif href :
+                post_id = parse_onclick(href, var['onclick_idx'])
+            result = post_url_frame.format(post_id)
+            return result
+        elif type(var['onclick_idx']) == list:
+            post_id_list = parse_onclick(onclick, var['onclick_idx'])
+            for post_id in post_id_list:
+                post_url_frame = post_url_frame.replace('{}', post_id, 1)
+            result = post_url_frame
+            return result
     else :
         if post_url_frame:
-            result = post_url_frame + href
+            if '{}' in post_url_frame:
+                result = post_url_frame.format(href)
+            else :
+                result = post_url_frame + href
             return result
         else :
             result = var['channel_main_url'] + href
             return result
 
+def parse_post_title(**params):
+    td = params['td']
+    var = params['var']
+    a_tag = extract_children_tag(td, 'a')
+    text = extract_text(a_tag)
+    if '...' in params['text']:
+        if a_tag.has_attr('title'):
+            text = extract_attrs(a_tag, 'title')
+            return text
+        else :
+            print(var['channel_code'], 'post_title error')
+            return None
+    else :
+        return text
+
 def _return_raw_text(**params):
     return params['text']
 
-parse_post_subject = parse_post_title = parse_uploader = _return_raw_text
+parse_contact = parse_post_subject = parse_uploader\
+     = _return_raw_text
 
 def _parse_total_table_data(checked_key_info, table_row_list, var):
     for tr in table_row_list :
@@ -456,6 +495,7 @@ def _parse_total_table_data(checked_key_info, table_row_list, var):
                             )
                         )
                     except KeyError as e :
+                        print(e)
                         print(fun_name, '미선언')
                 else :
                     globals()[fun_name](var, td_text[td_idx])
@@ -463,7 +503,7 @@ def _parse_total_table_data(checked_key_info, table_row_list, var):
 
 def parse_board_type_html_page(soup, var, key_list, table_header):
     # thead, tbody 형태로 포스트 리스트가 제공되는 경우에 사용함
-    # 시스템 빌더가 입력한 header를 우선 신뢰하고
+    # 시스템 빌더가 입력한 header를 신뢰함. 해당 기준에 맞춰 파싱 함수에 텍스트를 전달함
     # 페이지 내에서 제공되는 header와 다를 경우 warning 을 출력하고 진행함
     # parser.py 내에서 개별적으로 파싱 메서드를 선언하지 않을 경우
     # tools.py 내에 작성된 파싱 메서드를 사용함

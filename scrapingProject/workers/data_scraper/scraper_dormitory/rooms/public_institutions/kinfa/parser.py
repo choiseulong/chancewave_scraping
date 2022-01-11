@@ -13,7 +13,7 @@ def post_list_parsing_process(**params):
     result = parse_board_type_html_page(soup, var, key_list, table_header)
     return result
 
-def _parse_post_url(**params):
+def parse_post_url(**params):
     td = params['td']
     var = params['var']
     post_id = extract_attrs(td, 'data-seqboardgeneral')
