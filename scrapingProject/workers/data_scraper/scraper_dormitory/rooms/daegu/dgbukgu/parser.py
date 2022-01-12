@@ -21,7 +21,7 @@ def post_list_parsing_process(**params):
             if td_idx == 1:
                 a_tag = extract_children_tag(td, 'a')
                 onclick = extract_attrs(a_tag, 'onclick')
-                post_id = parse_onclick(onclick)
+                post_id = parse_post_id(onclick)
                 req_params = {
                     "menu_id" : "00000195",
                     "bbsId" : "BBSMSTR_000000001176",

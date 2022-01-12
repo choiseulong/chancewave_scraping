@@ -182,33 +182,42 @@ def convert_merged_list_to_dict(key_list, value_list):
         result.update({key : value_list[idx]})
     return result
 
-def parse_onclick(text, idx=1):
-    if type(idx) == list :
-        result = []
-        for i in idx:
-            result.append(re.findall("'(.+?)'", text)[i])
-    else :
-        result = re.findall("'(.+?)'", text)[idx]
+def parse_post_id(text, idx=1):
+    post_id_candidate = [param.strip() for param in extract_values_list_in_both_sides_bracket_text(text) if param]
+    result = [post_id_candidate[_] for _ in idx] if type(idx) == list else post_id_candidate[idx]
     return result
 
 def convert_text_to_tuple(text):
     return ast.literal_eval(str(text))
 
 def extract_text_from_single_tag(parent_tag, child_tag, child_tag_attrs={}):
-    tag = extract_children_tag(parent_tag, child_tag, child_tag_attrs=child_tag_attrs, is_child_multiple=False)
-    text = extract_text(tag)
+    text= extract_text(
+        extract_children_tag(parent_tag, child_tag, child_tag_attrs=child_tag_attrs)
+    )
     return text
 
 def extract_values_list_in_both_sides_bracket_text(text):
-    start_idx = text.find('(')
-    end_idx = text.rfind(')')
-    text = text[start_idx+1 : end_idx]
-    value_list = [i.replace("'", "") for i in text.split(',')]
+    text_cut = text[text.find('(')+1 : text.rfind(')')].replace("'", "")
+    value_list = [i for i in text_cut.split(',')]
+    return value_list
+
+def assign_multiple_table_data_to_key_name(value_list):
+    lenth_list = [len(_) for _ in value_list]
+    if len(lenth_list) > 2 :
+        for data_idx, data_len in enumerate(lenth_list):
+            if lenth_list.count(data_len) == 1 and data_len % 2 == 0:
+                data_list = value_list[data_idx]
+                half_data_length = int(len(data_list)/2)
+                merged_data_list = []
+                for idx in range(half_data_length):
+                    merged_data_list.append(data_list[idx*2] + ' - ' + data_list[idx*2 + 1])
+                value_list[data_idx] = merged_data_list
     return value_list
 
 def merge_var_to_dict(key_list, value_list, channel_code=''):
     # parser.py에서 포스트에 대한 정보를 key:value 꼴로 맵핑하는 기능
     # 수집된 데이터의 개수가 상이할 경우 빈 리스트를 반환하고 해당 데이터별 개수를 print 함 
+    value_list = assign_multiple_table_data_to_key_name(value_list)
     lenth_list = [len(_) for _ in value_list]
     if len(list(set(lenth_list))) == 1:
         pass
@@ -279,6 +288,8 @@ def html_type_default_setting(params, target_key_info):
     var = reflect_params(locals(), params)
     var, key_list = reflect_key(var, target_key_info)
     encoding = var['response'].encoding
+    if encoding == 'ISO-8859-1':
+        encoding = 'EUC-KR'
     # text = var['response'].text
     text = var['response'].content.decode(encoding,'replace')
     soup = change_to_soup(
@@ -314,6 +325,7 @@ def search_img_list_in_contents(contents, channel_main_url):
                 src = src[1:]
             elif src.startswith('../'):
                 src = src[2:]
+
             if src.startswith('//www.'):
                 src = src[2:]
                 imgs.append(src)
@@ -330,9 +342,9 @@ def _map_key_name_with_table_header(table_header_list):
     header_info = {
         'post_url' : ["제목"],
         'post_title' : ["제목"],
-        'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자"],
+        'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자"],
         'view_count' : ["조회", "조회수"],
-        'uploader' : ["작성자", "담당부서", "게시자"],
+        'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서"],
         'post_subject' : ["분류", "구분"],
         'contact' : ["연락처"]
     }
@@ -406,38 +418,43 @@ def parse_view_count(**params):
     return result
 
 def parse_post_url(**params):
-    # 1. a_tag 에서 'onclick' attrs 가 존재할 경우
-    # var['onclick_idx']를 parser.py에서 작성했으면 해당 번호의 onclick value 를 반환함.
-    # 없을 경우 idx = 1 인 parse_onclick을 그대로 실행
-    # self.post_url 은 'https://www.naver.com/?test_post_id={}' 형태로 post_id 하나만을 사용할 경우임
-    # 나머지 경우는 직접 작성해서 처리함
+    # 첫 번쩨 케이스 
+    # a태그 href 가 존재하고 self.post_url을 선언하지 않은 경우 
+    # var['channel_main_url'] + href 로 post_url 을 만들어서 return함
 
-    # 2. 'onclick'이 없는 경우 
-    # self.post_url 을 선언하여 post_url_frame이 있다면 
-    # var['post_url_frame'] + href 를 사용하고 
-    # 없을경우 var['channel_main_url'] + href 을 사용함.
-    # 이 외의 경우 parser.py 에서 개별 작성해서 처리함. 
+    # 두 번째 케이스 
+    # a태그 href 가 존재하고 self.post_url을 선언한 경우 
+    # var['post_url_frame'] 내에 '{}' 가 없을 경우
+    # var['post_url_frame'] + href
+    # var['post_url_frame'] 내에 '{}' 가 있을 경우
+    # var['post_url_frame'].format(href) 로 post_url 을 구성해 return 함
+
+    # 세 번째 케이스 
+    # var['post_id_idx'] int 값이 존재하고 self.post_url 이 선언된 경우
+    # 해당 index의 onclick 파싱값(post_id)을 var['post_url_frame'].format(post_id)로
+    # post_url을 사용해 return 함
+
+    # 네 번째 케이스
+    # var['post_id_idx'] list 값이 존재하고 self.post_url 이 선언된 경우
+    # var['post_url_frame'].replace('{}', 순차적으로 추출한 post_id, 1)
+    # 으로 url 을 만들어 return 함 onclick에 제시되는 파라미터 순으로 url 정렬이 필요할수도 있음.
+    # 손이 많이가는 경우라면 직접 parse_ 를 작성해서 사용
     td = params['td']
     var = params['var']
     post_url_frame = var['post_url_frame']
     a_tag = extract_children_tag(td, 'a')
-    try :
-        href = extract_attrs(a_tag, 'href') if a_tag.has_attr('href') else ''
-        onclick = extract_attrs(a_tag, 'onclick') if a_tag.has_attr('onclick') else ''
-    except AttributeError as e :
-        print(e)
-        print(td)
-        return None
-    if 'onclick_idx' in var.keys() :
-        if type(var['onclick_idx']) == int: 
+    href = extract_attrs(a_tag, 'href') if a_tag.has_attr('href') else ''
+    onclick = extract_attrs(a_tag, 'onclick') if a_tag.has_attr('onclick') else ''
+    if 'post_id_idx' in var.keys() :
+        if type(var['post_id_idx']) == int: 
             if onclick :
-                post_id = parse_onclick(onclick, var['onclick_idx'])
+                post_id = parse_post_id(onclick, var['post_id_idx'])
             elif href :
-                post_id = parse_onclick(href, var['onclick_idx'])
+                post_id = parse_post_id(href, var['post_id_idx'])
             result = post_url_frame.format(post_id)
             return result
-        elif type(var['onclick_idx']) == list:
-            post_id_list = parse_onclick(onclick, var['onclick_idx'])
+        elif type(var['post_id_idx']) == list:
+            post_id_list = parse_post_id(onclick, var['post_id_idx'])
             for post_id in post_id_list:
                 post_url_frame = post_url_frame.replace('{}', post_id, 1)
             result = post_url_frame
@@ -473,14 +490,22 @@ def _return_raw_text(**params):
 
 parse_contact = parse_post_subject = parse_uploader\
      = _return_raw_text
+    
+def _check_notice_post(text, page_count):
+    if '공지' in text[0] or not text[0]: # 공지글 첫 페이지에서만 수집
+        if page_count != 1:
+            return True
+    return False
 
 def _parse_total_table_data(checked_key_info, table_row_list, var):
     for tr in table_row_list :
         # 입력한 header 순번에 맞춰 해당 값을 파싱하는 함수에 전달함
         td_list = extract_children_tag(tr, 'td', is_child_multiple=True)
         td_text = [extract_text(td) for td in td_list]
+        is_notice = _check_notice_post(text = td_text[0], page_count=var['page_count'])
+        if not is_notice : pass
         if '공지' in td_text[0] or not td_text[0]: # 공지글 첫 페이지에서만 수집
-            if var['page_count'] != 1 :
+            if var['page_count'] != 1:
                 continue
         for td_idx in checked_key_info:
             for key_name in checked_key_info[td_idx]:

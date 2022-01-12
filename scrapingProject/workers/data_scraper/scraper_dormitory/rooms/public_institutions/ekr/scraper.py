@@ -8,7 +8,7 @@ from .parser import *
 '''
     @post list
     method : GET
-    url_0 = https://www.epis.or.kr/board/list?boardManagementNo=8&page={}&level=2&menuNo=8
+    url_0 = https://www.kpf.or.kr/front/board/boardContentsList.do?miv_pageNo={}&mode=W&board_id=245
     header :
         None
 '''

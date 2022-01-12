@@ -21,7 +21,7 @@ def post_list_parsing_process(**params):
             if td_idx == 1:
                 a_tag = extract_children_tag(td, 'a')
                 onclick = extract_attrs(a_tag, 'onclick')
-                post_id = parse_onclick(onclick)
+                post_id = parse_post_id(onclick)
                 var['contents_req_params'].append(
                     {
                         "menu_id" :"00000193",

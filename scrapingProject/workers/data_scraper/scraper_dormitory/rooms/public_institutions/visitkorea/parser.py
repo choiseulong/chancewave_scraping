@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type' : ['uploaded_time', 'view_count', 'post_url', 'post_title', 'contact']
+        'multiple_type' : ['uploaded_time', 'view_count', 'post_url', 'post_title', 'contact', 'uploader']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     for key in key_list :

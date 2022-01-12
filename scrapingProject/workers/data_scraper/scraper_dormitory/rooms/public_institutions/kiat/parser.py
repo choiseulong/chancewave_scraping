@@ -31,7 +31,7 @@ def post_list_parsing_process(**params):
                 var['post_title'].append(span_text)
                 a_tag = extract_children_tag(span, 'a')
                 href = extract_attrs(a_tag, 'href')
-                post_id = parse_onclick(href, 0)
+                post_id = parse_post_id(href, 0)
                 var['post_url'].append(
                     var['post_url_frame'].format(post_id)
                 )

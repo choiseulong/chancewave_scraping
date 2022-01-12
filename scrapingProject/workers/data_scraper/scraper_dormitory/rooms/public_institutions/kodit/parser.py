@@ -8,7 +8,7 @@ def post_list_parsing_process(**params):
     for key in key_list :
         var[f'parse_{key}'] = globals()[f'parse_{key}']
     # 2021-01-10
-    var['onclick_idx'] == 1
+    var['post_id_idx'] == 1
     table_header = ["번호", "제목", "등록일", "조회수"]
     result = parse_board_type_html_page(soup, var, key_list, table_header)
     return result
