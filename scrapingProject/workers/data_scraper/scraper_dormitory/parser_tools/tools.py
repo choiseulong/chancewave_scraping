@@ -345,7 +345,7 @@ def _map_key_name_with_table_header(table_header_list):
         'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자"],
         'view_count' : ["조회", "조회수"],
         'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서"],
-        'post_subject' : ["분류", "구분"],
+        'post_subject' : ["분류", "구분", "분야"],
         'contact' : ["연락처"]
     }
     for header_idx, header_name in enumerate(table_header_list):
