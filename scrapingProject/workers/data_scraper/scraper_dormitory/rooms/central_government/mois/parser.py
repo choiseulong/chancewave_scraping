@@ -14,7 +14,7 @@ def post_list_parsing_process(**params):
             if td_idx == 1:
                 a_tag = extract_children_tag(td, 'a', child_tag_attrs={}, is_child_multiple=False)
                 onclick = extract_attrs(a_tag, 'onclick')
-                nttId, bbsId = parse_onclick(onclick)
+                nttId, bbsId = parse_post_id(onclick)
                 var['post_url'].append(
                     var['post_url_frame'].format(bbsId, nttId)
                 )
@@ -37,7 +37,7 @@ def post_list_parsing_process(**params):
     # print(result)
     return result
 
-def parse_onclick(text):
+def parse_post_id(text):
     data = re.findall("'(.+?)'", text)
     nttId, bbsId = data[0], data[1]
     return nttId, bbsId

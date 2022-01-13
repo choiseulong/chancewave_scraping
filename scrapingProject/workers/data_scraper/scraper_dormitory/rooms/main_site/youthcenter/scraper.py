@@ -39,7 +39,7 @@ from .parser import *
 						<label for="cmprCheckboxR2021021800010"><span class="blind"><em>국민취업지원제도</em>선택</span></label>
                 </span>	
 '''
-isUpdate = True
+is_update = True
 
 class Scraper(ABCScraper):
     def __init__(self, session):
@@ -48,8 +48,8 @@ class Scraper(ABCScraper):
         self.post_board_name = '청년정책 통합검색'
         self.post_url = 'https://www.youthcenter.go.kr/youngPlcyUnif/youngPlcyUnifDtl.do'
 
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         # self.mongo.remove_channel_data(channel_code)
         self.page_count = 1
         while True :
@@ -65,7 +65,7 @@ class Scraper(ABCScraper):
                 for i in range(len(self.additional_key_value)):
                     del self.scraping_target[-(i+1)]
                 self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded "))
-                self.session = set_headers(self.session, self.additional_key_value, isUpdate)
+                self.session = set_headers(self.session, self.additional_key_value, is_update)
                 self.target_contents_scraping()
                 self.collect_data()
                 self.mongo.reflect_scraped_data(self.collected_data_list)

@@ -8,7 +8,6 @@ class Scraper(metaclass=ABCMeta):
     def __init__(self, session):
         # default var
         self.session = session
-        self.date_range = []
         self.mongo = ''
         self.channel_code = ''
         self.channel_url = ''
@@ -31,13 +30,16 @@ class Scraper(metaclass=ABCMeta):
         self.post_url_frame = ''
         self.channel_main_url = ''
 
+        #env
+        self.dev = False
+
     @abstractmethod
-    def scraping_process(self, channel_code, channel_url, date_range):
+    def scraping_process(self, channel_code, channel_url, dev=False):
         '''
             스크래핑 진행의 틀을 작성함
         '''
+        self.dev = dev
         self.mongo = MongoServer()
-        self.date_range = date_range
         self.channel_code = channel_code
         self.channel_url = channel_url
         self.channel_url_frame = channel_url #page_count 적용이 필요한 경우 사용
@@ -68,11 +70,12 @@ class Scraper(metaclass=ABCMeta):
         if status == 'ok':
             self.scraping_target = post_list_parsing_process(
                 response = response, 
-                date_range = self.date_range, 
                 channel_code = self.channel_code, 
                 post_url_frame = self.post_url,
                 page_count = self.page_count,
                 channel_main_url = self.channel_main_url,
+                channel_url = self.channel_url,
+                dev = self.dev
             )
 
     def target_contents_scraping(self, post_content_parsing_process, sleep_sec=2):
@@ -98,7 +101,8 @@ class Scraper(metaclass=ABCMeta):
                 response = response, 
                 channel_url = self.channel_url,
                 post_url_frame = self.post_url,
-                channel_main_url = self.channel_main_url
+                channel_main_url = self.channel_main_url,
+                dev = self.dev
             )
             if post_content == 'retry' : 
                 sleep(300)

@@ -28,7 +28,7 @@ from .parser import *
         header_1 : 메인페이지에서 쿠키 받아옴
 '''
 sleep_sec = 1
-isUpdate = True
+is_update = True
 
 class Scraper(ABCScraper):
     def __init__(self, session):
@@ -38,8 +38,8 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://www.naacc.go.kr'
         self.post_url = 'https://www.naacc.go.kr/csi_board/csi_boardView.do?menu_id=notice&num={}'
         
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :
@@ -59,7 +59,7 @@ class Scraper(ABCScraper):
             if status == 'ok' :
                 JSESSIONID = response.cookies.get_dict()['JSESSIONID']
                 self.additional_key_value.append(("Cookie", f"JSESSIONID={JSESSIONID}"))
-                self.session = set_headers(self.session, self.additional_key_value, isUpdate)
+                self.session = set_headers(self.session, self.additional_key_value, is_update)
         super().post_list_scraping(post_list_parsing_process, 'get', sleep_sec)
 
     def target_contents_scraping(self):

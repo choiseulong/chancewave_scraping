@@ -46,18 +46,16 @@ def make_session():
     session.mount("https://", HTTPAdapter(max_retries=retry))
     return session
 
-# 
-
 # job
 # 10시간 time limit 
 # retry 간격 3분 디폴트
 @schedule.task(time_limit=36000, retries=3)
-def job(group_name, room_name, channel_code, channel_url, date_range):
+def job(group_name, room_name, channel_code, channel_url):
     startTime = datetime.now(timezone('Asia/Seoul')).isoformat()
     session = make_session()
     scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'
     scraper = importlib.import_module(scraper_room_address).Scraper(session)
-    scraper.scraping_process(channel_code, channel_url, date_range)
+    scraper.scraping_process(channel_code, channel_url)
     endTime = datetime.now(timezone('Asia/Seoul')).isoformat()
     return {
         "channel_code" : channel_code,

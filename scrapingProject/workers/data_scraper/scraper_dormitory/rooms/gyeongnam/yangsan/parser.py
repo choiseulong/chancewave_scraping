@@ -19,7 +19,7 @@ def post_list_parsing_process(**params):
             if td_idx == 1 :
                 a_tag = extract_children_tag(td, 'a', child_tag_attrs={}, is_child_multiple=False)
                 onclick = extract_attrs(a_tag, 'onclick')
-                postId = parse_onclick(onclick)
+                postId = parse_post_id(onclick)
                 var['post_url'].append(
                     var['post_url_frame'].format(postId)
                 )

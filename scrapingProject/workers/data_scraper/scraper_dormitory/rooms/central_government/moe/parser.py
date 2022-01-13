@@ -13,7 +13,7 @@ def post_list_parsing_process(**params):
             td_text = extract_text(td)
             if td_idx == 1:
                 a_tag = extract_children_tag(td, 'a', child_tag_attrs={}, is_child_multiple=False)
-                postId = parse_onclick(
+                postId = parse_post_id(
                     extract_attrs(a_tag, 'onclick')
                 )
                 var['post_url'].append(
