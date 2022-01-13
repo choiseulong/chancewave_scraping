@@ -197,7 +197,7 @@ def extract_text_from_single_tag(parent_tag, child_tag, child_tag_attrs={}):
     return text
 
 def extract_values_list_in_both_sides_bracket_text(text):
-    text_cut = text[text.find('(')+1 : text.rfind(')')].replace("'", "")
+    text_cut = text[text.find('(')+1 : text.rfind(')')].replace("'", "").replace('"', '')
     value_list = [i for i in text_cut.split(',')]
     return value_list
 
@@ -325,6 +325,8 @@ def search_img_list_in_contents(contents, channel_main_url):
                 src = src[1:]
             elif src.startswith('../'):
                 src = src[2:]
+            elif src.startswith('file:///'):
+                continue
 
             if src.startswith('//www.'):
                 src = src[2:]
@@ -342,9 +344,9 @@ def _map_key_name_with_table_header(table_header_list):
     header_info = {
         'post_url' : ["제목"],
         'post_title' : ["제목"],
-        'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자"],
+        'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자", "날짜"],
         'view_count' : ["조회", "조회수"],
-        'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서"],
+        'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서", "담당자"],
         'post_subject' : ["분류", "구분", "분야"],
         'contact' : ["연락처"]
     }
@@ -417,6 +419,11 @@ def parse_view_count(**params):
     result = extract_numbers_in_text(num)
     return result
 
+def parse_href(href):
+    if href.startswith('#'):
+        href = href[1:]
+    return href
+
 def parse_post_url(**params):
     # 첫 번쩨 케이스 
     # a태그 href 가 존재하고 self.post_url을 선언하지 않은 경우 
@@ -444,6 +451,8 @@ def parse_post_url(**params):
     post_url_frame = var['post_url_frame']
     a_tag = extract_children_tag(td, 'a')
     href = extract_attrs(a_tag, 'href') if a_tag.has_attr('href') else ''
+    if href :
+        href = parse_href(href)
     onclick = extract_attrs(a_tag, 'onclick') if a_tag.has_attr('onclick') else ''
     if 'post_id_idx' in var.keys() :
         if type(var['post_id_idx']) == int: 
@@ -454,7 +463,10 @@ def parse_post_url(**params):
             result = post_url_frame.format(post_id)
             return result
         elif type(var['post_id_idx']) == list:
-            post_id_list = parse_post_id(onclick, var['post_id_idx'])
+            if onclick :
+                post_id_list = parse_post_id(onclick, var['post_id_idx'])
+            elif href :
+                post_id_list = parse_post_id(href, var['post_id_idx'])
             for post_id in post_id_list:
                 post_url_frame = post_url_frame.replace('{}', post_id, 1)
             result = post_url_frame
@@ -492,9 +504,12 @@ parse_contact = parse_post_subject = parse_uploader\
      = _return_raw_text
     
 def _check_notice_post(text, page_count):
-    if '공지' in text[0] or not text[0]: # 공지글 첫 페이지에서만 수집
+    # text -> td_text[0]
+    # 공지글 첫 페이지에서만 수집을 위함
+    if '공지' in text or not text:
         if page_count != 1:
             return True
+
     return False
 
 def _parse_total_table_data(checked_key_info, table_row_list, var):

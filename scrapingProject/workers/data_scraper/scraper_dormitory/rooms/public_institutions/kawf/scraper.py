@@ -8,7 +8,7 @@ from .parser import *
 '''
     @post list
     method : GET
-    url_0 = https://www.kcisa.kr/kr/board/notice/boardList.do?pageIndex={page_count}
+    url_0 = http://www.kawf.kr/notice/sub01.do?cpg={page_count}
     header :
         None
 '''
@@ -16,12 +16,9 @@ from .parser import *
     @post info
     method : GET
     url : 
-        self.channel_main_url + re.findall("'(.+?)'", onclick)[0]
+        self.post_url_frame.format(post_id)
     header :
         None
-'''
-'''
-    base64
 '''
 sleep_sec = 1
 is_update = True
