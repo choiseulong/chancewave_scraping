@@ -37,8 +37,8 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://www.guri.go.kr'
         print(f'SCRAP {self.channel_name} - {self.post_board_name}')
 
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True:

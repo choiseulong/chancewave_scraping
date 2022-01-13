@@ -36,8 +36,8 @@ class Scraper(ABCScraper):
         self.post_board_name = '공지사항'
         self.channel_main_url = 'https://www.guri.go.kr'
 
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True:
@@ -106,6 +106,7 @@ def post_list_parsing_process(**params):
     result = merge_var_to_dict(key_list, value_list)
     print(result)
     return result
+
 
 def post_content_parsing_process(**params):
     target_key_info = {
