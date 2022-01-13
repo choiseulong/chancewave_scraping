@@ -5,10 +5,10 @@ def post_list_parsing_process(**params):
         'multiple_type' : ['post_url', 'post_title', 'start_date', 'end_date', 'uploader', 'uploaded_time', 'view_count']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    tbody = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.not_multiple)
-    contents_tr = extract_children_tag(tbody, 'tr', DataStatus.empty_attrs, DataStatus.multiple)
+    tbody = extract_children_tag(soup, 'tbody', child_tag_attrs={}, is_child_multiple=False)
+    contents_tr = extract_children_tag(tbody, 'tr', child_tag_attrs={}, is_child_multiple=True)
     for tr in contents_tr :
-        anchor = extract_children_tag(tr, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
+        anchor = extract_children_tag(tr, 'a', child_tag_attrs={}, is_child_multiple=False)
         var['post_url'].append(
             var['post_url_frame'].format(
                     extract_params(
@@ -19,7 +19,7 @@ def post_list_parsing_process(**params):
         var['post_title'].append(
             extract_text(anchor)
         )
-        contents_td = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple)
+        contents_td = extract_children_tag(tr, 'td', child_tag_attrs={}, is_child_multiple=True)
         for idx, td in enumerate(contents_td):
             td_text = extract_text(td)
             if idx == 2:
@@ -44,7 +44,7 @@ def post_list_parsing_process(**params):
                 var['view_count'].append(extract_numbers_in_text((td_text)))
 
     value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     return result
 
 def extract_params(text):
@@ -59,13 +59,13 @@ def post_content_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     var['post_text_type'] = 'only_extra_info'
-    tbody_list = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.multiple)
-    tr = extract_children_tag(tbody_list[0], 'tr', DataStatus.empty_attrs, DataStatus.not_multiple) 
-    td_list = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple) 
+    tbody_list = extract_children_tag(soup, 'tbody', child_tag_attrs={}, is_child_multiple=True)
+    tr = extract_children_tag(tbody_list[0], 'tr', child_tag_attrs={}, is_child_multiple=False) 
+    td_list = extract_children_tag(tr, 'td', child_tag_attrs={}, is_child_multiple=True) 
     var['post_subject'] = extract_text(td_list[0])
 
-    boardBusiness = extract_children_tag(soup, 'div', {"class" : "boardBusiness"}, DataStatus.not_multiple)
-    h4_contName = extract_children_tag(boardBusiness, 'h4', {"class" : True}, DataStatus.multiple)
+    boardBusiness = extract_children_tag(soup, 'div', {"class" : "boardBusiness"}, is_child_multiple=False)
+    h4_contName = extract_children_tag(boardBusiness, 'h4', {"class" : True}, is_child_multiple=True)
     extraDict = {"info_title" : "지원사업 상세"}
 
     for h4 in h4_contName:

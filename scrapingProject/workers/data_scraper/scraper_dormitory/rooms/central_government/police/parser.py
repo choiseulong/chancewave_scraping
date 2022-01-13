@@ -5,15 +5,15 @@ def post_list_parsing_process(**params):
         'multiple_type' : ['post_url', 'post_title', 'uploader', 'uploaded_time', 'view_count']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    tbody = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.not_multiple)
-    tr_list = extract_children_tag(tbody, 'tr', DataStatus.empty_attrs, DataStatus.multiple)
+    tbody = extract_children_tag(soup, 'tbody', child_tag_attrs={}, is_child_multiple=False)
+    tr_list = extract_children_tag(tbody, 'tr', child_tag_attrs={}, is_child_multiple=True)
     for tr in tr_list:
-        td_list = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple)
+        td_list = extract_children_tag(tr, 'td', child_tag_attrs={}, is_child_multiple=True)
         for td_idx, td in enumerate(td_list):
             td_text = extract_text(td)
             if td_idx == 1:
-                a_tag = extract_children_tag(td, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
-                postId = parse_onclick(extract_attrs(a_tag, 'onclick'), 0)
+                a_tag = extract_children_tag(td, 'a', child_tag_attrs={}, is_child_multiple=False)
+                postId = parse_post_id(extract_attrs(a_tag, 'onclick'), 0)
                 var['post_url'].append(
                     var['post_url_frame'].format(postId)
                 )
@@ -30,7 +30,7 @@ def post_list_parsing_process(**params):
                 )
 
     value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     # print(result)
     return result
 
@@ -40,8 +40,8 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    tbody = extract_children_tag(soup, 'tbody', DataStatus.empty_attrs, DataStatus.not_multiple)
-    thList = extract_children_tag(tbody, 'th', DataStatus.empty_attrs, DataStatus.multiple)
+    tbody = extract_children_tag(soup, 'tbody', child_tag_attrs={}, is_child_multiple=False)
+    thList = extract_children_tag(tbody, 'th', child_tag_attrs={}, is_child_multiple=True)
     dateCount = 0
     dateInfo = {'start_date' : '공지시작일', 'end_date' : '공지종료일', 'start_date2' : '게시시작일시', 'end_date2' : '게시종료일시'}
     for th in thList:
@@ -54,7 +54,7 @@ def post_content_parsing_process(**params):
                 dateCount += 1
         if dateCount == 4:
             break
-    board_contents = extract_children_tag(tbody, 'div', {'class' : 'board-contents'}, DataStatus.not_multiple)
+    board_contents = extract_children_tag(tbody, 'div', {'class' : 'board-contents'}, is_child_multiple=False)
     post_text = extract_text(board_contents)
     var['post_text'] = clean_text(post_text)
     var['contact'] = extract_contact_numbers_from_text(post_text)

@@ -2,10 +2,8 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# SCRAPER
 # youthcenter_0 : 청년정책 통합검색
 # 타겟 : 모든 포스트
-# 중단 시점 : 유효 포스트가 0개인 경우가 5번 연속 나올 경우
 
 # HTTP Request
 '''
@@ -41,7 +39,7 @@ from .parser import *
 						<label for="cmprCheckboxR2021021800010"><span class="blind"><em>국민취업지원제도</em>선택</span></label>
                 </span>	
 '''
-isUpdate = True
+is_update = True
 
 class Scraper(ABCScraper):
     def __init__(self, session):
@@ -50,20 +48,24 @@ class Scraper(ABCScraper):
         self.post_board_name = '청년정책 통합검색'
         self.post_url = 'https://www.youthcenter.go.kr/youngPlcyUnif/youngPlcyUnifDtl.do'
 
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         # self.mongo.remove_channel_data(channel_code)
         self.page_count = 1
         while True :
             self.session = set_headers(self.session)
             self.channel_url = self.channel_url_frame.format(self.page_count)
             self.post_list_scraping()
+
+            if not self.scraping_target:
+                break
+            
             if isinstance(self.scraping_target, list):
                 self.additional_key_value.extend(find_request_params(self.scraping_target, ['Cookie'])) 
                 for i in range(len(self.additional_key_value)):
                     del self.scraping_target[-(i+1)]
                 self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded "))
-                self.session = set_headers(self.session, self.additional_key_value, isUpdate)
+                self.session = set_headers(self.session, self.additional_key_value, is_update)
                 self.target_contents_scraping()
                 self.collect_data()
                 self.mongo.reflect_scraped_data(self.collected_data_list)

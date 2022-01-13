@@ -31,8 +31,8 @@ from .parser import *
         None
 
 '''
-sleep_sec = 2
-isUpdate = True
+sleep_sec = 1
+is_update = True
 
 class Scraper(ABCScraper):
     def __init__(self, session):
@@ -42,10 +42,10 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'http://www.dapa.go.kr'
         self.post_url = 'http://www.dapa.go.kr/dapa/na/ntt/selectNttInfo.do?bbsId=443&nttSn={}&menuId=356'
         
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded"))
-        self.session = set_headers(self.session, self.additional_key_value, isUpdate)
+        self.session = set_headers(self.session, self.additional_key_value, is_update)
         self.page_count = 1
         while True :
             self.channel_url = self.channel_url_frame.format(self.page_count)

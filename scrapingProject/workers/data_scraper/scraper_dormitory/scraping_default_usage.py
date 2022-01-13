@@ -8,7 +8,6 @@ class Scraper(metaclass=ABCMeta):
     def __init__(self, session):
         # default var
         self.session = session
-        self.date_range = []
         self.mongo = ''
         self.channel_code = ''
         self.channel_url = ''
@@ -31,27 +30,36 @@ class Scraper(metaclass=ABCMeta):
         self.post_url_frame = ''
         self.channel_main_url = ''
 
+        #env
+        self.dev = False
+
     @abstractmethod
-    def scraping_process(self, channel_code, channel_url, date_range):
+    def scraping_process(self, channel_code, channel_url, dev=False):
         '''
             스크래핑 진행의 틀을 작성함
         '''
+        self.dev = dev
         self.mongo = MongoServer()
-        self.date_range = date_range
         self.channel_code = channel_code
         self.channel_url = channel_url
         self.channel_url_frame = channel_url #page_count 적용이 필요한 경우 사용
         self.post_url_frame = self.post_url
+        if not self.channel_main_url:
+            self.channel_main_url = extract_channel_main_url_from_channel_url(channel_url)
         # 추가 로직 작성 必
+    
+    def __is_continue(self, check_num):
+        if self.page_count == check_num:
+            self.scraping_target = []
+            return True
 
     def post_list_scraping(self, post_list_parsing_process, method, data={}, sleep_sec=2, jsonize=False):
         '''
             채널 메인에서 게시글의 기본정보를 가져오기 위한 요청을 처리함
         '''
-        # 첫페이지 테스트
-        # if self.page_count == 2 :
-        #     self.scraping_target = []
-        #     return
+        if self.__is_continue(6):
+            self.session.close()
+            return
 
         self.collected_data_list = []
         if method == 'get':
@@ -62,11 +70,12 @@ class Scraper(metaclass=ABCMeta):
         if status == 'ok':
             self.scraping_target = post_list_parsing_process(
                 response = response, 
-                date_range = self.date_range, 
                 channel_code = self.channel_code, 
                 post_url_frame = self.post_url,
                 page_count = self.page_count,
                 channel_main_url = self.channel_main_url,
+                channel_url = self.channel_url,
+                dev = self.dev
             )
 
     def target_contents_scraping(self, post_content_parsing_process, sleep_sec=2):
@@ -79,6 +88,7 @@ class Scraper(metaclass=ABCMeta):
                 self.scraping_target_contents.append(post_content)
 
     def target_scraping(self, post_content_parsing_process, target, sleep_sec):
+        status = ''
         if 'contents_req_params' in target.keys():
             data = target['contents_req_params']
             status, response = post_method_response(self.session, self.post_url, data, sleep_sec)
@@ -91,7 +101,8 @@ class Scraper(metaclass=ABCMeta):
                 response = response, 
                 channel_url = self.channel_url,
                 post_url_frame = self.post_url,
-                channel_main_url = self.channel_main_url
+                channel_main_url = self.channel_main_url,
+                dev = self.dev
             )
             if post_content == 'retry' : 
                 sleep(300)
@@ -124,8 +135,8 @@ class Scraper(metaclass=ABCMeta):
             else :
                 post_url_can_use = True
             data_frame = get_post_data_frame(self.channel_code, self.channel_url, post_url_can_use, self.channel_name, self.post_board_name)
-            data_frame_with_target_info = enter_data_into_dataFrame(data_frame, target_info)
-            data_frame_with_target_contents = enter_data_into_dataFrame(data_frame_with_target_info, target_contents)
+            data_frame_with_target_info = enter_data_into_data_frame(data_frame, target_info)
+            data_frame_with_target_contents = enter_data_into_data_frame(data_frame_with_target_info, target_contents)
             self.collected_data_list.append(data_frame_with_target_contents)
         self.scraping_target_contents = []
         self.scraping_target = []

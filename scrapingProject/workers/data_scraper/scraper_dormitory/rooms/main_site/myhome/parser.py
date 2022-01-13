@@ -58,7 +58,7 @@ def post_list_parsing_process(**params):
     ]
 
     value_list = [var[key][:-1] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     return result
 
 def parse_frstRegistDt(textDate):
@@ -82,14 +82,14 @@ def post_content_parsing_process(**params):
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
     var['post_content_target'] = '-'.join(
-        [extract_text(tag) for tag in extract_children_tag(soup, 'span', {'class' : 'ds'}, DataStatus.multiple)]
+        [extract_text(tag) for tag in extract_children_tag(soup, 'span', {'class' : 'ds'}, is_child_multiple=True)]
     )
     var['post_text_type'] = 'only_extra_info'
     extraDict = {'info_title' : '공고 개요'}
-    div_info = extract_children_tag(soup, 'div', {'class' : 'info'}, DataStatus.not_multiple)
+    div_info = extract_children_tag(soup, 'div', {'class' : 'info'}, is_child_multiple=False)
     for title, value in zip(
-        extract_children_tag(div_info, 'dt', DataStatus.empty_attrs, DataStatus.multiple), 
-        extract_children_tag(div_info, 'dd', DataStatus.empty_attrs, DataStatus.multiple), 
+        extract_children_tag(div_info, 'dt', child_tag_attrs={}, is_child_multiple=True), 
+        extract_children_tag(div_info, 'dd', child_tag_attrs={}, is_child_multiple=True), 
     ):
         title = extract_text(title)
         value = extract_text(value)

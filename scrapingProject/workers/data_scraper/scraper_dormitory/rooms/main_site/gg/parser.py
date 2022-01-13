@@ -30,7 +30,7 @@ def post_list_parsing_process(**params):
         in search_value_in_json_data_using_path(json_data, '$..ADD_COLUMN04')
     ]
     value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     return result
 
 
@@ -45,18 +45,18 @@ def post_content_parsing_process(**params):
         var['channel_main_url'] + \
         extract_attrs(img, 'src') \
         for img \
-        in extract_children_tag(item_box, 'img', DataStatus.empty_attrs, DataStatus.multiple)
+        in extract_children_tag(item_box, 'img', child_tag_attrs={}, is_child_multiple=True)
     ] 
 
     equitable_box = extract_children_tag(soup, 'div', {"class" : "equitable_box"})
-    linkList = extract_children_tag(equitable_box, 'a', DataStatus.empty_attrs, DataStatus.multiple)
+    linkList = extract_children_tag(equitable_box, 'a', child_tag_attrs={}, is_child_multiple=True)
     if linkList:
         for link in linkList:
             linkHref = extract_attrs(link, 'href')
             if linkHref :
                 var['linked_post_url'].append(linkHref)
-    span_text = [extract_text(span) for span in extract_children_tag(equitable_box, 'span', DataStatus.empty_attrs, DataStatus.multiple)]
-    p_text = [extract_text(p) for p in extract_children_tag(equitable_box, 'p', DataStatus.empty_attrs, DataStatus.multiple)]
+    span_text = [extract_text(span) for span in extract_children_tag(equitable_box, 'span', child_tag_attrs={}, is_child_multiple=True)]
+    p_text = [extract_text(p) for p in extract_children_tag(equitable_box, 'p', child_tag_attrs={}, is_child_multiple=True)]
 
 
     info = {'응모대상' : 'post_content_target', '문의' : 'contact'}

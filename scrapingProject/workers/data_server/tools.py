@@ -1,10 +1,9 @@
 import zlib
 from datetime import datetime
-from pytz import timezone
 
 def make_crc(data):
     text = ''
-    key_list = ['channel_code', 'channel_url', 'post_url', 'post_title', 'post_text', 'post_subject', 'contact', 'extra_info', 'is_going_on', 'post_image_url', 'view_count']
+    key_list = ['channel_code', 'post_title', 'post_text', 'post_subject', 'contact', 'extra_info', 'is_going_on', 'post_image_url', 'view_count']
     for key in key_list:
         if isinstance(data[key], str):
             text += data[key]

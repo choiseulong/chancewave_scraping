@@ -10,7 +10,7 @@ from .parser import *
 
     method : GET
     url = http://www.damyang.go.kr/board/list.damyang?boardId=BBS_0000001&listRow=10&\
-        listCel=1&menuCd=DOM_000000104001000000&paging=ok&startPage={pageCount}
+        listCel=1&menuCd=DOM_000000104001000000&paging=ok&startPage={page_count}
     header :
         None
 
@@ -23,8 +23,8 @@ from .parser import *
         None
 
 '''
-sleep_sec = 4
-isUpdate = True
+sleep_sec = 1
+is_update = True
 
 class Scraper(ABCScraper):
 
@@ -34,10 +34,9 @@ class Scraper(ABCScraper):
         self.post_board_name = '공지사항'
         self.channel_main_url = 'http://www.damyang.go.kr'
         
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)
-        # self.set_jsessionid()
         self.page_count = 1
         while True :
             self.channel_url = self.channel_url_frame.format(self.page_count)

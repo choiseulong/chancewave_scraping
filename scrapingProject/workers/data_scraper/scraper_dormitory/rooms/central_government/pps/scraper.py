@@ -29,8 +29,8 @@ from .parser import *
         header_1 : fixed
 '''
 
-sleep_sec = 3
-isUpdate = True
+sleep_sec = 1
+is_update = True
 
 class Scraper(ABCScraper):
     def __init__(self, session):
@@ -40,10 +40,10 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://www.pps.go.kr'
         self.post_url = 'https://www.pps.go.kr/kor/bbs/view.do?bbsSn={}&key=00641'
         
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded"))
-        self.session = set_headers(self.session, self.additional_key_value, isUpdate)
+        self.session = set_headers(self.session, self.additional_key_value, is_update)
 
         self.page_count = 1
         while True :

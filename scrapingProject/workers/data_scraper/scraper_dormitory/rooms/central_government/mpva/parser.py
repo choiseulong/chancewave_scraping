@@ -5,15 +5,15 @@ def post_list_parsing_process(**params):
         'multiple_type' : ['view_count', 'post_title', 'uploader', 'post_url', 'uploaded_time']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    tbody = extract_children_tag(soup, 'tbody', {'class' : 'text_center'}, DataStatus.not_multiple)
-    tr_list = extract_children_tag(tbody, 'tr', DataStatus.empty_attrs, DataStatus.multiple)
+    tbody = extract_children_tag(soup, 'tbody', {'class' : 'text_center'}, is_child_multiple=False)
+    tr_list = extract_children_tag(tbody, 'tr', child_tag_attrs={}, is_child_multiple=True)
     for tr in tr_list:
-        td_list = extract_children_tag(tr, 'td', DataStatus.empty_attrs, DataStatus.multiple)
+        td_list = extract_children_tag(tr, 'td', child_tag_attrs={}, is_child_multiple=True)
         for td_idx, td in enumerate(td_list):
             td_text = extract_text(td)
             if td_idx == 1:
                 href = extract_attrs(
-                    extract_children_tag(td, 'a', DataStatus.empty_attrs, DataStatus.not_multiple),
+                    extract_children_tag(td, 'a', child_tag_attrs={}, is_child_multiple=False),
                     'href'
                 )
                 if 'html' not in href :
@@ -31,7 +31,7 @@ def post_list_parsing_process(**params):
                 var['view_count'].append(extract_numbers_in_text(td_text))
 
     value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     return result
 
 def parse_href(text):
@@ -44,8 +44,8 @@ def post_content_parsing_process(**params):
         'single_type' : ['contact', 'post_text']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    tbody = extract_children_tag(soup, 'tbody', {'class' : 'p-table--th-left'}, DataStatus.not_multiple)
-    thList = extract_children_tag(tbody, 'th', DataStatus.empty_attrs, DataStatus.multiple)
+    tbody = extract_children_tag(soup, 'tbody', {'class' : 'p-table--th-left'}, is_child_multiple=False)
+    thList = extract_children_tag(tbody, 'th', child_tag_attrs={}, is_child_multiple=True)
     tdCount = 0
     for th in thList :
         td_text = extract_text(th)
@@ -56,7 +56,7 @@ def post_content_parsing_process(**params):
             tdCount += 1
         if tdCount == 2 :
             break
-    content = extract_children_tag(tbody, 'td', {'class' : 'p-table__content'}, DataStatus.not_multiple)
+    content = extract_children_tag(tbody, 'td', {'class' : 'p-table__content'}, is_child_multiple=False)
     var['post_text'] = extract_text(content)
     
     value_list = [var[key] for key in key_list]

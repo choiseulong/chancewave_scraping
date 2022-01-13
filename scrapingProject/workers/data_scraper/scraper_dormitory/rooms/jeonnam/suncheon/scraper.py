@@ -25,8 +25,8 @@ from .parser import *
         None
 
 '''
-sleep_sec = 2
-isUpdate = True
+sleep_sec = 1
+is_update = True
 
 class Scraper(ABCScraper):
 
@@ -37,10 +37,9 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://www.suncheon.go.kr'
         self.post_url = 'https://www.suncheon.go.kr/kr/news/0001/0001'
         
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)
-        # self.set_jsessionid()
         self.page_count = 1
         while True :
             self.channel_url = self.channel_url_frame.format(self.page_count)

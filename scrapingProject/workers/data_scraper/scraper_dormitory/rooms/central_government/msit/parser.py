@@ -6,9 +6,9 @@ def post_list_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
 
-    contentsList = extract_children_tag(soup, 'div', {'class' : 'toggle'}, DataStatus.multiple)
+    contentsList = extract_children_tag(soup, 'div', {'class' : 'toggle'}, is_child_multiple=True)
     for contents in contentsList:
-        a_tag = extract_children_tag(contents, 'a', DataStatus.empty_attrs, DataStatus.not_multiple)
+        a_tag = extract_children_tag(contents, 'a', child_tag_attrs={}, is_child_multiple=False)
         postId = extract_numbers_in_text(
             extract_attrs(a_tag, 'onclick')
         )
@@ -16,7 +16,7 @@ def post_list_parsing_process(**params):
             var['post_url_frame'].format(postId)
         )
     value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     return result
 
 def post_content_parsing_process(**params):
@@ -25,10 +25,10 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    view_head = extract_children_tag(soup, 'div', {'class' : 'view_head'}, DataStatus.not_multiple)
-    spanList = extract_children_tag(view_head, 'span', {'class' : True}, DataStatus.multiple)
+    view_head = extract_children_tag(soup, 'div', {'class' : 'view_head'}, is_child_multiple=False)
+    spanList = extract_children_tag(view_head, 'span', {'class' : True}, is_child_multiple=True)
     var['post_title'] = extract_text(
-        extract_children_tag(view_head, 'h2', DataStatus.empty_attrs, DataStatus.not_multiple)
+        extract_children_tag(view_head, 'h2', child_tag_attrs={}, is_child_multiple=False)
     )
     for span in spanList:
         spanText = extract_text(span)
@@ -41,7 +41,7 @@ def post_content_parsing_process(**params):
                     extract_text(find_next_tag(span))
                 )
             
-    contBox = extract_children_tag(soup, 'div', {'id' : 'cont-wrap'}, DataStatus.not_multiple)
+    contBox = extract_children_tag(soup, 'div', {'id' : 'cont-wrap'}, is_child_multiple=False)
     var['post_text'] = clean_text(extract_text(contBox))
     var['post_image_url'] = search_img_list_in_contents(contBox, var['channel_main_url'])
     value_list = [var[key] for key in key_list]

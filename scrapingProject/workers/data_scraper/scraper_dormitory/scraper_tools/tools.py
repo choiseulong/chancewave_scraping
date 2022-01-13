@@ -5,17 +5,17 @@ from pytz import timezone
 from ..parser_tools.tools import *
 import urllib3
 
-
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
+urllib3.disable_warnings(urllib3.exceptions.HeaderParsingError)
 
 def set_headers(session, additional_key_value=None, is_update=False):
     headers = {
+        "Connection": "keep-alive",
         "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36"
     }
     if additional_key_value and is_update:
         for key_value in additional_key_value:
-            headers.update({key_value[0]: key_value[1]})
+            headers.update({key_value[0]:key_value[1]})
     session.headers = headers
     return session
 
@@ -45,30 +45,29 @@ def get_method_response(session, url, sleep_sec=2):
     sleep(sleep_sec)
     return status, response
 
+
 def post_method_response(session, url, data={}, sleep_sec=2, jsonize=False):
     if jsonize :
         data = json.dumps(data)
     response = session.post(url, data=data, verify=False)
     status = 'fail'
-    if response.status_code == 200:
+    if response.status_code == 200 :
         status = 'ok'
     sleep(sleep_sec)
     return status, response
 
-def filtering_channel_path_in_globals(globals):
+def filtering_channel_path_in_globals(Globals):
     channel_code_list = []
-    for global_var_key in globals.keys():
+    for global_var_key in Globals.keys():
         if 'url_' in global_var_key:
             key = global_var_key.replace("url_", "")
-            channel_code_list.append({key : globals[f'{global_var_key}']})
+            channel_code_list.append({key : Globals[f'{global_var_key}']})
     return channel_code_list
-
 
 def return_key_value(data):
     key = list(data.keys())[0]
     value = data[key]
     return key, value
-
 
 def get_post_data_frame(
         channel_code='',
@@ -109,31 +108,37 @@ def get_post_data_frame(
         'extra_info' : []
     }
 
-
-def find_key_root(key_name) :
+def find_key_root(keyName) : 
     frame = get_post_data_frame()
-    value = frame.get(key_name)
+    value = frame.get(keyName)
     if value is not None:
-        return
+        return 
     else :
         for key in frame.keys():
-            if type(frame[key]) == dict:
-                value = frame[key].get(key_name)
-                if value is not None:
+            if type(frame[key]) == dict :
+                value = frame[key].get(keyName)
+                if value is not None :
                     return key
 
-
-def enter_data_into_dataFrame(dataFrame, result):
+def enter_data_into_data_frame(data_frame, result):
     for key in result:
-        if key in dataFrame.keys():
-            dataFrame[key] = result[key]
-    return dataFrame
+        if key in data_frame.keys():
+            data_frame[key] = result[key]
+    return data_frame
 
-
-def find_request_params(data, params_key):
+def find_request_params(data, paramsKey):
     params = []
-    for key in params_key:
-        tmp_param = [k for k in data if key in k.keys()]
-        if tmp_param:
-            params.append((key, tmp_param[0][key]))
+    for key in paramsKey:
+        P = [k for k in data if key in k.keys()]
+        if P:
+            params.append((key,P[0][key]))
     return params
+
+def extract_channel_main_url_from_channel_url(channel_url):
+    # input : 'https://www.wando.go.kr/www/administration/news/notice?page={}'
+    # output : 'https://www.wando.go.kr'
+    slash_idx_list = []
+    for word_idx, word in enumerate(channel_url):
+        if word == '/':
+            slash_idx_list.append(word_idx)
+    return channel_url[:slash_idx_list[2]]

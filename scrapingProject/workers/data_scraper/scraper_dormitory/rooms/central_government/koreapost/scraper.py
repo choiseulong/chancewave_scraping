@@ -25,7 +25,7 @@ from .parser import *
 
 '''
 
-sleep_sec = 3
+sleep_sec = 1
 
 class Scraper(ABCScraper):
     def __init__(self, session):
@@ -35,8 +35,8 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://www.koreapost.go.kr'
         self.post_url = 'https://www.msit.go.kr/bbs/view.do?sCode=user&mId=129&mPid=128&bbsSeqNo=100&nttSeqNo={}'
         
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :

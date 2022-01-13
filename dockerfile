@@ -12,4 +12,8 @@ EXPOSE 9201
 ARG DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 
+# test code line start
+RUN sed -i '/CipherString = DEFAULT/s/^#\?/#/' /etc/ssl/openssl.cnf
+# test code line end
+
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "9201"]

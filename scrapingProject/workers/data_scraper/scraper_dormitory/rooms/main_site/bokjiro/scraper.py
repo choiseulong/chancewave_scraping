@@ -5,7 +5,6 @@ from .parser import *
 # 채널 이름 : 복지로
 
 # 타겟 : 모든 포스트
-# 중단 시점 : 포스트가 존재하지 않는 마지막 지점 도달 시
 
 #HTTP Request
 '''
@@ -37,8 +36,8 @@ from .parser import *
         None
 '''
 
-isUpdate = True
-sleep_sec = 3
+is_update = True
+sleep_sec = 1
 jsonize = True
 
 class Scraper(ABCScraper):
@@ -48,19 +47,22 @@ class Scraper(ABCScraper):
         self.post_board_name = '서비스 목록'
         self.post_url = "https://www.bokjiro.go.kr/ssis-teu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId={}"
     
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         self.additional_key_value.append(("Content-Type", "application/json; charset=UTF-8"))
-        self.session = set_headers(self.session, self.additional_key_value, isUpdate)
+        self.session = set_headers(self.session, self.additional_key_value, is_update)
         for i in range(1,4):
             self.tabId = i
             while True :
-                self.page_count += 1 
                 self.post_list_scraping()
+                if not self.scraping_target:
+                    break
                 if self.scraping_target :
                     self.target_contents_scraping()
                     self.collect_data()
                     self.mongo.reflect_scraped_data(self.collected_data_list)
+                    self.page_count += 1 
+
                 else:
                     break
 

@@ -9,7 +9,7 @@ from .parser import *
     @post list
 
     method : GET
-    url = https://www.gokseong.go.kr/main/?pid=435&page={pageCount}
+    url = https://www.gokseong.go.kr/main/?pid=435&page={page_count}
     header :
         None
 
@@ -22,8 +22,8 @@ from .parser import *
         None
 
 '''
-sleep_sec = 2
-isUpdate = True
+sleep_sec = 1
+is_update = True
 
 class Scraper(ABCScraper):
 
@@ -33,10 +33,9 @@ class Scraper(ABCScraper):
         self.post_board_name = '공지사항'
         self.channel_main_url = 'https://www.gokseong.go.kr'
         
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)
-        # self.set_jsessionid()
         self.page_count = 1
         while True :
             self.channel_url = self.channel_url_frame.format(self.page_count)

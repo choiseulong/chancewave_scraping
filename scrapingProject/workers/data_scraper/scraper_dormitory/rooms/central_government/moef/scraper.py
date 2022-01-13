@@ -24,8 +24,8 @@ from .parser import *
         None
 '''
 
-sleep_sec = 3
-isUpdate = True
+sleep_sec = 1
+is_update = True
 
 class Scraper(ABCScraper):
     def __init__(self, session):
@@ -35,22 +35,20 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://www.moef.go.kr'
         self.post_url = 'https://www.moef.go.kr/nw/nes/detailNesDtaView.do?searchBbsId1={}&searchNttId1={}'
         
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :
             self.channel_url = self.channel_url_frame.format(self.page_count)
             self.post_list_scraping()
-            self.page_count += 1
-
-            # if self.scraping_target :
-            #     self.target_contents_scraping()
-            #     self.collect_data()
-            #     self.mongo.reflect_scraped_data(self.collected_data_list)
-            #     self.page_count += 1
-            # else :
-            #     break
+            if self.scraping_target :
+                self.target_contents_scraping()
+                self.collect_data()
+                self.mongo.reflect_scraped_data(self.collected_data_list)
+                self.page_count += 1
+            else :
+                break
 
     def post_list_scraping(self):
         super().post_list_scraping(post_list_parsing_process, 'get', sleep_sec)

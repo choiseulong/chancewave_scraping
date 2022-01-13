@@ -37,8 +37,8 @@ from .parser import *
         1. postSeq : post list parsing postSeq 
 '''
 
-isUpdate = True
-sleep_sec = 6
+is_update = True
+sleep_sec = 2
 
 class Scraper(ABCScraper):
     def __init__(self, session):
@@ -48,10 +48,10 @@ class Scraper(ABCScraper):
         self.post_url =  'https://www.jobaba.net/fntn/dtl2020.do?seq={}'
         self.channel_main_url = 'https://www.jobaba.net'
     
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded"))
-        self.session = set_headers(self.session, self.additional_key_value, isUpdate)
+        self.session = set_headers(self.session, self.additional_key_value, is_update)
         self.page_count = 1 
         while True:
             self.post_list_scraping()

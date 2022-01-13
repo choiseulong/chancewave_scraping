@@ -25,8 +25,8 @@ from .parser import *
         None
 
 '''
-sleep_sec = 2
-isUpdate = True
+sleep_sec = 4
+is_update = True
 
 class Scraper(ABCScraper):
     def __init__(self, session):
@@ -36,8 +36,8 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://www.gbmg.go.kr'
         self.post_url = 'https://www.gbmg.go.kr/portal/bbs/view.do?mId=0301010000&bIdx={}&ptIdx=73'
         
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :

@@ -6,9 +6,10 @@ class ProjectManager:
         self.TargetDateRange = None
         self.scraping_manager = ScrapingManager()
     
-    def job_init_with_target_date(self, targetDate:dict):
-        self.TargetDateRange = self.scraping_manager.get_date_range(targetDate)
-        self.scraping_manager.scraping_worker_job_init()
+    def job_init(self):
+        self.scraping_manager.get_channel_url()
+        self.scraping_manager.scraping_init_with_celery()
+        return 'scraping start'
     
     def get_data(self, channel_code=''):
         mongo = MongoServer()
@@ -18,8 +19,9 @@ class ProjectManager:
             data = mongo.get_total_data()
         return data
 
-    # def scraping_test(self, channel_code):
-    #     self.scraping_manager.scraping_test(channel_code)
+    def scraping_dev_test(self, channel_code):
+        self.scraping_manager.get_channel_url()
+        self.scraping_manager.scraping_dev_test(channel_code)
 
 
 

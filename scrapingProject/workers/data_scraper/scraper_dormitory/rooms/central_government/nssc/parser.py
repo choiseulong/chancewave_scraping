@@ -33,7 +33,7 @@ def post_list_parsing_process(**params):
         var[key] = value_list
 
     value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     return result
 
     
@@ -44,7 +44,7 @@ def post_content_parsing_process(**params):
     }
     var, json_data, key_list = json_type_default_setting(params, target_key_info)
 
-    post_text = search_value_in_json_data_using_path(json_data, '$..CONTENTS', 'solo')
+    post_text = search_value_in_json_data_using_path(json_data, '$..CONTENTS', is_data_multiple=False)
     soup = change_to_soup(post_text)
     soupText = extract_text(soup)
     var['post_text'] = clean_text(soupText)

@@ -12,7 +12,7 @@ from .parser import *
     @post list
 
     method : GET
-    url = https://www.gg.go.kr/bbs/board.do?bsIdx=570&menuId=1590#page={pageCount}
+    url = https://www.gg.go.kr/bbs/board.do?bsIdx=570&menuId=1590#page={page_count}
     header :
         None
 
@@ -26,7 +26,7 @@ from .parser import *
 
 '''
 sleepSec = 2
-isUpdate = True
+is_update = True
 
 
 class Scraper(ABCScraper):
@@ -37,8 +37,8 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://www.gg.go.kr/'
         self.post_url = 'https://www.gg.go.kr/bbs/boardView.do?bIdx={}&bsIdx=570&bcIdx=0&menuId=1590&isManager=false&isCharge=false&page=1'
 
-    def scraping_process(self, channel_code, channel_url, date_range):
-        super().scraping_process(channel_code, channel_url, date_range)
+    def scraping_process(self, channel_code, channel_url, dev):
+        super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)
         self.page_count = 0
         channel_board_num = extract_channel_board_num(channel_code)
@@ -60,12 +60,13 @@ class Scraper(ABCScraper):
             if self.scraping_target:
                 self.target_contents_scraping()
                 self.collect_data()
-                self.mongo.reflect_scraped_data(self.scraping_target)
+                self.mongo.reflect_scraped_data(self.collected_data_list)
                 self.page_count += 1
             else:
                 break
 
     # def post_list_scraping(self):
+    ## post 방식이라면 super().post_list_scraping(postListParsingProcess, 'post', data, sleepSec)
     #     super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
 
     def target_contents_scraping(self):

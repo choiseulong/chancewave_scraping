@@ -28,7 +28,7 @@ def post_list_parsing_process(**params):
         in search_value_in_json_data_using_path(json_data, '$..rqtEndDe')
     ]
     value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
     return result
 
 def post_content_parsing_process(**params):
@@ -36,17 +36,17 @@ def post_content_parsing_process(**params):
         'single_type' : ['uploader', 'linked_post_url', 'post_text', 'contact']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    error_warp = extract_children_tag(soup, 'div', {"class" : "error-warp"}, DataStatus.not_multiple)
+    error_warp = extract_children_tag(soup, 'div', {"class" : "error-warp"}, is_child_multiple=False)
     if error_warp :
         # 페이지는 있으나 요청에 오류가 발생한 포스트
         return 'retry'
 
-    scripts = extract_children_tag(soup, 'script', DataStatus.empty_attrs, DataStatus.multiple)
+    scripts = extract_children_tag(soup, 'script', child_tag_attrs={}, is_child_multiple=True)
     if len(scripts) == 1 :
         # 모집이 마감된 포스트
         return
 
-    mainText = extract_children_tag(soup, 'div', {'class' : 'con-wrap'}, DataStatus.not_multiple)
+    mainText = extract_children_tag(soup, 'div', {'class' : 'con-wrap'}, is_child_multiple=False)
     if mainText :
         var['post_text'] = clean_text(
                 extract_text(
@@ -58,11 +58,11 @@ def post_content_parsing_process(**params):
         return 
 
     linkedPostUrlData = extract_attrs(
-        extract_children_tag(soup, 'a', {'class' : 'homepage_go_btn'}, DataStatus.not_multiple),
+        extract_children_tag(soup, 'a', {'class' : 'homepage_go_btn'}, is_child_multiple=False),
         'onclick'
     )
     var['linked_post_url'] = extract_values_list_in_both_sides_bracket_text(linkedPostUrlData)[1] if linkedPostUrlData else None
-    uploaderData = extract_children_tag(soup, 'p', {'class' : 'note'}, DataStatus.multiple)
+    uploaderData = extract_children_tag(soup, 'p', {'class' : 'note'}, is_child_multiple=True)
     var['uploader'] = extract_text(uploaderData[1]) if uploaderData else None
     var['contact'] = list(set(extract_contact_numbers_from_text(var['post_text']) + extract_emails(var['post_text'])))
     value_list = [var[key] for key in key_list]
