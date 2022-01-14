@@ -31,8 +31,8 @@ def post_list_parsing_process(**params):
                 var['uploaded_time'].append(
                     convert_datetime_string_to_isoformat_datetime(td_text)
                 )
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    
+    result = merge_var_to_dict(key_list, var)
     return result
 
 def post_content_parsing_process(**params):
@@ -49,7 +49,7 @@ def post_content_parsing_process(**params):
     var['post_text'] = extract_text(tmp_contents)
     var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
     var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents))
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     return result
 

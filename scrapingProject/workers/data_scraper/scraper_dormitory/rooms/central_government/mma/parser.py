@@ -32,8 +32,8 @@ def post_list_parsing_process(**params):
                 var['view_count'].append(
                     extract_numbers_in_text(td_text)
                 )
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    
+    result = merge_var_to_dict(key_list, var)
     # print(result)
     return result
 
@@ -59,8 +59,8 @@ def post_content_parsing_process(**params):
     con_text = extract_children_tag(table, 'td', {'class' : 'con_text'}, is_child_multiple=False)
     var['post_text'] = clean_text(extract_text(con_text))
     var['post_image_url'] = search_img_list_in_contents(con_text, var['channel_main_url'])
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     return result
 
 

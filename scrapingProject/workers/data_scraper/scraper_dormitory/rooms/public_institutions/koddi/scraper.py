@@ -32,6 +32,7 @@ class Scraper(ABCScraper):
         self.channel_name = '한국장애인개발원'
         self.post_board_name = '공지사항'
         self.post_url = 'https://www.koddi.or.kr/bbs/'
+        
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)

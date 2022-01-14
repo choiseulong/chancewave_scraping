@@ -29,8 +29,8 @@ def post_list_parsing_process(**params):
         for date \
         in search_value_in_json_data_using_path(json_data, '$..ADD_COLUMN04')
     ]
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    
+    result = merge_var_to_dict(key_list, var)
     return result
 
 
@@ -71,8 +71,8 @@ def post_content_parsing_process(**params):
         extraDict.update({f'info_{dictLength}' : data})
     var['extra_info'].append(extraDict)
     var['post_text_type'] = 'only_extra_info'
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     return result
 
 

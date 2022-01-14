@@ -9,12 +9,12 @@ def post_list_parsing_process(**params):
         var[f'parse_{key}'] = globals()[f'parse_{key}']
     # 2021-01-10
     var['post_id_idx'] = 1
-    table_header = ["번호", "제목", "첨부", "작성일", "조회"]
-    result = parse_board_type_html_page(soup, var, key_list, table_header)
+    var['table_header'] = ["번호", "제목", "첨부", "작성일", "조회"]
+    result = parse_board_type_html_page(soup, var, key_list)
     return result
 
 def parse_post_url(**params):
-    td = params['td']
+    child_tag = params['child_tag']
     var = params['var']
     post_id = extract_attrs(td, 'data-seqboardgeneral')
     result = var['post_url_frame'].format(post_id)
@@ -39,6 +39,6 @@ def post_content_parsing_process(**params):
     var['post_text'] = extract_text(tmp_contents)
     var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents)) 
     var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     return result

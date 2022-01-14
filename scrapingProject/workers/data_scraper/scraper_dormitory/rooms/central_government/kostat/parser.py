@@ -40,8 +40,8 @@ def post_list_parsing_process(**params):
         if 'http' not in post_url :
             post_url = var['channel_main_url'] + post_url
         var['post_url'].append(post_url)
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    
+    result = merge_var_to_dict(key_list, var)
     return result
 
 
@@ -70,6 +70,6 @@ def post_content_parsing_process(**params):
     bv_content_wrap = extract_children_tag(soup, 'div', {'class' : 'bv_content_wrap'}, is_child_multiple=False)
     var['post_text'] = extract_text(bv_content_wrap)
     var['post_image_url'] = search_img_list_in_contents(bv_content_wrap, var['channel_main_url'])
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     return result

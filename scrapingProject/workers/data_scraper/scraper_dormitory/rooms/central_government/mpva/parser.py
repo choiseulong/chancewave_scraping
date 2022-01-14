@@ -30,8 +30,8 @@ def post_list_parsing_process(**params):
             elif td_idx == 5 :
                 var['view_count'].append(extract_numbers_in_text(td_text))
 
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    
+    result = merge_var_to_dict(key_list, var)
     return result
 
 def parse_href(text):
@@ -59,7 +59,7 @@ def post_content_parsing_process(**params):
     content = extract_children_tag(tbody, 'td', {'class' : 'p-table__content'}, is_child_multiple=False)
     var['post_text'] = extract_text(content)
     
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     return result
     

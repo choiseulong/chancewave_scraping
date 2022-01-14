@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 한국등산·트레킹지원센터
+# 채널 이름 : 한국양성평등교육진흥원
 
 #HTTP Request
 '''
@@ -26,7 +26,7 @@ is_update = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '한국등산·트레킹지원센터'
+        self.channel_name = '한국양성평등교육진흥원'
         self.post_board_name = '공지사항'
         self.post_url = 'https://www.kigepe.or.kr/user'
 

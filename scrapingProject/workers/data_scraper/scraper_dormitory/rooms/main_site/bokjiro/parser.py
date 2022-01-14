@@ -53,8 +53,8 @@ def post_list_parsing_process(**params):
         for location \
         in search_value_in_json_data_using_path(json_data, '$..ADDR')
     ]
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    
+    result = merge_var_to_dict(key_list, var)
     return result
 
 
@@ -93,8 +93,8 @@ def post_content_parsing_process(**params):
     if textList :
         var['post_text'] = '\n'.join(textList) 
 
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     return result
 
 def extract_text_list_from_json_data(textList):
