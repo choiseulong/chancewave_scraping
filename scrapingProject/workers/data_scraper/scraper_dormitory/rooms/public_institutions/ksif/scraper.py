@@ -2,13 +2,14 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 한국문화정보원
+# 채널 이름 : 세종학당재단
 
 #HTTP Request
 '''
     @post list
     method : GET
-    url_0 = https://www.kcisa.kr/kr/board/notice/boardList.do?pageIndex={page_count}
+    url_0 = https://www.ksif.or.kr/cop/bbs/selectBoardList.do?bbsId=BBSMSTR_000000000001\
+        &nttId=0&bbsTyCode=BBST01&bbsAttrbCode=BBSA03&authFlag=Y&pageIndex={page_count}
     header :
         None
 '''
@@ -16,7 +17,7 @@ from .parser import *
     @post info
     method : GET
     url : 
-        self.channel_main_url + re.findall("'(.+?)'", onclick)[0]
+        self.post_url.format(post_id)
     header :
         None
 '''
@@ -26,8 +27,9 @@ is_update = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '한국문화정보원'
+        self.channel_name = '세종학당재단'
         self.post_board_name = '공지사항'
+        self.post_url = 'http://www.kawf.kr/notice/sub01View.do?selIdx={}'
  
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)

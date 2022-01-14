@@ -32,6 +32,7 @@ class Scraper(metaclass=ABCMeta):
 
         #env
         self.dev = False
+        self.limit_page_count = 6
 
     @abstractmethod
     def scraping_process(self, channel_code, channel_url, dev=False):
@@ -57,7 +58,7 @@ class Scraper(metaclass=ABCMeta):
         '''
             채널 메인에서 게시글의 기본정보를 가져오기 위한 요청을 처리함
         '''
-        if self.__is_continue(6):
+        if self.__is_continue(self.limit_page_count):
             self.session.close()
             return
 

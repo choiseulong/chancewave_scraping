@@ -2,21 +2,22 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 한국문화정보원
+# 채널 이름 : 중소기업유통센터
 
 #HTTP Request
 '''
     @post list
     method : GET
-    url_0 = https://www.kcisa.kr/kr/board/notice/boardList.do?pageIndex={page_count}
+    url_0 =  https://www.sbdc.or.kr/board/notices
     header :
         None
+    단일요청..
 '''
 '''
     @post info
     method : GET
     url : 
-        self.channel_main_url + re.findall("'(.+?)'", onclick)[0]
+        self.post_url.format(post_id) + href
     header :
         None
 '''
@@ -26,23 +27,18 @@ is_update = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '한국문화정보원'
+        self.channel_name = '중소기업유통센터'
         self.post_board_name = '공지사항'
- 
+        self.post_url = 'https://www.sbdc.or.kr/board/notice/{}'
+
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
-        self.session = set_headers(self.session)
-        self.page_count = 1
-        while True :
-            self.channel_url = self.channel_url_frame.format(self.page_count)
-            self.post_list_scraping()
-            if self.scraping_target :
-                self.target_contents_scraping()
-                self.collect_data()
-                self.mongo.reflect_scraped_data(self.collected_data_list)
-                self.page_count += 1
-            else :
-                break
+        self.additional_key_value.append(("Accept", "application/json, text/plain, */*"))
+        self.session = set_headers(self.session, self.additional_key_value, is_update)
+        self.post_list_scraping()
+        self.target_contents_scraping()
+        self.collect_data()
+        self.mongo.reflect_scraped_data(self.collected_data_list)
 
     def post_list_scraping(self):
         super().post_list_scraping(post_list_parsing_process, 'get', sleep_sec)
