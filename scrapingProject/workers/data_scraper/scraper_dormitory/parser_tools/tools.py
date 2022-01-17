@@ -194,7 +194,7 @@ def convert_text_to_tuple(text):
 
 def extract_text_from_single_tag(parent_tag, child_tag, child_tag_attrs={}):
     text = extract_text(
-        extract_children_tag(parent_tag, child_tag, child_tag_attrs=child_tag_attrs)
+        extract_children_tag(parent_tag, child_tag, child_tag_attrs=child_tag_attrs, is_child_multiple=False)
     )
     return text
 
@@ -354,7 +354,7 @@ def _map_key_name_with_table_header(**kargs):
         'post_title' : ["제목"],
         'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자", "날짜"],
         'view_count' : ["조회", "조회수"],
-        'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서", "담당자"],
+        'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서", "담당자", "작성부서"],
         'post_subject' : ["분류", "구분", "분야"],
         'contact' : ["연락처"]
     }
@@ -385,13 +385,15 @@ def _check_valid_key(**kargs):
 
 def _search_table_header_list(**kargs):
     soup, var = kargs['soup'], kargs['var']
-    tabel_header_box = var['table_header_box'] if 'table_header_box' in var.keys() else extract_children_tag(soup, 'thead')
+    thead = extract_children_tag(soup, 'thead')
+    tabel_header_box = var['table_header_box'] if 'table_header_box' in var.keys() else extract_children_tag(thead, 'tr')
     var['table_header_list'] = [
         extract_text(child) \
         for child \
         in tabel_header_box.children\
         if extract_text(child)
     ]
+    print(var['table_header_list'])
     return var
 
 def _compare_input_header_with_table_header(**kargs):
@@ -538,18 +540,15 @@ def _check_notice_post(child_tag_text, page_count):
     return False
 
 def _seperate_parents_tag_to_child_tag_list(parents_tag):
-        child_tag_list = [child for child in parents_tag.children if isinstance(child, bs4.element.Tag)]
-        return child_tag_list
+    child_tag_list = [child for child in parents_tag.children if isinstance(child, bs4.element.Tag)]
+    return child_tag_list
 
 def _parse_total_table_data(**kargs):
     var = kargs['var']
     checked_key_info, table_data_list = var['checked_key_info'], var['table_data_list']
     for table_data in table_data_list :
         # 입력한 header 순번에 맞춰 해당 값을 파싱하는 함수에 전달함
-        child_tag_exception = extract_children_tag(table_data, 'th')
         child_tag_list = _seperate_parents_tag_to_child_tag_list(table_data)
-        if child_tag_exception:
-            child_tag_list.insert(var['title_idx'], child_tag_exception)
         child_tag_text_list = [extract_text(child_tag) for child_tag in child_tag_list]
         is_notice = _check_notice_post(child_tag_text = child_tag_text_list[0], page_count=var['page_count'])
         if not is_notice : pass

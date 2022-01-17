@@ -5,7 +5,7 @@ def post_list_parsing_process(**params):
         'multiple_type' : ['uploaded_time', 'view_count', 'post_url', 'post_title', 'uploader']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    # 22-01-14 header = ["번호", "제목", "작성자", "작성일", "파일", "조회"]
+    # 22-01-17 header = ["번호", "제목", "작성자", "작성일", "파일", "조회"]
     board_list = extract_children_tag(soup, 'div', child_tag_attrs={'class':'body_row'}, is_child_multiple=True)
     for post in board_list:
         subject = extract_children_tag(post, 'div', child_tag_attrs={'class':'subject'})
