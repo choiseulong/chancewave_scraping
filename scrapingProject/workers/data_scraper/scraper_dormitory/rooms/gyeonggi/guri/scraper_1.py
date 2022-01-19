@@ -133,8 +133,7 @@ def post_list_parsing_process(**params):
                 tmp_post_url = make_absolute_url(in_url=tmp_post_url, channel_main_url=var['channel_main_url'])
                 var['post_url'].append(tmp_post_url)
 
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, var)
     print(result)
     return result
 
@@ -168,7 +167,6 @@ def post_content_parsing_process(**params):
     var['post_text'] = clean_text(content_context_area.text)
     var['post_image_url'] = search_img_list_in_contents(content_context_area, var['channel_main_url'])
 
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    result = convert_merged_list_to_dict(key_list, var)
     print(result)
     return result
