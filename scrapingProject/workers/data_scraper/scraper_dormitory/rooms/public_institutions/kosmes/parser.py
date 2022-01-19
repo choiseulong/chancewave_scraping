@@ -25,8 +25,8 @@ def post_list_parsing_process(**params):
         in var['contents_req_params']
     ]
     var['uploaded_time'] = [convert_datetime_string_to_isoformat_datetime(date) for date in var['uploaded_time']]
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    
+    result = merge_var_to_dict(key_list, var)
     return result
 
 def post_content_parsing_process(**params):
@@ -39,7 +39,7 @@ def post_content_parsing_process(**params):
         tmp_contents
     )
     var['contact'] = extract_contact_numbers_from_text(tmp_contents)
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     return result
 

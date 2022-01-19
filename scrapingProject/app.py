@@ -38,6 +38,10 @@ async def scraping_with_target_date():
 #     else :
 #         return
 
+@app.get('/')
+def main():
+    return 'chancewave scraper'
+
 @app.get('/dev-test/')
 def test(channel_code:str=''):
     manager = ProjectManager()

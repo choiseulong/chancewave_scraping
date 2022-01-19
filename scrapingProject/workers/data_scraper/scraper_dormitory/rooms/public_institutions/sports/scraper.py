@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 태권도진흥재단
+# 채널 이름 : 대한체육회
 
 #HTTP Request
 '''
@@ -29,7 +29,7 @@ is_update = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '태권도진흥재단'
+        self.channel_name = '대한체육회'
         self.post_board_name = '공지사항'
         self.post_url = 'https://www.sports.or.kr/home/010201/0000/view.do?T_IDX={}'
  

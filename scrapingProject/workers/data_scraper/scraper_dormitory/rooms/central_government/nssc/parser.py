@@ -32,8 +32,8 @@ def post_list_parsing_process(**params):
             value_list = [int(count) for count in value_list]
         var[key] = value_list
 
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    
+    result = merge_var_to_dict(key_list, var)
     return result
 
     
@@ -50,6 +50,6 @@ def post_content_parsing_process(**params):
     var['post_text'] = clean_text(soupText)
     var['contact'] = extract_contact_numbers_from_text(soupText)
     var['post_image_url'] = search_img_list_in_contents(soup, var['channel_main_url'])
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     return result

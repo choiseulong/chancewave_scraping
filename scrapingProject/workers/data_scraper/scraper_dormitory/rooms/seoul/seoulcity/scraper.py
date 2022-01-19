@@ -7,9 +7,6 @@ from .parser import *
 # seoul_city_1 : 이달의 행사 및 축제
 # seoul_city_2 : 이벤트 신청
 
-# 타겟 : 유효 일자 내의 포스트
-# 중단 시점 : 데이터의 개수가 0개인 페이지에 도달할 경우
-
 #HTTP Request
 '''
     @post list

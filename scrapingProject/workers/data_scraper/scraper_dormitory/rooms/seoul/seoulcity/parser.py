@@ -27,8 +27,7 @@ def post_list_parsing_process(**params):
         for div \
         in item_div
     ]
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    result = merge_var_to_dict(key_list, var)
     return result
  
 def post_content_parsing_process(**params):
@@ -80,8 +79,8 @@ def post_content_parsing_process(**params):
             ]
         ) \
         if uploader else None
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     return result
 
 def search_total_post_count(result):

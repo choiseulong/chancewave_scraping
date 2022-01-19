@@ -105,7 +105,7 @@ def post_content_parsing_process(**params):
             infoNum = len(var['extra_info'][tableIdx])
             var['extra_info'][tableIdx].update({f'info_{infoNum}' : [title, cont]})
     var['post_text_type'] = 'only_extra_info'
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     return result
         

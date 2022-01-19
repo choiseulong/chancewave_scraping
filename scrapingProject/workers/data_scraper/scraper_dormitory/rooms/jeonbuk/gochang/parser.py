@@ -17,8 +17,8 @@ def post_list_parsing_process(**params):
             extract_text_from_single_tag(li, 'strong')
         )
 
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    
+    result = merge_var_to_dict(key_list, var)
     return result
     
 def post_content_parsing_process(**params):
@@ -51,6 +51,6 @@ def post_content_parsing_process(**params):
     if not var['contact']:
         var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_content))
     var['post_image_url'] = search_img_list_in_contents(tmp_content, var['channel_main_url'])
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     return result

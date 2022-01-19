@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 한국특허정보원
+# 채널 이름 : 한국발명진흥회
 
 #HTTP Request
 '''
@@ -27,7 +27,7 @@ is_update = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '한국특허정보원'
+        self.channel_name = '한국발명진흥회'
         self.post_board_name = '공지사항'
         self.post_url = 'https://www.kipa.org/kipa/notice/kw_0401.jsp'
  

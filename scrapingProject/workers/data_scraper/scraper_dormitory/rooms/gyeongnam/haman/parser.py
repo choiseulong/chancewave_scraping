@@ -46,8 +46,8 @@ def post_list_parsing_process(**params):
                     extract_numbers_in_text(spanText)
                 )
 
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    
+    result = merge_var_to_dict(key_list, var)
     # print(result)
     return result
 
@@ -62,8 +62,8 @@ def post_content_parsing_process(**params):
     var['post_text'] = clean_text(post_text)
     var['contact'] = extract_contact_numbers_from_text(post_text)
     var['post_image_url'] = search_img_list_in_contents(substance, var['channel_main_url'])
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     # print(result)
     return result
 

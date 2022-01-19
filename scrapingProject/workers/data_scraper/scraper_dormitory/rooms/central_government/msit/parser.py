@@ -15,8 +15,8 @@ def post_list_parsing_process(**params):
         var['post_url'].append(
             var['post_url_frame'].format(postId)
         )
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    
+    result = merge_var_to_dict(key_list, var)
     return result
 
 def post_content_parsing_process(**params):
@@ -44,7 +44,7 @@ def post_content_parsing_process(**params):
     contBox = extract_children_tag(soup, 'div', {'id' : 'cont-wrap'}, is_child_multiple=False)
     var['post_text'] = clean_text(extract_text(contBox))
     var['post_image_url'] = search_img_list_in_contents(contBox, var['channel_main_url'])
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     # print(result)
     return result

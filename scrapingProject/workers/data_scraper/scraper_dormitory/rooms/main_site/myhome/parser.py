@@ -58,7 +58,7 @@ def post_list_parsing_process(**params):
     ]
 
     value_list = [var[key][:-1] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    result = merge_var_to_dict(key_list, var)
     return result
 
 def parse_frstRegistDt(textDate):
@@ -102,8 +102,8 @@ def post_content_parsing_process(**params):
     extraDict.update({'info_0' : ['주소', addressList]})
     extraDict.update({'info_1': ['최초 입주 년월', firstEntryDateList]})
     var['extra_info'].append(extraDict)
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     return result
 
 def extract_info(text):

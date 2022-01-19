@@ -82,7 +82,8 @@ class ScrapingManager:
         # channel_code = ulsansi_0 로 받은 경우
         # 반환값은 channel_code_with_location = ulsan__ulsansi_0 이다
         for channel_code_with_location in self.channel_url_info_dict.keys():
-            if channel_code in channel_code_with_location :
+            channel_code_split = channel_code_with_location.split('__')[1]
+            if channel_code == channel_code_split :
                 return channel_code_with_location
 
 def combine_group_room_num_str(group_name, room_name, room_num):
