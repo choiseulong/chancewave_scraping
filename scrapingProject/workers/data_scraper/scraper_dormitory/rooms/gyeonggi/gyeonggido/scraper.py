@@ -41,6 +41,7 @@ class Scraper(ABCScraper):
         super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)
         self.page_count = 0
+        channel_board_num = extract_channel_board_num(channel_code)
         while True:
             self.channel_url = self.channel_url_frame.format(self.page_count)
             list_param = {

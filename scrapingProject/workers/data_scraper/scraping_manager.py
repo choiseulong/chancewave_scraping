@@ -6,12 +6,17 @@ import requests as req
 import importlib
 from datetime import datetime, timedelta
 from pytz import timezone
+from glob import glob
+
 import os
 
 print(os.path.dirname(__file__))
 
-URL_CONFIG_INI_PATH = os.path.join(os.path.dirname(__file__), 'scraper_dormitory', 'scraper_tools', 'url.ini')
-FIDDLER_PEM_PATH = os.path.join(os.path.dirname(__file__), 'scraper_dormitory', 'scraper_tools', 'FiddlerRoot.pem')
+SCRAPING_MANAGER_FILE_PATH = os.path.dirname(__file__)
+SCRAPING_ROOMS_DIR_PATH = os.path.join(SCRAPING_MANAGER_FILE_PATH, 'scraper_dormitory', 'rooms')
+
+URL_CONFIG_INI_PATH = os.path.join(SCRAPING_MANAGER_FILE_PATH, 'scraper_dormitory', 'scraper_tools', 'url.ini')
+FIDDLER_PEM_PATH = os.path.join(SCRAPING_MANAGER_FILE_PATH, 'scraper_dormitory', 'scraper_tools', 'FiddlerRoot.pem')
 
 checker = ErrorChecker()
 
@@ -22,9 +27,9 @@ class ScrapingManager:
         self.date_range = []
     
     def get_requests_session(
-            self, 
+            self,
             proxies = {
-                "http": "http://127.0.0.1:8889", 
+                "http": "http://127.0.0.1:8889",
                 "https":"http:127.0.0.1:8889"
             }
         ):
@@ -41,8 +46,8 @@ class ScrapingManager:
         for section in config.sections():
             section_name = section.lower()
             for item in list(config[section].items()):
-                key = item[0] 
-                value = item[1] 
+                key = item[0]
+                value = item[1]
                 globals()[f'{section_name}_{key}'] = value
         for key in globals():
             if 'url_' in key :
@@ -57,7 +62,20 @@ class ScrapingManager:
         print(channel_code, 'init')
         print(group_name, room_name)
         session = self.get_requests_session()
-        scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'
+
+        tmp_scraper_file_name_list = get_scraper_file_list_from_group_room(group_name, room_name)
+
+        scraper_room_address = None
+        for tmp_scraper_file_name in tmp_scraper_file_name_list:
+
+            # module 이름으로 변형 위해 python 확장자 제거
+            tmp_module_nm = tmp_scraper_file_name[:tmp_scraper_file_name.rfind('.py')]
+            if tmp_module_nm == f'scraper_{tmp_room_num}':
+                scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.{tmp_module_nm}'
+                break
+        else:
+            scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'
+
         scraper = importlib.import_module(scraper_room_address).Scraper(session)
         scraper.scraping_process(channel_code, channel_url, dev=True)
     
@@ -86,6 +104,19 @@ class ScrapingManager:
             if channel_code == channel_code_split :
                 return channel_code_with_location
 
+def get_scraper_file_list_from_group_room(group_name, room_name):
+    total_scraper_file_list = []
+    tmp_scraper_file_path_list = glob(
+        os.path.join(SCRAPING_ROOMS_DIR_PATH, group_name, room_name) + os.path.sep + 'scraper*.py')
+    for tmp_scraper_file_path in tmp_scraper_file_path_list:
+        tmp_file_nm = os.path.basename(tmp_scraper_file_path)
+        if tmp_file_nm[-3:] != '.py':
+            continue
+        total_scraper_file_list.append(tmp_file_nm)
+
+    return total_scraper_file_list
+
+
 def combine_group_room_num_str(group_name, room_name, room_num):
     return group_name + '__' + room_name + '_' + room_num
 
@@ -109,18 +140,23 @@ if __name__ == '__main__':
     # start_date = convert_datetime_string_to_isoformat_datetime(todayString)
     # end_date = convert_datetime_string_to_isoformat_datetime(before2WeekString)
 
-    scraperRoomAddress = f'workers.data_scraper.scraper_dormitory.rooms.{tmp_group_name}.{tmp_room_name}.scraper'
-    proxies = {
-        "http": "http://127.0.0.1:8889",
-        "https": "http:127.0.0.1:8889"
-    }
+    tmp_scraper_file_name_list = get_scraper_file_list_from_group_room(group_name=tmp_group_name,
+                                                                       room_name=tmp_room_name)
 
+    scraper_room_address = None
+    for tmp_scraper_file_name in tmp_scraper_file_name_list:
+
+        # module 이름으로 변형 위해 python 확장자 제거
+        tmp_module_nm = tmp_scraper_file_name[:tmp_scraper_file_name.rfind('.py')]
+        if tmp_module_nm == f'scraper_{tmp_room_num}':
+            print(f'{tmp_room_name} IDX {tmp_room_num}')
+            scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{tmp_group_name}.{tmp_room_name}.{tmp_module_nm}'
+            break
+    else:
+        print('NOT MATCH IDX')
+        scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{tmp_group_name}.{tmp_room_name}.scraper'
     session = req.Session()
-    # session.verify = FIDDLER_PEM_PATH
-    # session.proxies = proxies
-
-    scraper = importlib.import_module(scraperRoomAddress).Scraper(session)
-    # scraper.scraping_process(URL_CODE, TARGET_URL, [start_date, end_date])
+    scraper = importlib.import_module(scraper_room_address).Scraper(session)
     scraper.scraping_process(URL_CODE, TARGET_URL)
 
 

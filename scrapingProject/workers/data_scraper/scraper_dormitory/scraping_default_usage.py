@@ -54,7 +54,7 @@ class Scraper(metaclass=ABCMeta):
             self.scraping_target = []
             return True
 
-    def post_list_scraping(self, post_list_parsing_process, method, data='', sleep_sec=2, jsonize = False):
+    def post_list_scraping(self, post_list_parsing_process, method, data={}, sleep_sec=2, jsonize=False):
         '''
             채널 메인에서 게시글의 기본정보를 가져오기 위한 요청을 처리함
         '''

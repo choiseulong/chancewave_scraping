@@ -19,14 +19,32 @@ def set_headers(session, additional_key_value=None, is_update=False):
     session.headers = headers
     return session
 
+
+def extract_channel_board_num(channel_code):
+    """
+    채널 코드에서 채널의 게시판 번호를 추출
+    :param channel_code: 채널 코드
+    :return: int - 게시판 번호
+
+    example)
+    input string "jeonnam__jeonnamdo_0"
+    output int   0
+    """
+    if channel_code.find('_') < 0:
+        return None
+    else:
+        channel_board_num = channel_code.split('_')[-1]
+        return int(channel_board_num)
+
+
 def get_method_response(session, url, sleep_sec=2):
-    # response = session.get(url)
     response = session.get(url, verify=False)
     status = 'fail'
-    if response.status_code == 200 :
+    if response.status_code == 200:
         status = 'ok'
     sleep(sleep_sec)
     return status, response
+
 
 def post_method_response(session, url, data={}, sleep_sec=2, jsonize=False):
     if jsonize :
@@ -52,10 +70,10 @@ def return_key_value(data):
     return key, value
 
 def get_post_data_frame(
-        channel_code='', 
-        channel_url='', 
-        post_url_can_use=True, 
-        channel_name='', 
+        channel_code='',
+        channel_url='',
+        post_url_can_use=True,
+        channel_name='',
         post_board_name=''
     ):
     now = datetime.now(timezone('Asia/Seoul'))

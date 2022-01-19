@@ -8,6 +8,8 @@ import json
 import re
 from pytz import timezone
 from w3lib.html import remove_tags
+from urllib.parse import urljoin
+
 
 def change_to_soup(reponse_text):
     # response.text 를 soup로 변환
@@ -51,7 +53,7 @@ def parse_href_in_tools(attrs):
 def extract_children_tag(parents_tag, child_tag, child_tag_attrs={}, is_child_multiple=False, is_recursive=True):
     # 자식 태그의 attrs 가 없고, 개수가 1개인 설정이 기본값
     # bs4.Tag 를 반환함
-    # 여러개의 자식태그를 찾고 싶다면 
+    # 여러개의 자식태그를 찾고 싶다면
     # is_child_multiple=True 로 선언
     # 결과는 bs4.Tag 가 아닌 bs4.tag List 를 반환
     if parents_tag.find(child_tag, child_tag_attrs):
@@ -62,13 +64,13 @@ def extract_children_tag(parents_tag, child_tag, child_tag_attrs={}, is_child_mu
             child_tag = parents_tag.find(child_tag, attrs=child_tag_attrs, recursive=is_recursive)
             return child_tag
     else :
-        return 
+        return
 
 def find_next_tag(tag):
     # 기준 Tag 다음 위치에 등장하는 Tag를 반환함
     next_tag = tag.find_next_siblings()[0]
     return next_tag
-    
+
 def find_parent_tag(tag):
     # 부모 Tag를 반환함
     parent_tag = tag.parent
@@ -264,7 +266,7 @@ def reflect_key(var, target_key_info):
             'single_type' : ['post_text', 'post_title', 'contact'],
             'multiple_type' : ['post_image_url']
         }
-        인 경우 
+        인 경우
         var['post_text'] = ''
         var['post_title'] = ''
         var['contact'] = ''
@@ -286,8 +288,8 @@ def html_type_default_setting(params, target_key_info):
     # 해당 요청 데이터에서 어떤 key값을 찾을지를 넘겨받아
     # 해당 key 값의 더미데이터 형식을 var 에 담아 반환함
     # soup 는 BeautifulSoup 객체
-    # key_list 는 수집할 대상이 될 key list 
-    # text 의 경우 response.text 를 그대로 반환하며, 
+    # key_list 는 수집할 대상이 될 key list
+    # text 의 경우 response.text 를 그대로 반환하며,
     # BeautifulSoup 객체에서 데이터를 파싱할 수 없을 경우 사용함
     var = reflect_params(locals(), params)
     var, key_list = reflect_key(var, target_key_info)
@@ -312,10 +314,11 @@ def extract_text_between_prefix_and_suffix(prefix, suffix, text):
     # text 에서 prefix 문자와 suffix 문자 사이의 값을 반환함
     return text[text.find(prefix)+len(prefix):text.find(suffix)]
 
+
 def search_img_list_in_contents(contents, channel_main_url):
     # 흔히 사용되는 이미지 리스트 추출 로직
     # 포스트 내용('post_text')이 담긴 tag 내부에서 img tag를 찾아서 반환함
-    # channle의 url이 포함되지 않은 src Attrs 인 경우 
+    # channle의 url이 포함되지 않은 src Attrs 인 경우
     # channel_main_url + src 로 반영함
     if not contents :
         print(f'{channel_main_url} contents is empty')
@@ -337,7 +340,7 @@ def search_img_list_in_contents(contents, channel_main_url):
                 imgs.append(src)
                 continue
             if 'http' not in src and 'base64' not in src :
-                src = channel_main_url + src
+                src = urljoin(channel_main_url, src)
             imgs.append(src)
     return imgs
 
@@ -391,7 +394,6 @@ def _search_table_header_list(**kargs):
         in tabel_header_box.children\
         if extract_text(child)
     ]
-    print(var['table_header_list'])
     return var
 
 def _compare_input_header_with_table_header(**kargs):
@@ -451,18 +453,18 @@ def parse_href(href):
     return href
 
 def parse_post_url(**params):
-    # 첫 번쩨 케이스 
-    # a태그 href 가 존재하고 self.post_url을 선언하지 않은 경우 
+    # 첫 번쩨 케이스
+    # a태그 href 가 존재하고 self.post_url을 선언하지 않은 경우
     # var['channel_main_url'] + href 로 post_url 을 만들어서 return함
 
-    # 두 번째 케이스 
-    # a태그 href 가 존재하고 self.post_url을 선언한 경우 
+    # 두 번째 케이스
+    # a태그 href 가 존재하고 self.post_url을 선언한 경우
     # var['post_url_frame'] 내에 '{}' 가 없을 경우
     # var['post_url_frame'] + href
     # var['post_url_frame'] 내에 '{}' 가 있을 경우
     # var['post_url_frame'].format(href) 로 post_url 을 구성해 return 함
 
-    # 세 번째 케이스 
+    # 세 번째 케이스
     # var['post_id_idx'] int 값이 존재하고 self.post_url 이 선언된 경우
     # 해당 index의 onclick 파싱값(post_id)을 var['post_url_frame'].format(post_id)로
     # post_url을 사용해 return 함
@@ -481,7 +483,7 @@ def parse_post_url(**params):
         href = parse_href(href)
     onclick = extract_attrs(a_tag, 'onclick') if a_tag.has_attr('onclick') else ''
     if 'post_id_idx' in var.keys() :
-        if type(var['post_id_idx']) == int: 
+        if type(var['post_id_idx']) == int:
             if onclick :
                 post_id = parse_post_id(onclick, var['post_id_idx'])
             elif href :
