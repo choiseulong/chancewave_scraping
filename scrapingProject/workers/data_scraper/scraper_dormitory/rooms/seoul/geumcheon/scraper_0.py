@@ -23,7 +23,7 @@ from urllib.parse import urlencode
 '''
     @post info
     method : GET
-    url : https://www.ydp.go.kr/www/selectBbsNttView.do?bbsNo=40&nttNo={postId}
+    url : https://www.geumcheon.go.kr/portal/selectBbsNttView.do?key=293&id=&bbsNo=4&nttNo={postId}0&searchCtgry=&searchCnd=all&searchKrwd=&pageIndex=1&integrDeptCode=&searchDeptCode=
     header :
         None
 
@@ -113,8 +113,7 @@ def post_list_parsing_process(**params):
             elif idx == 4:
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
 
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, var)
     print(result)
     return result
 
@@ -138,20 +137,14 @@ def post_content_parsing_process(**params):
             if tmp_info_title_text == '연락처':
                 var['contact'] = tmp_info_value_text
             elif tmp_info_title_text == '제목':
-                var['post_title]'] = tmp_info_value_text
-            elif tmp_info_title_text == '직상지':
-                var['post_title]'] = tmp_info_value_text
+                var['post_title'] = tmp_info_value_text
+            elif tmp_info_title_text == '작성자':
+                var['uploader'] = tmp_info_value_text
 
+    context_area = content_info_area.find('td', class_='bbs_content')
+    var['post_text'] = clean_text(context_area.text.strip())
+    var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 
-    context_area = content_info_area.find('td', class_='p-table__content')
-    if context_area:
-        var['post_text'] = clean_text(context_area.text.strip())
-        var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
-    else:
-        var['post_text'] = ''
-        var['post_image_url'] = []
-
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, var)
     print(result)
     return result

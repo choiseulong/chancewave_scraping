@@ -109,8 +109,7 @@ def post_list_parsing_process(**params):
             elif idx == 5:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
 
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, var)
     print(result)
     return result
 
@@ -126,7 +125,6 @@ def post_content_parsing_process(**params):
     var['post_text'] = clean_text(content_info_area.text.strip())
     var['post_image_url'] = search_img_list_in_contents(content_info_area, var['response'].url)
 
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    result = convert_merged_list_to_dict(key_list, var)
     print(result)
     return result

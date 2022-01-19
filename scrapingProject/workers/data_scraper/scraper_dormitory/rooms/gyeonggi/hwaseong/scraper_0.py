@@ -98,8 +98,7 @@ def post_list_parsing_process(**params):
             elif idx == 3:
                 var['post_subject'].append(tmp_td.text.strip())
 
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, var)
     print(result)
     return result
 
@@ -140,7 +139,6 @@ def post_content_parsing_process(**params):
     if valid_column_count != len(valid_column_title_list):
         raise ValueError('COLUMN TITLE TEXT IS CHANGED')
 
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    result = convert_merged_list_to_dict(key_list, var)
     print(result)
     return result

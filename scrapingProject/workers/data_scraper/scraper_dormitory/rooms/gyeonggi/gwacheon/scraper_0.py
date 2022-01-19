@@ -49,7 +49,7 @@ class Scraper(ABCScraper):
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)
-        self.page_count = 225
+        self.page_count = 1
         while True:
             print(f'PAGE {self.page_count}')
             self.channel_url = channel_url
@@ -140,8 +140,7 @@ def post_list_parsing_process(**params):
             elif idx == 6:
                 var['view_count'].append(tmp_td_text)
 
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list)
+    result = merge_var_to_dict(key_list, var)
     print(result)
     return result
 
@@ -165,7 +164,6 @@ def post_content_parsing_process(**params):
     var['post_text'] = clean_text(context_area.text.strip())
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    result = convert_merged_list_to_dict(key_list, var)
     print(result)
     return result
