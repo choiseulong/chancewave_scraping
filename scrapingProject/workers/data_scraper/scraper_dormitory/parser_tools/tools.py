@@ -1,4 +1,3 @@
-from multiprocessing.managers import ValueProxy
 from bs4 import BeautifulSoup as bs
 import bs4
 from jsonpath_ng import parse as jsonpath_parse
@@ -106,7 +105,7 @@ def convert_datetime_string_to_isoformat_datetime(datetime_string):
         # 2021-02-14 와 같이 구분자로 특수문자가 사용된 경우
         timeFormat = ['%Y{}%m{}%d ', '%H{}%M{}%S ']
         strptime_format = ''
-        for idx, key in enumerate(special_word_count):      
+        for idx, key in enumerate(special_word_count):
             if idx == 1 and len(datetime_string.split(' ')) == 2:
                 if '24' in datetime_string.split(' ')[1] :
                     cleanedDate = " 00" + ''.join([':00' for _ in range(special_word_count[key])])
@@ -179,15 +178,14 @@ def extract_contact_numbers_from_text(in_str):
         return contact_list[0]
     return contact_list
 
-def convert_merged_list_to_dict(key_list, var):
-    value_list = [var[key] for key in key_list]
+def convert_merged_list_to_dict(key_list, value_list):
     result = {}
     for idx, key in enumerate(key_list):
         result.update({key : value_list[idx]})
     return result
 
-def parse_post_id(child_tag_text, idx=1):
-    post_id_candidate = [param.strip() for param in extract_values_list_in_both_sides_bracket_text(child_tag_text) if param]
+def parse_post_id(text, idx=1):
+    post_id_candidate = [param.strip() for param in extract_values_list_in_both_sides_bracket_text(text) if param]
     result = [post_id_candidate[_] for _ in idx] if type(idx) == list else post_id_candidate[idx]
     return result
 
@@ -195,13 +193,13 @@ def convert_text_to_tuple(text):
     return ast.literal_eval(str(text))
 
 def extract_text_from_single_tag(parent_tag, child_tag, child_tag_attrs={}):
-    text = extract_text(
-        extract_children_tag(parent_tag, child_tag, child_tag_attrs=child_tag_attrs, is_child_multiple=False)
+    text= extract_text(
+        extract_children_tag(parent_tag, child_tag, child_tag_attrs=child_tag_attrs)
     )
     return text
 
 def extract_values_list_in_both_sides_bracket_text(text):
-    text_cut = text[text.find('(')+1 : text.rfind(')')].replace("'", "").replace('"', '')
+    text_cut = text[text.find('(')+1 : text.rfind(')')].replace("'", "")
     value_list = [i for i in text_cut.split(',')]
     return value_list
 
@@ -218,14 +216,12 @@ def assign_multiple_table_data_to_key_name(value_list):
                 value_list[data_idx] = merged_data_list
     return value_list
 
-def merge_var_to_dict(key_list, var):
+def merge_var_to_dict(key_list, value_list, channel_code=''):
     # parser.py에서 포스트에 대한 정보를 key:value 꼴로 맵핑하는 기능
-    # 수집된 데이터의 개수가 상이할 경우 빈 리스트를 반환하고 해당 데이터별 개수를 print 함 
-    channel_code = var['channel_code']
-    value_list = [var[key] for key in key_list]
+    # 수집된 데이터의 개수가 상이할 경우 빈 리스트를 반환하고 해당 데이터별 개수를 print 함
     value_list = assign_multiple_table_data_to_key_name(value_list)
-    value_lenth_list = [len(_) for _ in value_list]
-    if len(list(set(value_lenth_list))) == 1:
+    lenth_list = [len(_) for _ in value_list]
+    if len(list(set(lenth_list))) == 1:
         pass
     else :
         print(f'{channel_code} 채널 데이터 수집 에러')
@@ -334,8 +330,6 @@ def search_img_list_in_contents(contents, channel_main_url):
                 src = src[1:]
             elif src.startswith('../'):
                 src = src[2:]
-            elif src.startswith('file:///'):
-                continue
 
             if src.startswith('//www.'):
                 src = src[2:]
@@ -346,36 +340,31 @@ def search_img_list_in_contents(contents, channel_main_url):
             imgs.append(src)
     return imgs
 
-def _map_key_name_with_table_header(**kargs):
+def _map_key_name_with_table_header(table_header_list):
     # 게시물 리스트 스크래핑 진행시 테이블 헤더로 제공되는 항목
     # api key값과 맵핑함
-    var = kargs['var']
-    table_header = var['table_header']
     included_key_info = {}
     header_info = {
-        'post_url' : ["제목", "행사명"],
-        'post_title' : ["제목", "행사명"],
-        'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자", "날짜", "공고일"],
+        'post_url' : ["제목"],
+        'post_title' : ["제목"],
+        'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자"],
         'view_count' : ["조회", "조회수"],
-        'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서", "담당자", "작성부서"],
+        'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서"],
         'post_subject' : ["분류", "구분", "분야"],
         'contact' : ["연락처"]
     }
-    for header_idx, header_name in enumerate(table_header):
+    for header_idx, header_name in enumerate(table_header_list):
         for key_name in header_info:
             if header_name in header_info[key_name]:
                 if header_idx not in included_key_info.keys():
                     included_key_info.update({header_idx : []})
                 included_key_info[header_idx].append(key_name)
-    var['included_key_info'] = included_key_info
-    return var
+    return included_key_info
 
-def _check_valid_key(**kargs):
+def _check_valid_key(key_list, included_key_info):
     # key_list = ['uploaded_time', 'view_count', 'uploader', 'post_url']
     # included_key_info = {1: ['post_url', 'post_title'], 2: ['uploaded_time'], 3: ['view_count']}
     # result = {1: ['post_url'], 2: ['uploaded_time'], 3: ['view_count']}
-    var, key_list = kargs['var'], kargs['key_list']
-    included_key_info = var['included_key_info']
     result = {}
     for idx in included_key_info:
         for key_name in included_key_info[idx]:
@@ -383,25 +372,19 @@ def _check_valid_key(**kargs):
                 if idx not in result.keys():
                     result.update({idx:[]})
                 result[idx].append(key_name)
-    var['checked_key_info'] = result
-    return var
+    return result
 
-def _search_table_header_list(**kargs):
-    soup, var = kargs['soup'], kargs['var']
+def _search_table_header_list(soup):
     thead = extract_children_tag(soup, 'thead')
-    tabel_header_box = var['table_header_box'] if 'table_header_box' in var.keys() else extract_children_tag(thead, 'tr')
-    var['table_header_list'] = [
-        extract_text(child) \
-        for child \
-        in tabel_header_box.children\
-        if extract_text(child)
+    table_header_list = [
+        extract_text(th) \
+        for th \
+        in extract_children_tag(thead, 'th', is_child_multiple=True) \
+        if extract_text(th)
     ]
-    return var
+    return table_header_list
 
-def _compare_input_header_with_table_header(**kargs):
-    var = kargs['var']
-    table_header = var['table_header']
-    table_header_list = var['table_header_list']
+def _compare_input_header_with_table_header(table_header, table_header_list, var):
     if table_header != table_header_list:
         if var['dev'] :
             print(f'Table Header Warning\nCHANNEL_URL : {var["channel_url"]}')
@@ -411,32 +394,22 @@ def _compare_input_header_with_table_header(**kargs):
     else :
         if var['dev'] :
             print('header pass')
-    return var
 
-def _search_table_data_list(**kargs):
-    soup, var = kargs['soup'], kargs['var']
-    if 'tabel_data_box' in var.keys():
-        tabel_data_box = var['tabel_data_box']
-    else :
-        tabel_data_box = extract_children_tag(soup, 'tbody')
-        tabel_data_box = _handle_tbody_exception(soup, tbody=tabel_data_box)
-    var['table_data_list'] = _seperate_parents_tag_to_child_tag_list(tabel_data_box)
-    if not var['table_data_list'] :
-        var['table_data_list'] = 'break'
-    return var
-
-def _handle_tbody_exception(soup, tbody):
-    # tbody가 2개 등장하는데 첫 번째 tbody 가 공백인 예외 처리
-    tbody_list = extract_children_tag(soup, 'tbody', is_child_multiple=True)
-    if len(tbody_list) > 1 and not tbody.text:
-        tbody = tbody_list[1]
-    return tbody
+def _search_table_row_list(soup):
+    tbody = extract_children_tag(soup, 'tbody')
+    # tbody가 두개인 경우 첫 번째 등장하는 tbody가 공백인 예외 처리
+    if not extract_text(tbody):
+        tbody = extract_children_tag(soup, 'tbody', is_child_multiple=True)
+        if len(tbody) > 1:
+            tbody = tbody[1]
+    table_row_list = extract_children_tag(tbody, 'tr', is_child_multiple=True)
+    return table_row_list
 
 def parse_uploaded_time(**params):
     # 기본 등록일 처리.
     # 예외 케이스로 등록일을 처리할 경우 직접 작성
     # parse_view_count 를 작성해서 처리하거나 포스트 개별 페이지 파싱에서 처리함
-    text = params['child_tag_text']
+    text = params['text']
     if text.endswith('.'):
         text = text[:-1]
     result = convert_datetime_string_to_isoformat_datetime(text)
@@ -445,14 +418,9 @@ def parse_uploaded_time(**params):
 def parse_view_count(**params):
     # 기본 조회수 처리.
     # parse_view_count 를 작성해서 처리하거나 포스트 개별 페이지 파싱에서 처리함
-    num = params['child_tag_text']
+    num = params['text']
     result = extract_numbers_in_text(num)
     return result
-
-def parse_href(href):
-    if href.startswith('#'):
-        href = href[1:]
-    return href
 
 def parse_post_url(**params):
     # 첫 번쩨 케이스
@@ -476,13 +444,11 @@ def parse_post_url(**params):
     # var['post_url_frame'].replace('{}', 순차적으로 추출한 post_id, 1)
     # 으로 url 을 만들어 return 함 onclick에 제시되는 파라미터 순으로 url 정렬이 필요할수도 있음.
     # 손이 많이가는 경우라면 직접 parse_ 를 작성해서 사용
-    child_tag = params['child_tag']
+    td = params['td']
     var = params['var']
     post_url_frame = var['post_url_frame']
-    a_tag = extract_children_tag(child_tag, 'a')
+    a_tag = extract_children_tag(td, 'a')
     href = extract_attrs(a_tag, 'href') if a_tag.has_attr('href') else ''
-    if href :
-        href = parse_href(href)
     onclick = extract_attrs(a_tag, 'onclick') if a_tag.has_attr('onclick') else ''
     if 'post_id_idx' in var.keys() :
         if type(var['post_id_idx']) == int:
@@ -493,10 +459,7 @@ def parse_post_url(**params):
             result = post_url_frame.format(post_id)
             return result
         elif type(var['post_id_idx']) == list:
-            if onclick :
-                post_id_list = parse_post_id(onclick, var['post_id_idx'])
-            elif href :
-                post_id_list = parse_post_id(href, var['post_id_idx'])
+            post_id_list = parse_post_id(onclick, var['post_id_idx'])
             for post_id in post_id_list:
                 post_url_frame = post_url_frame.replace('{}', post_id, 1)
             result = post_url_frame
@@ -513,11 +476,11 @@ def parse_post_url(**params):
             return result
 
 def parse_post_title(**params):
-    child_tag = params['child_tag']
+    td = params['td']
     var = params['var']
-    a_tag = extract_children_tag(child_tag, 'a')
+    a_tag = extract_children_tag(td, 'a')
     text = extract_text(a_tag)
-    if '...' in params['child_tag_text']:
+    if '...' in params['text']:
         if a_tag.has_attr('title'):
             text = extract_attrs(a_tag, 'title')
             return text
@@ -528,88 +491,129 @@ def parse_post_title(**params):
         return text
 
 def _return_raw_text(**params):
-    return params['child_tag_text']
+    return params['text']
 
 parse_contact = parse_post_subject = parse_uploader\
      = _return_raw_text
-    
-def _check_notice_post(child_tag_text, page_count):
-    # text -> child_tag_text[0]
-    # 공지글 첫 페이지에서만 수집을 위함
-    if '공지' in child_tag_text or not child_tag_text:
+
+def _check_notice_post(text, page_count):
+    if '공지' in text[0] or not text[0]: # 공지글 첫 페이지에서만 수집
         if page_count != 1:
             return True
     return False
 
-def _seperate_parents_tag_to_child_tag_list(parents_tag):
-    child_tag_list = [child for child in parents_tag.children if isinstance(child, bs4.element.Tag)]
-    return child_tag_list
-
-def _parse_total_table_data(**kargs):
-    var = kargs['var']
-    checked_key_info, table_data_list = var['checked_key_info'], var['table_data_list']
-    for table_data in table_data_list :
+def _parse_total_table_data(checked_key_info, table_row_list, var):
+    for tr in table_row_list :
         # 입력한 header 순번에 맞춰 해당 값을 파싱하는 함수에 전달함
-        child_tag_list = _seperate_parents_tag_to_child_tag_list(table_data)
-        child_tag_text_list = [extract_text(child_tag) for child_tag in child_tag_list]
-        is_notice = _check_notice_post(child_tag_text = child_tag_text_list[0], page_count=var['page_count'])
+        td_list = extract_children_tag(tr, 'td', is_child_multiple=True)
+        td_text = [extract_text(td) for td in td_list]
+        is_notice = _check_notice_post(text = td_text[0], page_count=var['page_count'])
         if not is_notice : pass
-        if '공지' in child_tag_text_list[0] or not child_tag_text_list[0]: # 공지글 첫 페이지에서만 수집
+        if '공지' in td_text[0] or not td_text[0]: # 공지글 첫 페이지에서만 수집
             if var['page_count'] != 1:
                 continue
-        for child_tag_idx in checked_key_info:
-            for key_name in checked_key_info[child_tag_idx]:
-                func_name = f'parse_{key_name}'
-                if func_name in var.keys():
+        for td_idx in checked_key_info:
+            for key_name in checked_key_info[td_idx]:
+                fun_name = f'parse_{key_name}'
+                if fun_name in var.keys():
                     try :
                         var[key_name].append(
-                            var[func_name](
+                            var[fun_name](
                                 var=var,
-                                child_tag=child_tag_list[child_tag_idx], 
-                                child_tag_text=child_tag_text_list[child_tag_idx],
+                                td=td_list[td_idx],
+                                text=td_text[td_idx]
                             )
                         )
                     except KeyError as e :
                         print(e)
-                        print(func_name, '미선언')
+                        print(fun_name, '미선언')
                 else :
-                    globals()[func_name](var, child_tag_text_list[child_tag_idx])
+                    globals()[fun_name](var, td_text[td_idx])
     return var
 
-def _add_title_index_to_var(**kargs):
-    var = kargs['var']
-    checked_key_info = var['checked_key_info']
-    for idx in checked_key_info:
-        if 'post_title' in checked_key_info[idx]:
-            var['title_idx'] = idx
-            break
-    return var
-
-def parse_board_type_html_page(soup, var, key_list):
-    # 테이블 헤더, 데이블 데이터가 리스트 형식으로 담긴 태그가 있을때 사용할 수 있음
-    # var['tabel_data_box'] 와 var['table_header_box'] 를 parser.py 에서 임의로 선언했으면 해당 태그를 사용함
-    # 선언하지 않았다면 부모태그(thead, tbody) 의 자식태그를 사용해 
-    # var['tabel_data_box'] 와 var['table_header_box'] 를 만들어 사용함
-
+def parse_board_type_html_page(soup, var, key_list, table_header):
+    # thead, tbody 형태로 포스트 리스트가 제공되는 경우에 사용함
     # 시스템 빌더가 입력한 header를 신뢰함. 해당 기준에 맞춰 파싱 함수에 텍스트를 전달함
     # 페이지 내에서 제공되는 header와 다를 경우 warning 을 출력하고 진행함
-
     # parser.py 내에서 개별적으로 파싱 메서드를 선언하지 않을 경우
     # tools.py 내에 작성된 파싱 메서드를 사용함
-    process_order = [ 
-    # 실행 함수를 순서대로 선언
-        _search_table_header_list,
-        _compare_input_header_with_table_header,
-        _map_key_name_with_table_header,
-        _check_valid_key,
-        _add_title_index_to_var,
-        _search_table_data_list,
-        _parse_total_table_data
-    ]
-    var['table_data_list'] = ''
-    for process in process_order: 
-    # 파싱 결과값은 var의 key:value 쌍으로 추가되어 반환됨
-        var = process(soup=soup, var=var, key_list=key_list)
-        if var['table_data_list'] == 'break': return
-    result = merge_var_to_dict(key_list=key_list, var=var)
+    table_header_list = _search_table_header_list(soup)
+    _compare_input_header_with_table_header(table_header, table_header_list, var)
+    included_key_info = _map_key_name_with_table_header(table_header)
+    checked_key_info = _check_valid_key(key_list, included_key_info)
+    table_row_list = _search_table_row_list(soup)
+    if not table_row_list : return
+    var = _parse_total_table_data(checked_key_info, table_row_list, var)
+    value_list = [var[key] for key in key_list]
+    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    return result
+
+
+
+
+
+def make_absolute_img_src(img_src, channel_main_url):
+    """
+    img 태그의 src가 상대 경로인 경우 절대경로로 변환
+    :param img_src: img 태그의 src
+    :param channel_main_url: host
+    :return: 이미지 절대경로 or base64 인코딩 파일
+    """
+    if 'http' in img_src or 'base64' in img_src:
+        return img_src
+
+    return urljoin(channel_main_url, img_src)
+
+
+def make_absolute_url(in_url, channel_main_url):
+    """
+    url이 상대경로이면 절대로 변환하여 리턴, 절대 경로이면 그대로 리턴
+    :param in_url: 변환 대상 url
+    :param channel_main_url: host
+    :return: url의 절대경로
+    """
+    if 'http' in in_url:
+        return in_url
+
+    return urljoin(channel_main_url, in_url)
+
+
+def str_grab(input_str, start_str, end_str, index=1, from_back=False):
+    """
+    String에서 시작, 끝 String으로 String 추출
+    ex)
+    sample = '강현 이 만든 코드'
+    str_grab(sample, '이 ', ' 코드') == '만든'
+    :param input_str: 전체 String
+    :param start_str: 추출 대상 앞 String
+    :param end_str: 추출 대상 뒷 String
+    :param index: 추출 대상 앞 String이 전체에서 여러 개일 경우 숫자만큼 넘기기 가능
+    :param from_back: 추출 대상 앞 String이 전체에서 여러 개일 경우 뒤에서부터 추출
+    :return: String
+    """
+    result = ''
+
+    while index > 0:
+        index = index - 1
+
+        if not from_back:
+            start_idx = input_str.find(start_str)
+        else:
+            start_idx = input_str.rfind(start_str)
+        if start_idx == -1:
+            return ''
+        input_str = input_str[start_idx + len(start_str):]
+
+        if end_str == '':
+            end_idx = len(input_str)
+        else:
+            end_idx = input_str.find(end_str)
+        if end_idx == -1:
+            return ''
+
+        if index != 0:
+            continue
+        input_str = input_str[:end_idx]
+        result = input_str
+
     return result
