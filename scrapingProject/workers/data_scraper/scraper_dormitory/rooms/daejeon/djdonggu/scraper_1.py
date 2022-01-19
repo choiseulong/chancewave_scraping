@@ -8,17 +8,20 @@ from .parser_1 import *
 '''
     @post list
     method : GET
-    url_1 = https://www.donggu.go.kr/dg/kor/article/newsNotice?pageIndex={}
+    url_1 = https://www.donggu.go.kr/lll/damoa/contents/learning/community/01\
+        /community.01.001.motion?mnucd=MENU0100020&bmode=list&pageIndex={}
     header :
         None
 '''
 '''
     @post info
-    method : GET
+    method : POST
     url : 
-        self.channel_main_url + href
+        self.post_url
     header :
         None
+    body:
+        
 '''
 sleep_sec = 1
 
@@ -26,8 +29,8 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '대전동구청'
-        self.post_board_name = '공지사항'
-        self.post_url = 'https://www.donggu.go.kr/dg/kor/article/newsNotice/{}'
+        self.post_board_name = '학습커뮤니티_공지사항'
+        self.post_url = 'https://www.donggu.go.kr/lll/damoa/contents/learning/community/01/community.01.001.motion'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
