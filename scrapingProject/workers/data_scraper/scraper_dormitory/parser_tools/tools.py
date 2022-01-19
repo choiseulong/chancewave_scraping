@@ -299,14 +299,12 @@ def html_type_default_setting(params, target_key_info):
     soup = change_to_soup(
         text
     )
-    var['table_data_list'] = 'empty'
     return var, soup, key_list, text
 
 def json_type_default_setting(params, target_key_info):
     var = reflect_params(locals(), params)
     var, key_list = reflect_key(var, target_key_info)
     json_data = json.loads(var['response'].text)
-    var['table_data_list'] = 'empty'
     return var, json_data, key_list
 
 def extract_text_between_prefix_and_suffix(prefix, suffix, text):
@@ -352,7 +350,7 @@ def _map_key_name_with_table_header(**kargs):
     header_info = {
         'post_url' : ["제목"],
         'post_title' : ["제목"],
-        'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자", "날짜"],
+        'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자", "날짜", "공고일"],
         'view_count' : ["조회", "조회수"],
         'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서", "담당자", "작성부서"],
         'post_subject' : ["분류", "구분", "분야"],
@@ -604,6 +602,7 @@ def parse_board_type_html_page(soup, var, key_list):
         _search_table_data_list,
         _parse_total_table_data
     ]
+    var['table_data_list'] = ''
     for process in process_order: 
     # 파싱 결과값은 var의 key:value 쌍으로 추가되어 반환됨
         var = process(soup=soup, var=var, key_list=key_list)

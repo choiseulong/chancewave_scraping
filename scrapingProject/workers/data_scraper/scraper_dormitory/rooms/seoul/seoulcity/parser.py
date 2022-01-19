@@ -27,7 +27,6 @@ def post_list_parsing_process(**params):
         for div \
         in item_div
     ]
-    
     result = merge_var_to_dict(key_list, var)
     return result
  

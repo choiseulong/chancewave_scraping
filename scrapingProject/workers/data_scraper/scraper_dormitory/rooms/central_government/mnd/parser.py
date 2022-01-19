@@ -49,12 +49,12 @@ def post_content_parsing_process(**params):
         'single_type' : ['contact', 'post_text'],
         'multiple_type' : ['post_image_url']
     }
-    var, soup, key_list, fullText = html_type_default_setting(params, target_key_info)
+    var, soup, key_list, full_text = html_type_default_setting(params, target_key_info)
     if type(soup) == str :
         # ERROR 예외 : [local variable 'match' referenced before assignment] bug
         # UserWarning: unknown status keyword 'data-hwpjson' in marked section warnings.warn(msg)
-        fullText = fullText.replace('[data-hwpjson]', '')
-        soup = change_to_soup(fullText)
+        fullText = full_text.replace('[data-hwpjson]', '')
+        soup = change_to_soup(full_text)
 
     post_content = extract_children_tag(soup, 'div', {'class' : 'post_content'}, is_child_multiple=False)
     post_text = extract_text(post_content)
