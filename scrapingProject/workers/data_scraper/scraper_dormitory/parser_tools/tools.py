@@ -292,6 +292,8 @@ def html_type_default_setting(params, target_key_info):
     encoding = var['response'].encoding
     if encoding == 'ISO-8859-1':
         encoding = 'EUC-KR'
+    elif not encoding:
+        encoding = 'UTF8'
     # text = var['response'].text
     text = var['response'].content.decode(encoding,'replace')
     soup = change_to_soup(
