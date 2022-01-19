@@ -62,12 +62,10 @@ class ScrapingManager:
         print(channel_code, 'init')
         print(group_name, room_name)
         session = self.get_requests_session()
-
         tmp_scraper_file_name_list = get_scraper_file_list_from_group_room(group_name, room_name)
-
+        tmp_room_num = channel_code[-1]
         scraper_room_address = None
         for tmp_scraper_file_name in tmp_scraper_file_name_list:
-
             # module 이름으로 변형 위해 python 확장자 제거
             tmp_module_nm = tmp_scraper_file_name[:tmp_scraper_file_name.rfind('.py')]
             if tmp_module_nm == f'scraper_{tmp_room_num}':
@@ -75,7 +73,6 @@ class ScrapingManager:
                 break
         else:
             scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'
-
         scraper = importlib.import_module(scraper_room_address).Scraper(session)
         scraper.scraping_process(channel_code, channel_url, dev=True)
     
