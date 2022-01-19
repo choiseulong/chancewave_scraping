@@ -10,3 +10,4 @@ jsonpath-ng==1.5.3
 celery==5.2.0
 gevent==21.8.0
 w3lib==1.22.0
+js2py==0.71
