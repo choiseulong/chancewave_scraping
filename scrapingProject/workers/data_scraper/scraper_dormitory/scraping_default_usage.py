@@ -103,6 +103,7 @@ class Scraper(metaclass=ABCMeta):
                 channel_url = self.channel_url,
                 post_url_frame = self.post_url,
                 channel_main_url = self.channel_main_url,
+                channel_code = self.channel_code,
                 dev = self.dev
             )
             if post_content == 'retry' : 
