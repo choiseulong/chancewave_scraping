@@ -23,7 +23,7 @@ from urllib.parse import urlencode
 '''
     @post info
     method : GET
-    url : https://www.gangseo.seoul.kr/gs040101/{postId}?srchCtgry=&srchStdg=&fieldTy=&curPage=1&srchKey=&srchText=&srchBeginDt=&srchEndDt=
+    url : https://www.mapo.go.kr/site/main/board/notice/{postId}}
     header :
         None
 
@@ -64,21 +64,22 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_subject', 'view_count', 'uploaded_time']
+        'multiple_type': ['post_url', 'post_subject', 'uploaded_time']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
     # 2022-1-19 HYUN
     # html table header index
-    table_column_list = ['순번', '제목', '작성자', '작성일', '조회수', '첨부파일']
+    table_column_list = ['순번', '제목', '담당부서', '첨부파일', '작성일']
 
     # 게시물 리스트 테이블 영역
-    post_list_table_bs = soup.find('table', class_='is-board')
+    post_list_table_bs = soup.find('div', class_='bbs_list')
+    post_list_table_bs = post_list_table_bs.find('table')
 
     # 테이블 컬럼 영역
-    post_list_table_header_area_bs = post_list_table_bs.find('thead')
-    # 테이블 칼럼 리스트
+    post_list_table_header_area_bs = post_list_table_bs.find('tr')
+    # 테이블 칼럼 리스트 thead에 있는 것이 아닌, tbody의 첫번째 row가 칼럼명
     post_list_table_header_list_bs = post_list_table_header_area_bs.find_all('th')
 
     # 테이블 컬럼명 검증 로직
@@ -87,28 +88,34 @@ def post_list_parsing_process(**params):
             print(f'IDX {column_idx} ERROR - {table_column_list[column_idx]} is {tmp_header_column.text.strip()}')
             raise('List Column Index Change')
 
-    post_row_list = post_list_table_bs.find('tbody').find_all('tr')
+    # 테이블 칼럼 리스트 thead에 있는 것이 아닌, tbody의 첫번째 row가 칼럼명이므로 첫번째 row 생략
+    post_row_list = post_list_table_bs.find('tbody').find_all('tr')[1:]
 
     if not post_row_list:
         print('PAGING END')
         return
-
+    processing_count = 0
     for tmp_post_row in post_row_list:
 
         for idx, tmp_td in enumerate(tmp_post_row.find_all('td')):
 
             if idx == 0:
-                pass
+                # 첫페이지 이외에는 '알림' 게시물 처리 X
+                if var['page_count'] != 1 and tmp_td.find('img', {'alt':'알림'}):
+                    break
+                processing_count += 1
             elif idx == 1:
                 var['post_url'].append(make_absolute_url(
                     in_url=tmp_td.find('a').get('href'),
                     channel_main_url=var['response'].url))
             elif idx == 2:
                 var['post_subject'].append(tmp_td.text.strip())
-            elif idx == 3:
-                var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
             elif idx == 4:
-                var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
+                var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
+
+    if processing_count == 0:
+        print('PAGING END')
+        return
 
     result = merge_var_to_dict(key_list, var)
     print(result)
@@ -117,19 +124,15 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type': ['post_text', 'post_title', 'contact'],
+        'single_type': ['post_text', 'post_title'],
         'multiple_type': ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    content_info_area = soup.find('div', class_='board-view-wrap')
-    var['post_title'] = content_info_area.find('div', class_='subject').text.strip()
-    header_area = content_info_area.find('div', class_='write')
-    header_contact_area = header_area.find('strong', text='문의')
+    content_info_area = soup.find('div', class_='bbs_view')
+    header_area = content_info_area.find('div', class_='bbs_view_tit')
+    var['post_title'] = header_area.find('h3').text.strip()
 
-    if header_contact_area:
-        var['contact'] = header_contact_area.nextSibling.text.strip()
-
-    context_area = content_info_area.find('div', class_='view-content')
+    context_area = content_info_area.find('div', class_='bbs_view_body')
     var['post_text'] = clean_text(context_area.text.strip())
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 
