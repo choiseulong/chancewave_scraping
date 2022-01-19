@@ -348,8 +348,8 @@ def _map_key_name_with_table_header(**kargs):
     table_header = var['table_header']
     included_key_info = {}
     header_info = {
-        'post_url' : ["제목"],
-        'post_title' : ["제목"],
+        'post_url' : ["제목", "행사명"],
+        'post_title' : ["제목", "행사명"],
         'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자", "날짜", "공고일"],
         'view_count' : ["조회", "조회수"],
         'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서", "담당자", "작성부서"],

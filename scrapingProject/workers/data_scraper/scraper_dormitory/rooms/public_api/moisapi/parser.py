@@ -14,7 +14,6 @@ def post_list_parsing_process(**params):
             var['post_url_frame'].format(data['서비스ID'])
         )
     result = merge_var_to_dict(key_list, var)
-    print(result)
     return result
 
 def post_content_parsing_process(**params):
@@ -35,7 +34,7 @@ def post_content_parsing_process(**params):
         elif '지원대상' in key :
             var['post_content_target'] = data[key]
         else :
-            extra_info.update({key : data[key]})
+            extra_info.update({f'info_{len(extra_info)}' : (key, data[key])})
     var['post_text_type'] = 'both'
     var['extra_info'].append(extra_info)
     result = convert_merged_list_to_dict(key_list, var)
