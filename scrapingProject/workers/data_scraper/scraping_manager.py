@@ -59,8 +59,7 @@ class ScrapingManager:
             self.get_channel_url()
         channel_code_with_location = self.find_channel_code_with_location(channel_code)
         group_name, room_name, channel_code, channel_url = self.parse_scraping_parameters(channel_code_with_location)
-        print(channel_code, 'init')
-        print(group_name, room_name)
+        print(group_name, channel_code, 'init')
         session = self.get_requests_session()
         tmp_scraper_file_name_list = get_scraper_file_list_from_group_room(group_name, room_name)
         tmp_room_num = channel_code[-1]
