@@ -9,7 +9,7 @@ def post_list_parsing_process(**params):
     tr_list = extract_children_tag(tbody, 'tr', is_child_multiple=True)
     if not tr_list :
         return
-    
+    # 22-01-19 header ["번호", "제목", "작성자", "작성일", "첨부", "조회수"]
     for tr in tr_list:
         td_list = extract_children_tag(tr, 'td', is_child_multiple=True)
         form = extract_children_tag(tr, 'form')
@@ -36,8 +36,7 @@ def post_list_parsing_process(**params):
                     extract_numbers_in_text(td_text)
                 )
     result = merge_var_to_dict(key_list, var)
-    print(result)
-    # return result
+    return result
 
 def post_content_parsing_process(**params):
     target_key_info = {
@@ -45,10 +44,16 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    tmp_contents = extract_children_tag(soup, 'td', child_tag_attrs={'class':'p-table__content'})
-    var['post_text'] = extract_text(tmp_contents)
-    var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents)) 
-    var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
+    th_list = extract_children_tag(soup, 'th', is_child_multiple=True)
+    for th in th_list :
+        th_text = extract_text(th)
+        if '제목' in th_text:
+            var['post_title'] = extract_text(find_next_tag(th))
+        elif '내용' in th_text:
+            tmp_contents = find_next_tag(th)
+            var['post_text'] = extract_text(tmp_contents)
+            var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents)) 
+            var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
     result = convert_merged_list_to_dict(key_list, var)
     return result
 

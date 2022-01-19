@@ -67,8 +67,9 @@ def extract_children_tag(parents_tag, child_tag, child_tag_attrs={}, is_child_mu
 
 def find_next_tag(tag):
     # 기준 Tag 다음 위치에 등장하는 Tag를 반환함
-    next_tag = tag.find_next_siblings()[0]
-    return next_tag
+    next_tag = tag.find_next_siblings()
+    if next_tag :
+        return next_tag[0]
 
 def find_parent_tag(tag):
     # 부모 Tag를 반환함
@@ -206,7 +207,7 @@ def extract_values_list_in_both_sides_bracket_text(text):
 
 def assign_multiple_table_data_to_key_name(value_list):
     lenth_list = [len(_) for _ in value_list]
-    if len(lenth_list) > 2 :
+    if len(lenth_list) > 3 :
         for data_idx, data_len in enumerate(lenth_list):
             if lenth_list.count(data_len) == 1 and data_len % 2 == 0:
                 data_list = value_list[data_idx]
@@ -350,13 +351,14 @@ def _map_key_name_with_table_header(**kargs):
     table_header = var['table_header']
     included_key_info = {}
     header_info = {
-        'post_url' : ["제목", "행사명"],
-        'post_title' : ["제목", "행사명"],
+        'post_url' : ["제목", "행사명", "강좌명"],
+        'post_title' : ["제목", "행사명", "강좌명"],
         'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자", "날짜", "공고일"],
         'view_count' : ["조회", "조회수"],
         'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서", "담당자", "작성부서", "기관"],
         'post_subject' : ["분류", "구분", "분야"],
-        'contact' : ["연락처"]
+        'contact' : ["연락처"],
+        'is_going_on' : ["접수상태"]
     }
     for header_idx, header_name in enumerate(table_header):
         for key_name in header_info:
@@ -428,6 +430,13 @@ def _handle_tbody_exception(soup, tbody):
     if len(tbody_list) > 1 and not tbody.text:
         tbody = tbody_list[1]
     return tbody
+
+def parse_is_going_on(**params):
+    text = params['child_tag_text']
+    if '마감' in text:
+        return False
+    else:
+        return True
 
 def parse_uploaded_time(**params):
     # 기본 등록일 처리.
