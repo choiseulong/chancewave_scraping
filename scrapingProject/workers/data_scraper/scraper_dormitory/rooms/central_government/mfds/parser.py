@@ -45,8 +45,8 @@ def post_list_parsing_process(**params):
                 var['view_count'].append(
                     extract_numbers_in_text(pText)
                 )
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    
+    result = merge_var_to_dict(key_list, var)
     return result
 
 def parse_href(text):
@@ -76,6 +76,6 @@ def post_content_parsing_process(**params):
             if 'html' not in src:
                 src = var['channel_main_url'] + src
             var['post_image_url'].append(src)
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     return result

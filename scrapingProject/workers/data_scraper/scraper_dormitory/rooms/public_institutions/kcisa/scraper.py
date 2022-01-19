@@ -20,9 +20,6 @@ from .parser import *
     header :
         None
 '''
-'''
-    base64
-'''
 sleep_sec = 1
 is_update = True
 

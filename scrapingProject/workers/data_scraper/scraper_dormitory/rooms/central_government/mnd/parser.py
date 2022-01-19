@@ -39,8 +39,8 @@ def post_list_parsing_process(**params):
                 var['view_count'].append(
                     extract_numbers_in_text(infoText)
                 )
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    
+    result = merge_var_to_dict(key_list, var)
     # print(result)
     return result
 
@@ -49,18 +49,18 @@ def post_content_parsing_process(**params):
         'single_type' : ['contact', 'post_text'],
         'multiple_type' : ['post_image_url']
     }
-    var, soup, key_list, fullText = html_type_default_setting(params, target_key_info)
+    var, soup, key_list, full_text = html_type_default_setting(params, target_key_info)
     if type(soup) == str :
         # ERROR 예외 : [local variable 'match' referenced before assignment] bug
         # UserWarning: unknown status keyword 'data-hwpjson' in marked section warnings.warn(msg)
-        fullText = fullText.replace('[data-hwpjson]', '')
-        soup = change_to_soup(fullText)
+        fullText = full_text.replace('[data-hwpjson]', '')
+        soup = change_to_soup(full_text)
 
     post_content = extract_children_tag(soup, 'div', {'class' : 'post_content'}, is_child_multiple=False)
     post_text = extract_text(post_content)
     var['contact'] = extract_contact_numbers_from_text(post_text)
     var['post_text'] = clean_text(post_text)
     var['post_image_url'] = search_img_list_in_contents(post_content, var['channel_main_url'])
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     return result

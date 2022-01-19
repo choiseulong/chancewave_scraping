@@ -35,8 +35,8 @@ def post_list_parsing_process(**params):
         )
         uploader = extract_children_tag(contents, 'td', child_tag_attrs={"class": "name"})
         var['uploader'].append(extract_text(uploader))
-    value_list = [var[key] for key in key_list]
-    result = merge_var_to_dict(key_list, value_list, var['channel_code'])
+    
+    result = merge_var_to_dict(key_list, var)
     return result
 
 def post_content_parsing_process(**params):
@@ -67,8 +67,8 @@ def post_content_parsing_process(**params):
     else :
         var['post_thumbnail'] = None
 
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     return result
 
 
@@ -88,6 +88,6 @@ def postContentParsingProcess_other(**params):
                 href = extract_attrs(a_tag, 'href')
                 var['linked_post_url'] += href
     var['post_image_url'] = search_img_list_in_contents(view_content, var['channel_main_url'])
-    value_list = [var[key] for key in key_list]
-    result = convert_merged_list_to_dict(key_list, value_list)
+    
+    result = convert_merged_list_to_dict(key_list, var)
     return result
