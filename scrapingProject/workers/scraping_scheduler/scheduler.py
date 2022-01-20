@@ -44,6 +44,10 @@ def make_session():
     )
 
     session = Session()
+    session.headers = {
+        "Connection": "keep-alive",
+        "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36"
+    }
     session.mount("http://", HTTPAdapter(max_retries=retry))
     session.mount("https://", HTTPAdapter(max_retries=retry))
     return session
@@ -53,14 +57,6 @@ def make_session():
 # retry 간격 3분 디폴트
 @schedule.task(time_limit=36000, retries=3)
 def job(scraper_room_address, channel_code, channel_url):
-    print(f'{channel_code}, job init')
-    startTime = datetime.now(timezone('Asia/Seoul')).isoformat()
     session = make_session()
     scraper = importlib.import_module(scraper_room_address).Scraper(session)
     scraper.scraping_process(channel_code, channel_url, dev=False)
-    endTime = datetime.now(timezone('Asia/Seoul')).isoformat()
-    return {
-        "channel_code" : channel_code,
-        "startTime" : startTime,
-        "endTime" : endTime
-    }

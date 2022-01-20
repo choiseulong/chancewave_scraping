@@ -10,7 +10,6 @@ def post_list_parsing_process(**params):
     # 2021-01-12
     var['table_header'] = ["번호", "제목", "첨부파일", "등록일", "등록자", "조회수"]
     result = parse_board_type_html_page(soup, var, key_list)
-    print(result)
     return result
 
 def parse_post_url(**params):
@@ -37,8 +36,6 @@ def post_content_parsing_process(**params):
     var['post_text'] = extract_text(tmp_contents)
     var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents)) 
     var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
-    
     result = convert_merged_list_to_dict(key_list, var)
-    print(result)
     return result
 

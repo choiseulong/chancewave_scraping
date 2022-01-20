@@ -18,7 +18,6 @@ def post_list_parsing_process(**params):
             if li_idx == 1:
                 a_tag = extract_children_tag(li, 'a')
                 href = extract_attrs(a_tag, 'href')
-                print(href)
                 var['post_url'].append(
                     var['post_url_frame'] + href
                 )
@@ -37,7 +36,6 @@ def post_list_parsing_process(**params):
                 )
     result = merge_var_to_dict(key_list, var)
     # 2022-01-20 header ["번호", "제목", "작성자", "첨부파일", "작성일", "조회수"]\
-    print(result)
     return result
 
 def post_content_parsing_process(**params):
@@ -58,5 +56,4 @@ def post_content_parsing_process(**params):
         var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents)) 
     var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
     result = convert_merged_list_to_dict(key_list, var)
-    print(result)
     return result

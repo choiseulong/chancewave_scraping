@@ -589,7 +589,7 @@ def _parse_total_table_data(**kargs):
                         print(e)
                         print(func_name, '미선언')
                 else :
-                    globals()[func_name](var, child_tag_text_list[child_tag_idx])
+                    globals()[func_name](var=var, child_tag_text=child_tag_text_list[child_tag_idx], child_tag=child_tag_list[child_tag_idx])
     return var
 
 def _add_title_index_to_var(**kargs):

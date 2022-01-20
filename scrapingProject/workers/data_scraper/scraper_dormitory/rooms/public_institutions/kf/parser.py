@@ -13,7 +13,7 @@ def post_list_parsing_process(**params):
     return result
 
 def parse_uploaded_time(**params):
-    text = params['text']
+    text = params['child_tag_text']
     result = convert_datetime_string_to_isoformat_datetime(text[:-2])
     return result
 
