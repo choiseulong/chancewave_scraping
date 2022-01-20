@@ -1,13 +1,11 @@
 from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scraper as ABCScraper
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
-import js2py
 from urllib.parse import urlencode
 
+# 채널 이름 : 중구
 
-# 채널 이름 : 구로구
-
-# 타겟 : 새소식
+# 타겟 : 공지사항
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -15,7 +13,7 @@ from urllib.parse import urlencode
     @post list
 
     method : GET
-    url : https://www.guro.go.kr/www/selectBbsNttList.do?bbsNo=662&&pageUnit=10&key=1790&pageIndex={page_count}
+    url : https://www.junggu.seoul.kr/content.do?page={}&cmsid=14231
     header :
         None
 
@@ -23,7 +21,7 @@ from urllib.parse import urlencode
 '''
     @post info
     method : GET
-    url : https://www.guro.go.kr/www/selectBbsNttView.do?bbsNo=662&nttNo={postId}
+    url : https://www.junggu.seoul.kr/content.do?cmsid=14231&mode=view&cid={postId}
     header :
         None
 
@@ -35,9 +33,9 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '구로구'
-        self.post_board_name = '새소식'
-        self.channel_main_url = 'https://www.guro.go.kr'
+        self.channel_name = '중구'
+        self.post_board_name = '공지사항'
+        self.channel_main_url = 'https://www.junggu.seoul.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
@@ -64,26 +62,18 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_subject', 'view_count', 'uploader', 'uploaded_time']
+        'multiple_type': ['post_url', 'post_subject', 'uploader', 'view_count', 'uploaded_time']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
     # 2022-1-19 HYUN
     # html table header index
-    table_column_list = ['번호', '제목', '부서', '작성자', '작성일', '조회수', '파일']
+    table_column_list = ['번호', '제목', '담당부서', '작성자', '작성일', '조회', '첨부']
 
     # 게시물 리스트 테이블 영역
-    post_list_table_bs = soup.find('div', class_='bbs__list')
-
-    last_page_area_text = post_list_table_bs.find('div', class_='bbs_info').text
-    last_page_num = str_grab(last_page_area_text, '/', '페이지').strip()
-
-    if var['page_count'] > int(last_page_num):
-        print('PAGING END')
-        return
-
-    post_list_table_bs = post_list_table_bs.find('table', class_='p-table')
+    post_list_table_bs = soup.find('div', class_='board_list')
+    post_list_table_bs = post_list_table_bs.find('table')
 
     # 테이블 컬럼 영역
     post_list_table_header_area_bs = post_list_table_bs.find('thead')
@@ -107,7 +97,7 @@ def post_list_parsing_process(**params):
         for idx, tmp_td in enumerate(tmp_post_row.find_all('td')):
 
             if idx == 0:
-                if tmp_td.text == '공지':
+                if tmp_td.find('td', {'alt':'공지'}):
                     break
             elif idx == 1:
                 var['post_url'].append(make_absolute_url(
@@ -133,12 +123,10 @@ def post_content_parsing_process(**params):
         'multiple_type': ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    content_info_area = soup.find('div', class_='bbs__view')
-
-    content_info_area = content_info_area.find('table', class_='p-table')
-    var['post_title'] = content_info_area.find('span', class_='p-table__subject_text').text.strip()
-
-    context_area = content_info_area.find('td', class_='p-table__content')
+    content_info_area = soup.find('div', class_='board_view_02')
+    content_info_area = content_info_area.find('table')
+    var['post_title'] = content_info_area.find('th', class_='view_tit').text.strip()
+    context_area = content_info_area.find('td', class_='view_txt')
     var['post_text'] = clean_text(context_area.text.strip())
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 
