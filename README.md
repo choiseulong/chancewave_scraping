@@ -23,7 +23,9 @@ broker_url = 'pyamqp://choline:123123@localhost:8080//'
 
 ### Run Celery
 app.py 와 같은 경로에서 실행하였음 C:\workspace\scrapingProject\chancewave-scraper\scrapingProject  
-celery -A workers.scraping_scheduler.scheduler worker --loglevel=info --pool=prefork --autoscale=2,8  
+celery -A workers.scraping_scheduler.scheduler worker --loglevel=info --pool=prefork --autoscale=2,8   #service
+celery -A workers.scraping_scheduler.scheduler worker --loglevel=inf --pool=gevent --concurrency=12    #local dev
+
 
 ### Run RabbitMQ, Message Broker 
 broker_url = 'pyamqp://choline:123123@localhost:8080//'  
