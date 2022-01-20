@@ -2,16 +2,16 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type' : ['post_url', 'post_title', 'is_going_on']
+        'multiple_type' : ['post_url', 'is_going_on']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     for key in key_list :
         var[f'parse_{key}'] = globals()[f'parse_{key}']
-    # 2021-01-19
+    # 2021-01-20
     thead = extract_children_tag(soup, 'thead', is_child_multiple=True)[1]
     var['table_header_box'] = extract_children_tag(thead, 'tr')
     var['post_id_idx'] = [1,2]
-    var['table_header'] = ["번호", "강좌명", "모집기간", "운영기간", "신청/모집", "수강료", "접수상태"]
+    var['table_header'] = ["번호", "강좌명", "모집기간", "운영기간", "모집", "수강료", "접수상태"]
     result = parse_board_type_html_page(soup, var, key_list)
     return result
 
@@ -47,6 +47,8 @@ def post_content_parsing_process(**params):
                 var['end_date'] = convert_datetime_string_to_isoformat_datetime(
                     None
                 )
+        elif '프로그램명' in th_text:
+            var['post_title'] = td_text
     var['extra_info'] = extra_info
     result = convert_merged_list_to_dict(key_list, var)
     return result

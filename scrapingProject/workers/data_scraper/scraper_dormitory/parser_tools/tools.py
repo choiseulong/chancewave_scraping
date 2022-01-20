@@ -388,13 +388,16 @@ def _check_valid_key(**kargs):
 def _search_table_header_list(**kargs):
     soup, var = kargs['soup'], kargs['var']
     thead = extract_children_tag(soup, 'thead')
+    print(var['table_header_box'], '@')
     tabel_header_box = var['table_header_box'] if 'table_header_box' in var.keys() else extract_children_tag(thead, 'tr')
+    print(tabel_header_box)
     var['table_header_list'] = [
         extract_text(child) \
         for child \
         in tabel_header_box.children\
         if extract_text(child)
     ]
+    print(var['table_header_list'], '@@')
     return var
 
 def _compare_input_header_with_table_header(**kargs):
@@ -414,12 +417,12 @@ def _compare_input_header_with_table_header(**kargs):
 
 def _search_table_data_list(**kargs):
     soup, var = kargs['soup'], kargs['var']
-    if 'tabel_data_box' in var.keys():
-        tabel_data_box = var['tabel_data_box']
+    if 'table_data_box' in var.keys():
+        table_data_box = var['table_data_box']
     else :
-        tabel_data_box = extract_children_tag(soup, 'tbody')
-        tabel_data_box = _handle_tbody_exception(soup, tbody=tabel_data_box)
-    var['table_data_list'] = _seperate_parents_tag_to_child_tag_list(tabel_data_box)
+        table_data_box = extract_children_tag(soup, 'tbody')
+        table_data_box = _handle_tbody_exception(soup, tbody=table_data_box)
+    var['table_data_list'] = _seperate_parents_tag_to_child_tag_list(table_data_box)
     if not var['table_data_list'] :
         var['table_data_list'] = 'break'
     return var
@@ -593,9 +596,9 @@ def _add_title_index_to_var(**kargs):
 
 def parse_board_type_html_page(soup, var, key_list):
     # 테이블 헤더, 데이블 데이터가 리스트 형식으로 담긴 태그가 있을때 사용할 수 있음
-    # var['tabel_data_box'] 와 var['table_header_box'] 를 parser.py 에서 임의로 선언했으면 해당 태그를 사용함
+    # var['table_data_box'] 와 var['table_header_box'] 를 parser.py 에서 임의로 선언했으면 해당 태그를 사용함
     # 선언하지 않았다면 부모태그(thead, tbody) 의 자식태그를 사용해 
-    # var['tabel_data_box'] 와 var['table_header_box'] 를 만들어 사용함
+    # var['table_data_box'] 와 var['table_header_box'] 를 만들어 사용함
 
     # 시스템 빌더가 입력한 header를 신뢰함. 해당 기준에 맞춰 파싱 함수에 텍스트를 전달함
     # 페이지 내에서 제공되는 header와 다를 경우 warning 을 출력하고 진행함
@@ -613,6 +616,7 @@ def parse_board_type_html_page(soup, var, key_list):
         _parse_total_table_data
     ]
     var['table_data_list'] = ''
+    print(var['table_header_box'])
     for process in process_order: 
     # 파싱 결과값은 var의 key:value 쌍으로 추가되어 반환됨
         var = process(soup=soup, var=var, key_list=key_list)
