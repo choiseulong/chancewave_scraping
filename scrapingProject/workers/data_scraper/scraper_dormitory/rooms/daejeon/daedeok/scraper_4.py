@@ -1,36 +1,32 @@
 from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scraper as ABCScraper
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
-from .parser_1 import *
+from .parser_4 import *
 
-# 채널 이름 : 대전동구청
+# 채널 이름 : 대덕구청
 
 #HTTP Request
 '''
     @post list
     method : GET
-    url_1 = https://www.donggu.go.kr/lll/damoa/contents/learning/community/01\
-        /community.01.001.motion?mnucd=MENU0100020&bmode=list&pageIndex={}
+    url_4 = https://www.daedeok.go.kr/chc/chc04/CHC0401_cmmBoardList.do?pageIndex={}&boardId=CHC_000005
     header :
         None
 '''
 '''
     @post info
-    method : POST
+    method : GET
     url : 
-        self.post_url
+        self.channel_main_url + href
     header :
         None
-    body:
-
 '''
 sleep_sec = 1
 
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '대전동구청'
-        self.post_board_name = '학습커뮤니티_공지사항'
-        self.post_url = 'https://www.donggu.go.kr/lll/damoa/contents/learning/community/01/community.01.001.motion'
+        self.channel_name = '대덕구청'
+        self.post_board_name = '참여/소식_공지사항'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)

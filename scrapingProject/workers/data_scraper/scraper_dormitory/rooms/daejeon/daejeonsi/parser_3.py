@@ -9,7 +9,7 @@ def post_list_parsing_process(**params):
         var[f'parse_{key}'] = globals()[f'parse_{key}']
     # 2021-01-19
     tbody_list = extract_children_tag(soup, 'tbody', is_child_multiple=True)
-    var['tabel_data_box'] = tbody_list[-1]
+    var['table_data_box'] = tbody_list[-1]
     var['table_header'] = ["번호", "기관", "분류", "제목", "등록일"]
     result = parse_board_type_html_page(soup, var, key_list)
     print(result)

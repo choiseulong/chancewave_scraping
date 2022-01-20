@@ -9,7 +9,7 @@ def post_list_parsing_process(**params):
         var[f'parse_{key}'] = globals()[f'parse_{key}']
     # 2021-01-17 
     var['table_header_box'] = extract_children_tag(soup, 'div', child_tag_attrs={'class':'board-head'})
-    var['tabel_data_box'] = extract_children_tag(soup, 'ul', child_tag_attrs={'class':'board-body'})
+    var['table_data_box'] = extract_children_tag(soup, 'ul', child_tag_attrs={'class':'board-body'})
     var['table_header'] = ["번호", "제목", "작성자", "작성일", "첨부"]
     result = parse_board_type_html_page(soup, var, key_list)
     return result
