@@ -9,7 +9,7 @@ def post_list_parsing_process(**params):
         var[f'parse_{key}'] = globals()[f'parse_{key}']
     # 2021-01-12
     var['post_id_idx'] = 0
-    var['table_header'] = ["번호", "제목", "작성일", "작성자", "조회수"]
+    var['table_header'] = ["번호", "제 목", "작성일", "작성자", "조회수"]
     result = parse_board_type_html_page(soup, var, key_list)
     return result
 

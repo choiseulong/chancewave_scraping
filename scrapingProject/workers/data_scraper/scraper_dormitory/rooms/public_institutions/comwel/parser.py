@@ -46,8 +46,10 @@ def post_content_parsing_process(**params):
     var['post_text'] = extract_text(tmp_contents)
     var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents))
     tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'class' : 'image_view'})
-    var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
-    
+    if tmp_contents:
+        var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
+    else :
+        var['post_image_url'] = None
     result = convert_merged_list_to_dict(key_list, var)
     return result
 

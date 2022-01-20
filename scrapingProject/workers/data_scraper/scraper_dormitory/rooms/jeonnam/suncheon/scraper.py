@@ -12,7 +12,7 @@ from .parser import *
     @post list
 
     method : GET
-    url = https://www.mokpo.go.kr/www/open_administration/city_news/notice?page={page_count}
+    url = https://www.suncheon.go.kr/kr/news/0001/0001/?mode=list&boardId=BBS_0000000000000130&searchCondition=all&searchKeyword=&pageIdx={}
     header :
         None
 

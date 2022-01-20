@@ -12,7 +12,6 @@ def post_list_parsing_process(**params):
     var['table_data_box'] = tbody_list[-1]
     var['table_header'] = ["번호", "기관", "분류", "제목", "등록일"]
     result = parse_board_type_html_page(soup, var, key_list)
-    print(result)
     return result
 
 def parse_uploader(**params):

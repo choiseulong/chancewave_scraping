@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type' : ['uploaded_time', 'post_url', 'post_title', 'view_count']
+        'multiple_type' : ['uploaded_time', 'post_url', 'view_count']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     for key in key_list :
@@ -14,10 +14,12 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['post_text', 'contact', 'uploader'],
+        'single_type' : ['post_text', 'contact', 'uploader', 'post_title'],
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    board_view = extract_children_tag(soup, 'div', child_tag_attrs={'class':'board_view'})
+    var['post_title'] = extract_text_from_single_tag(board_view, 'h4')
     var['contact'] = extract_contact_numbers_from_text(
         extract_text_from_single_tag(soup, 'li', child_tag_attrs={'class' : 'date'})
     )
