@@ -8,7 +8,7 @@ def post_list_parsing_process(**params):
     for key in key_list :
         var[f'parse_{key}'] = globals()[f'parse_{key}']
     # 2021-01-10
-    var['post_id_idx'] == 1
+    var['post_id_idx'] = 1
     var['table_header'] = ["번호", "제목", "등록일", "조회수"]
     result = parse_board_type_html_page(soup, var, key_list)
     return result
@@ -16,7 +16,7 @@ def post_list_parsing_process(**params):
 def parse_post_url(**params):
     child_tag = params['child_tag']
     var = params['var']
-    a_tag = extract_children_tag(td, 'a')
+    a_tag = extract_children_tag(child_tag, 'a')
     data_id = extract_attrs(a_tag, 'data-id')
     result = var['post_url_frame'].format(data_id)
     return result

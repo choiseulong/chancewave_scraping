@@ -66,8 +66,6 @@ def post_content_parsing_process(**params):
         )
     else :
         var['post_thumbnail'] = None
-
-    
     result = convert_merged_list_to_dict(key_list, var)
     return result
 

@@ -12,18 +12,12 @@ def post_list_parsing_process(**params):
     # 22-01-19 header ["번호", "제목", "작성자", "작성일", "첨부", "조회수"]
     for tr in tr_list:
         td_list = extract_children_tag(tr, 'td', is_child_multiple=True)
-        form = extract_children_tag(tr, 'form')
-        input_list = extract_children_tag(form, 'input', is_child_multiple=True)
-        req_params = {}
-        for input in input_list:
-            input_name = extract_attrs(input, 'name')
-            input_value = extract_attrs(input, 'value')
-            req_params.update({input_name : input_value})
-        var['contents_req_params'].append(req_params)
+        is_notice = False
         for td_idx, td in enumerate(td_list):
             td_text = extract_text(td)
             if '공지' in td_text and td_idx == 0:
                 if var['page_count'] != 1 :
+                    is_notice = True
                     break
             if td_idx == 2:
                 var['uploader'].append(td_text)
@@ -35,6 +29,15 @@ def post_list_parsing_process(**params):
                 var['view_count'].append(
                     extract_numbers_in_text(td_text)
                 )
+        if not is_notice:
+            form = extract_children_tag(tr, 'form')
+            input_list = extract_children_tag(form, 'input', is_child_multiple=True)
+            req_params = {}
+            for input in input_list:
+                input_name = extract_attrs(input, 'name')
+                input_value = extract_attrs(input, 'value')
+                req_params.update({input_name : input_value})
+            var['contents_req_params'].append(req_params)
     result = merge_var_to_dict(key_list, var)
     return result
 

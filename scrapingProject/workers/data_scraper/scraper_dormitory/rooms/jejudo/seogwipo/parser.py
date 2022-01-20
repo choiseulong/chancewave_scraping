@@ -6,12 +6,12 @@ def post_list_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     tbody = extract_children_tag(soup, 'tbody', {}, is_child_multiple=False)
-    trList_all = extract_children_tag(tbody, 'tr', child_tag_attrs={}, is_child_multiple=True)
+    trList_all = extract_children_tag(tbody, 'tr', is_child_multiple=True)
     if not trList_all: 
         return
-    trList_info = extract_children_tag(tbody, 'tr', {'class' : 'info'}, is_child_multiple=True)
-    validTrList = list(set(trList_all) - set(trList_info))
-    for tr in validTrList :
+    # trList_info = extract_children_tag(tbody, 'tr', child_tag_attrs={'class' : 'info'}, is_child_multiple=True)
+    # validTrList = list(set(trList_all) - set(trList_info))
+    for tr in trList_all :
         td_list = extract_children_tag(tr, 'td', child_tag_attrs={}, is_child_multiple=True)
         for td_idx, td in enumerate(td_list):
             td_text = extract_text(td)
@@ -35,9 +35,8 @@ def post_list_parsing_process(**params):
                 )
             elif td_idx == 5 :
                 var['view_count'].append(extract_numbers_in_text(td_text))
-
-    
     result = merge_var_to_dict(key_list, var)
+    print(result)
     return result
 
 def post_content_parsing_process(**params):
@@ -49,6 +48,5 @@ def post_content_parsing_process(**params):
     viewContent = extract_children_tag(soup, 'div', {'class':'view-contents'}, is_child_multiple=False)
     var['post_text'] = clean_text(extract_text(viewContent))
     var['post_image_url'] = search_img_list_in_contents(viewContent, var['channel_main_url'])
-    
     result = convert_merged_list_to_dict(key_list, var)
     return result

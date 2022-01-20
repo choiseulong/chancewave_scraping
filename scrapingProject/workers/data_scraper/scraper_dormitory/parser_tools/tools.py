@@ -207,7 +207,8 @@ def extract_values_list_in_both_sides_bracket_text(text):
 
 def assign_multiple_table_data_to_key_name(value_list):
     lenth_list = [len(_) for _ in value_list]
-    if len(lenth_list) > 3 :
+    deduplication_lenth_list = list(set(lenth_list))
+    if len(deduplication_lenth_list) == 2 :
         for data_idx, data_len in enumerate(lenth_list):
             if lenth_list.count(data_len) == 1 and data_len % 2 == 0:
                 data_list = value_list[data_idx]
@@ -296,7 +297,9 @@ def html_type_default_setting(params, target_key_info):
     encoding = var['response'].encoding
     if encoding == 'ISO-8859-1':
         encoding = 'EUC-KR'
-    # text = var['response'].text
+    if type(encoding) == type(None):
+        encoding = 'UTF-8'
+
     text = var['response'].content.decode(encoding,'replace')
     soup = change_to_soup(
         text
@@ -388,16 +391,13 @@ def _check_valid_key(**kargs):
 def _search_table_header_list(**kargs):
     soup, var = kargs['soup'], kargs['var']
     thead = extract_children_tag(soup, 'thead')
-    print(var['table_header_box'], '@')
     tabel_header_box = var['table_header_box'] if 'table_header_box' in var.keys() else extract_children_tag(thead, 'tr')
-    print(tabel_header_box)
     var['table_header_list'] = [
         extract_text(child) \
         for child \
         in tabel_header_box.children\
         if extract_text(child)
     ]
-    print(var['table_header_list'], '@@')
     return var
 
 def _compare_input_header_with_table_header(**kargs):
@@ -616,7 +616,6 @@ def parse_board_type_html_page(soup, var, key_list):
         _parse_total_table_data
     ]
     var['table_data_list'] = ''
-    print(var['table_header_box'])
     for process in process_order: 
     # 파싱 결과값은 var의 key:value 쌍으로 추가되어 반환됨
         var = process(soup=soup, var=var, key_list=key_list)

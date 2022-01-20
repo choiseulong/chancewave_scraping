@@ -42,6 +42,7 @@ def post_content_parsing_process(**params):
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'class' : 'tb_contents'})
     scripts = extract_children_tag(tmp_contents, 'script', is_child_multiple=True)
+    pdf_url=''
     if scripts :
         pdf_url = var['channel_main_url'] + extract_values_list_in_both_sides_bracket_text(extract_text(scripts[1]))[0]
     var['post_text'] = extract_text(tmp_contents) if extract_text(tmp_contents) else pdf_url

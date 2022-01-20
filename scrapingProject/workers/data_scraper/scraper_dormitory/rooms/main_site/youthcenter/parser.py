@@ -4,9 +4,9 @@ def post_list_parsing_process(**params):
     var = reflect_params(locals(), params)
     target_key_info = {
         'multiple_type' : ['is_going_on', 'post_subject', 'post_title', 'uploader', 'contents_req_params'],
-        'single_type' : ['Cookie','_csrf']
+        # 'single_type' : ['Cookie','_csrf']
     }
-    var, soup, _, _ = html_type_default_setting(params, target_key_info)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     # var, _ = reflect_key(var, target_key_info)
     # soup = change_to_soup(
     #     var['response'].text
@@ -62,13 +62,7 @@ def post_list_parsing_process(**params):
         else :
             var['is_going_on'].append(False)
             
-    value_list = [
-        [_ for idx, _ in enumerate(var[key])] \
-       for key \
-        in target_key_info['multiple_type']
-    ]
-
-    result = merge_var_to_dict(target_key_info['multiple_type'], value_list)
+    result = merge_var_to_dict(key_list, var)
     var['Cookie'] = var['response'].cookies.get_dict()['YOUTHCENTERSESSIONID']
     result.append({'Cookie' : 'YOUTHCENTERSESSIONID=' + var['Cookie']})
     return result

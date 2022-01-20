@@ -29,7 +29,7 @@ from .parser import *
         header_1 : fixed
 '''
 
-sleep_sec = 1
+sleep_sec = 3
 
 class Scraper(ABCScraper):
     def __init__(self, session):

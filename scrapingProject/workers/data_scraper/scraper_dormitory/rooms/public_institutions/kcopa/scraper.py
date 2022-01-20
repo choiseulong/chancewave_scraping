@@ -8,7 +8,7 @@ from .parser import *
 '''
     @post list
     method : GET
-    url_0 = https://www.chf.or.kr/brd/board/644/L/SITES/100/menu/371?thisPage={page_count}
+    url_0 = https://www.kcopa.or.kr/lay1/bbs/S1T12C49/A/12/list.do?rows=10&cpage={}
     header :
         None
 '''

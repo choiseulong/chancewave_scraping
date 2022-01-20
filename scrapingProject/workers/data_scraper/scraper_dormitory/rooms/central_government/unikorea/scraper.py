@@ -19,7 +19,7 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : https://www.mofa.go.kr/www/brd/m_4075/view.do?seq={postId}
+    url : self.post_url.format(postId)
     header :
         None
 

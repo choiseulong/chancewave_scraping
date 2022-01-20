@@ -8,7 +8,7 @@ from .parser import *
 '''
     @post list
     method : GET
-    url_0 = https://www.kpf.or.kr/front/board/boardContentsList.do?miv_pageNo={}&mode=W&board_id=245
+    url_0 = https://www.ekr.or.kr/planweb/board/list.krc?page={}&boardUid=402880317cc0644a017cc5e8000f06b7
     header :
         None
 '''
@@ -16,7 +16,7 @@ from .parser import *
     @post info
     method : GET
     url : 
-        href
+        self.post_url + href
     header :
         None
 '''
@@ -28,7 +28,7 @@ class Scraper(ABCScraper):
         super().__init__(session)
         self.channel_name = '한국농어촌공사'
         self.post_board_name = '공지사항'
-        self.post_url = 'https://www.ekr.or.kr/homepage/cms/index.krc?MENUMST_ID=20032&bmode=detail&artcId={}&searchBlbdId=0'
+        self.post_url = 'https://www.ekr.or.kr/planweb/board'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)

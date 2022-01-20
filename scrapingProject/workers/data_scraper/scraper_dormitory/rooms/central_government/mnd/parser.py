@@ -53,7 +53,7 @@ def post_content_parsing_process(**params):
     if type(soup) == str :
         # ERROR 예외 : [local variable 'match' referenced before assignment] bug
         # UserWarning: unknown status keyword 'data-hwpjson' in marked section warnings.warn(msg)
-        fullText = full_text.replace('[data-hwpjson]', '')
+        full_text = full_text.replace('[data-hwpjson]', '')
         soup = change_to_soup(full_text)
 
     post_content = extract_children_tag(soup, 'div', {'class' : 'post_content'}, is_child_multiple=False)

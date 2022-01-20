@@ -64,7 +64,6 @@ def post_content_parsing_process(**params):
     var['linked_post_url'] = extract_values_list_in_both_sides_bracket_text(linkedPostUrlData)[1] if linkedPostUrlData else None
     uploaderData = extract_children_tag(soup, 'p', {'class' : 'note'}, is_child_multiple=True)
     var['uploader'] = extract_text(uploaderData[1]) if uploaderData else None
-    var['contact'] = list(set(extract_contact_numbers_from_text(var['post_text']) + extract_emails(var['post_text'])))
-    
+    var['contact'] = extract_contact_numbers_from_text(var['post_text'])
     result = convert_merged_list_to_dict(key_list, var)
     return result

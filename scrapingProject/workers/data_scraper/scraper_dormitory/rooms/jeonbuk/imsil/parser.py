@@ -42,11 +42,10 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    tmp_content = extract_children_tag(soup, 'td', {'colspan' : '4'})
+    tmp_content = extract_children_tag(soup, 'div', {'class' : 'bbs_con'})
     var['post_text'] = extract_text(tmp_content)
     var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_content))
     var['post_image_url'] = search_img_list_in_contents(tmp_content, var['channel_main_url'])
-    
     result = convert_merged_list_to_dict(key_list, var)
     return result
 

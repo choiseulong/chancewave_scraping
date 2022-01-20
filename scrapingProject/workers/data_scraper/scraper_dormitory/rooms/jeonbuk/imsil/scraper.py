@@ -8,8 +8,8 @@ from .parser import *
 '''
     @post list
     method : GET
-    url_0 = https://www.wanju.go.kr/board/list.wanju?boardId=BBS_0000107\
-        &menuCd=DOM_000000102001001000&startPage={page_count}
+    url_0 = https://www.imsil.go.kr/board/list.imsil?boardId=BBS_0000002&listRow=10&listCel=1&menuCd=DOM_000000103001001000&\
+        orderBy=REGISTER_DATE%%20DESC&paging=ok&startPage={}
     header :
         None
 
@@ -29,7 +29,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '임실군청'
-        self.post_board_name = '공지사항'
+        self.post_board_name = '임실소식'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)

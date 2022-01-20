@@ -8,10 +8,9 @@ from .parser import *
 '''
     @post list
     method : GET
-    url_0 = https://www.kasfo.or.kr/05_fou/04_01.asp?mcbid=NOTICE04&cur={page_count}\
-        &sYear=2022&sMonth=1&sDay=1&eYear=2022&eMonth=1&eDay=30
+    url_0 = https://www.kasfo.or.kr/05_fou/04_01.asp?mcbid=NOTICE04&cur={}
     header :
-        None
+        1. Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
 '''
 '''
     @post info
@@ -32,7 +31,8 @@ class Scraper(ABCScraper):
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
-        self.session = set_headers(self.session)
+        self.additional_key_value.append(("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"))
+        self.session = set_headers(self.session, self.additional_key_value, is_update)
         self.page_count = 1
         while True :
             self.channel_url = self.channel_url_frame.format(self.page_count)

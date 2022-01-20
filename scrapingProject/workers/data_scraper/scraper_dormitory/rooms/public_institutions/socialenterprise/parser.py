@@ -17,7 +17,7 @@ def parse_post_url(**params):
     child_tag = params['child_tag']
     var = params['var']
     post_url_frame = var['post_url_frame']
-    a_tag = extract_children_tag(td, 'a')
+    a_tag = extract_children_tag(child_tag, 'a')
     if a_tag.has_attr('onclick'):
         onclick = extract_attrs(a_tag, 'onclick')
         post_id = parse_post_id(onclick, 0)

@@ -99,7 +99,6 @@ def post_list_parsing_process(**params):
                 var['post_subject'].append(tmp_td.text.strip())
 
     result = merge_var_to_dict(key_list, var)
-    print(result)
     return result
 
 def post_content_parsing_process(**params):
@@ -140,5 +139,4 @@ def post_content_parsing_process(**params):
         raise ValueError('COLUMN TITLE TEXT IS CHANGED')
 
     result = convert_merged_list_to_dict(key_list, var)
-    print(result)
     return result

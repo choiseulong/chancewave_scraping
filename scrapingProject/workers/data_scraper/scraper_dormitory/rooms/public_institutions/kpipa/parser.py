@@ -16,7 +16,7 @@ def post_list_parsing_process(**params):
 def parse_post_url(**params):
     child_tag = params['child_tag']
     var = params['var']
-    a_tag = extract_children_tag(td, 'a')
+    a_tag = extract_children_tag(child_tag, 'a')
     onclick = extract_attrs(a_tag, 'onclick')
     post_id_list = parse_post_id(onclick, [0,1])
     result = var['post_url_frame'].format(post_id_list[0], post_id_list[1])

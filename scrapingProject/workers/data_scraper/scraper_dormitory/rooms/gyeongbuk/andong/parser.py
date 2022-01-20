@@ -5,7 +5,7 @@ def post_list_parsing_process(**params):
     target_key_info = {
         'multiple_type' : ['post_url']
     }
-    var, soup, key_list, fullText = html_type_default_setting(params, target_key_info)
+    var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     tbody = extract_children_tag(soup, 'tbody', child_tag_attrs={}, is_child_multiple=False)
     tr_list = extract_children_tag(tbody, 'tr', child_tag_attrs={}, is_child_multiple=True)
     if not tr_list :

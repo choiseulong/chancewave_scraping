@@ -7,6 +7,7 @@ import importlib
 from datetime import datetime, timedelta
 from pytz import timezone
 from glob import glob
+import random
 
 import os
 
@@ -77,9 +78,22 @@ class ScrapingManager:
     
     def scraping_init_with_celery(self):
         # celery 에게 스크래핑 진행을 위임한다
-        for channel_code_with_location in self.channel_url_info_dict:
+        channel_url_list = list(self.channel_url_info_dict.keys())
+        random.shuffle(channel_url_list)
+        for channel_code_with_location in channel_url_list:
             group_name, room_name, channel_code, channel_url = self.parse_scraping_parameters(channel_code_with_location)
-            job.delay(group_name, room_name, channel_code, channel_url)
+            tmp_scraper_file_name_list = get_scraper_file_list_from_group_room(group_name, room_name)
+            tmp_room_num = channel_code[-1]
+            scraper_room_address = None
+            for tmp_scraper_file_name in tmp_scraper_file_name_list:
+                # module 이름으로 변형 위해 python 확장자 제거
+                tmp_module_nm = tmp_scraper_file_name[:tmp_scraper_file_name.rfind('.py')]
+                if tmp_module_nm == f'scraper_{tmp_room_num}':
+                    scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.{tmp_module_nm}'
+                    break
+            else:
+                scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'
+            job.delay(scraper_room_address, channel_code, channel_url)
 
     def parse_scraping_parameters(self, channel_code_with_location):
         # 지역정보가 함께 담긴 채널 코드를 가져와서 파싱하고 return 한다
@@ -118,6 +132,7 @@ def combine_group_room_num_str(group_name, room_name, room_num):
 
 
 if __name__ == '__main__':
+    print(SCRAPING_MANAGER_FILE_PATH)
     tmp_group_name = 'gyeonggi'
     tmp_room_name = 'gyeonggido'
     tmp_room_num = '0'

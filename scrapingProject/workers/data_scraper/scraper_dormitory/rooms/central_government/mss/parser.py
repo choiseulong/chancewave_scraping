@@ -41,9 +41,9 @@ def post_content_parsing_process(**params):
         'single_type' : ['contact', 'post_text'],
         'multiple_type' : ['post_image_url']
     }
-    var, _, key_list, fullText = html_type_default_setting(params, target_key_info)
-    fullText = fullText.replace('&lt;', '<').replace('&gt;', '>').replace('&middot;', '·')
-    soup = change_to_soup(fullText)
+    var, _, key_list, full_text = html_type_default_setting(params, target_key_info)
+    full_text = full_text.replace('&lt;', '<').replace('&gt;', '>').replace('&middot;', '·')
+    soup = change_to_soup(full_text)
 
     contents_box = extract_children_tag(soup, 'div', {'class' : 'view_contents'}, is_child_multiple=False)
     post_text = extract_text(contents_box)

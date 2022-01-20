@@ -45,8 +45,8 @@ def post_content_parsing_process(**params):
                 )
             )
             break
-    contentsBox = extract_children_tag(soup, 'div', {'class' : 'bo_con'}, is_child_multiple=False)
-    var['post_image_url']=search_img_list_in_contents(contentsBox, var['channel_main_url'])
+    contentsBox = extract_children_tag(soup, 'div', {'class' : 'bo_con'})
+    var['post_image_url'] = search_img_list_in_contents(contentsBox, var['channel_main_url'])
     var['post_text'] = extract_text(contentsBox)
     var['contact'] = extract_contact_numbers_from_text(extract_text(contentsBox))
     

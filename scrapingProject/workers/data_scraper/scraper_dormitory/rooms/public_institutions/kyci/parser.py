@@ -15,7 +15,7 @@ def post_list_parsing_process(**params):
 def parse_post_url(**params):
     child_tag = params['child_tag']
     var = params['var']
-    span = extract_children_tag(td, 'span')
+    span = extract_children_tag(child_tag, 'span')
     href = extract_attrs(span, 'title').split(',,')[0]
     result = var['post_url_frame'].format(href)
     return result

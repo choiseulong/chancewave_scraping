@@ -6,7 +6,9 @@ from requests.sessions import Session
 from urllib3.util import Retry
 from datetime import datetime
 from pytz import timezone
+from glob import glob
 import logging
+import os
 
 # 로깅 레벨 CRITICAL로 선언 
 urllib3_logger = logging.getLogger('urllib3')
@@ -17,10 +19,10 @@ schedule = Celery('scheduler')
 
 # celery app env
 schedule.conf.update(
-    # broker_url = 'amqp://username:password@localhost//',
-    # result_backend = 'mongodb://admin:mysterico@k8s.mysterico.com:31489/?authSource=admin',
-    broker_url = 'amqp://CHANCEWAVE:MYSTERICO@message_broker_container//',
-    result_backend = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/?authSource=admin',
+    broker_url = 'amqp://username:password@localhost//',
+    result_backend = 'mongodb://admin:mysterico@k8s.mysterico.com:31489/?authSource=admin',
+    # broker_url = 'amqp://CHANCEWAVE:MYSTERICO@message_broker_container//',
+    # result_backend = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/?authSource=admin',
     timezone = 'Asia/Seoul',
 
     # 2021-12-31 추가
@@ -50,20 +52,15 @@ def make_session():
 # 10시간 time limit 
 # retry 간격 3분 디폴트
 @schedule.task(time_limit=36000, retries=3)
-def job(group_name, room_name, channel_code, channel_url):
+def job(scraper_room_address, channel_code, channel_url):
+    print(f'{channel_code}, job init')
     startTime = datetime.now(timezone('Asia/Seoul')).isoformat()
     session = make_session()
-    scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'
     scraper = importlib.import_module(scraper_room_address).Scraper(session)
-    scraper.scraping_process(channel_code, channel_url)
+    scraper.scraping_process(channel_code, channel_url, dev=False)
     endTime = datetime.now(timezone('Asia/Seoul')).isoformat()
     return {
         "channel_code" : channel_code,
         "startTime" : startTime,
         "endTime" : endTime
     }
-
-
-
-
-

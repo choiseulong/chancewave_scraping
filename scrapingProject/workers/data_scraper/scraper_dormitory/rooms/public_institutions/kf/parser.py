@@ -20,7 +20,7 @@ def parse_uploaded_time(**params):
 def parse_post_url(**params):
     child_tag = params['child_tag']
     var = params['var']
-    a_tag = extract_children_tag(td, 'a')
+    a_tag = extract_children_tag(child_tag, 'a')
     data_id = extract_attrs(a_tag, 'data-id')
     result = var['post_url_frame'].format(data_id)
     return result

@@ -16,7 +16,7 @@ def post_list_parsing_process(**params):
 def parse_post_url(**params):
     child_tag = params['child_tag']
     var = params['var']
-    post_id = extract_attrs(td, 'data-seqboardgeneral')
+    post_id = extract_attrs(child_tag, 'data-seqboardgeneral')
     result = var['post_url_frame'].format(post_id)
     return result
 

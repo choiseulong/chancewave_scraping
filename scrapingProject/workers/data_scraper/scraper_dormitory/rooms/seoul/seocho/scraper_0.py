@@ -112,7 +112,6 @@ def post_list_parsing_process(**params):
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
 
     result = merge_var_to_dict(key_list, var)
-    print(result)
     return result
 
 
@@ -143,5 +142,4 @@ def post_content_parsing_process(**params):
                 var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 
     result = convert_merged_list_to_dict(key_list, var)
-    print(result)
     return result
