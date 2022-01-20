@@ -45,12 +45,11 @@ def post_content_parsing_process(**params):
     var['post_title'] = extract_text(extract_children_tag(bbs_detail_tit, 'h2'))
     part_li = extract_children_tag(soup, 'li', child_tag_attrs={'class' : 'part'})
     var['contact'] = extract_contact_numbers_from_text(extract_text(part_li))
-    tmp_contents = extract_children_tag(soup, 'td', child_tag_attrs={'class' : 'bbs_detail_content'})
+    tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'class' : 'bbs_detail_content'})
     var['post_text'] = extract_text(tmp_contents)
     var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
     if not var['contact']:
         var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents))
-    
     result = convert_merged_list_to_dict(key_list, var)
     return result
 

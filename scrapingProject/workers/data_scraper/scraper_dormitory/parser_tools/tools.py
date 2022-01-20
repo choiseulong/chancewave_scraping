@@ -354,8 +354,8 @@ def _map_key_name_with_table_header(**kargs):
     table_header = var['table_header']
     included_key_info = {}
     header_info = {
-        'post_url' : ["제목", "행사명", "강좌명"],
-        'post_title' : ["제목", "행사명", "강좌명"],
+        'post_url' : ["제목", "행사명", "강좌명", "제 목"],
+        'post_title' : ["제목", "행사명", "강좌명", "제 목"],
         'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자", "날짜", "공고일"],
         'view_count' : ["조회", "조회수"],
         'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서", "담당자", "작성부서", "기관"],
@@ -557,7 +557,14 @@ def _seperate_parents_tag_to_child_tag_list(parents_tag):
 def _parse_total_table_data(**kargs):
     var = kargs['var']
     checked_key_info, table_data_list = var['checked_key_info'], var['table_data_list']
+    if var['table_data_list'] == 'break':
+        return var
+
     for table_data in table_data_list :
+        table_data_text = extract_text(table_data)
+        if '등록된 글이 없습니다' == table_data_text:
+            var['table_data_list'] = 'break'
+            return var
         # 입력한 header 순번에 맞춰 해당 값을 파싱하는 함수에 전달함
         child_tag_list = _seperate_parents_tag_to_child_tag_list(table_data)
         child_tag_text_list = [extract_text(child_tag) for child_tag in child_tag_list]

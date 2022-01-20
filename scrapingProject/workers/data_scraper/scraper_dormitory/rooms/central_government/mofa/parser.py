@@ -12,11 +12,11 @@ def post_list_parsing_process(**params):
         for td_idx, td in enumerate(td_list):
             td_text = extract_text(td)
             if td_idx == 1:
-                a_tag = extract_children_tag(td, 'a', child_tag_attrs={}, is_child_multiple=False)
+                a_tag = extract_children_tag(td, 'a')
+                onclick = extract_attrs(a_tag, 'onclick')
+                post_id = parse_post_id(onclick, 0)
                 var['post_url'].append(
-                    var['post_url_frame'].format(
-                        extract_text_between_prefix_and_suffix('seq=', '&amp', extract_attrs(a_tag, 'href'))
-                    ) 
+                    var['post_url_frame'].format(post_id) 
                 )
                 var['post_title'].append(td_text)
             elif td_idx == 3 :
@@ -25,7 +25,6 @@ def post_list_parsing_process(**params):
                 var['uploaded_time'].append(
                     convert_datetime_string_to_isoformat_datetime(td_text)
                 )
-    
     result = merge_var_to_dict(key_list, var)
     return result
 
