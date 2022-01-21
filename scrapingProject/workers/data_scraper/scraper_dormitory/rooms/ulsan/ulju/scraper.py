@@ -8,7 +8,8 @@ from .parser import *
 '''
     @post list
     method : GET
-    url_0 =  https://www.ulju.ulsan.kr/ulju/ulju_news01?curPage={page_count}
+    url_0 =  https://www.ulju.ulsan.kr/ulju/bbs/list.do?ptIdx=145&mId=0404010000&\
+        cancelUrl=%%2Fulju%%2Fbbs%%2Flist.do%%3FptIdx%%3D145%%26mId%%3D0404010000&page={}
     header :
         None
 
@@ -16,7 +17,7 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : self.post_url + href
+    url : self.post_url.format()
     header :
         None
 
@@ -29,6 +30,7 @@ class Scraper(ABCScraper):
         super().__init__(session)
         self.channel_name = '울주군청'
         self.post_board_name = '알림사항'
+        self.post_url = 'https://www.ulju.ulsan.kr/ulju/bbs/view.do?bIdx={}&ptIdx={}&mId={}'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)

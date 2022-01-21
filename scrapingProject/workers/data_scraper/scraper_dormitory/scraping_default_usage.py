@@ -40,7 +40,7 @@ class Scraper(metaclass=ABCMeta):
             스크래핑 진행의 틀을 작성함
         '''
         self.dev = dev
-        self.mongo = MongoServer()
+        self.mongo = MongoServer(dev)
         self.channel_code = channel_code
         self.channel_url = channel_url
         self.channel_url_frame = channel_url #page_count 적용이 필요한 경우 사용

@@ -34,7 +34,7 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : https://www.usc.go.kr/board/detail.tc?mn=1275&viewType=sub&mngNo=275&pageIndex=1&boardName=EOVYRHDWL&boardNo={posrId}&pageSeq=1314
+    url : post_url + href
     header :
         None
 
@@ -48,7 +48,7 @@ class Scraper(ABCScraper):
         self.channel_name = '청도군청'
         self.post_board_name = '공지사항'
         self.channel_main_url = 'https://www.cheongdo.go.kr'
-        self.post_url = 'https://www.usc.go.kr/board/detail.tc?mn=1275&viewType=sub&mngNo=275&pageIndex=1&boardName=EOVYRHDWL&boardNo={}&pageSeq=1314'
+        self.post_url = 'https://www.cheongdo.go.kr/open.content/ko/administration/news/notice'
         
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)

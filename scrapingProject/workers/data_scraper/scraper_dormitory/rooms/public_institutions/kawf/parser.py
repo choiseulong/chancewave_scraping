@@ -1,5 +1,4 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
-import re
 
 def post_list_parsing_process(**params):
     target_key_info = {

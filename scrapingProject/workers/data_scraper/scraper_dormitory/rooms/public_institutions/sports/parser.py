@@ -15,7 +15,7 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['post_text', 'contact', 'uploader', 'view_count'],
+        'single_type' : ['post_text', 'contact', 'view_count'],
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
@@ -33,7 +33,6 @@ def post_content_parsing_process(**params):
     if not var['contact']:
         var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents))
     var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
-    
     result = convert_merged_list_to_dict(key_list, var)
     return result
 

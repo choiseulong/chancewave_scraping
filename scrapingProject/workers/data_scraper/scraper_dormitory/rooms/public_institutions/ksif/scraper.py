@@ -17,7 +17,7 @@ from .parser import *
     @post info
     method : GET
     url : 
-        self.post_url.format(post_id)
+        channel_main_url + href
     header :
         None
 '''
@@ -29,7 +29,6 @@ class Scraper(ABCScraper):
         super().__init__(session)
         self.channel_name = '세종학당재단'
         self.post_board_name = '공지사항'
-        self.post_url = 'http://www.kawf.kr/notice/sub01View.do?selIdx={}'
  
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)

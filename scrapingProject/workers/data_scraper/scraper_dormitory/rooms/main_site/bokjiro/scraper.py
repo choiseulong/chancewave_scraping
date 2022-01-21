@@ -51,6 +51,7 @@ class Scraper(ABCScraper):
         super().scraping_process(channel_code, channel_url, dev)
         self.additional_key_value.append(("Content-Type", "application/json; charset=UTF-8"))
         self.session = set_headers(self.session, self.additional_key_value, is_update)
+        self.page_count = 1
         for i in range(1,4):
             self.tabId = i
             while True :

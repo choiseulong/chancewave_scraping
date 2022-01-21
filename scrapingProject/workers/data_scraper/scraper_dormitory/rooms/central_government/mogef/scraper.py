@@ -2,22 +2,21 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
-# 채널 이름 : 대한적십자사
+# 채널 이름 : 여성가족부
 
 #HTTP Request
 '''
     @post list
+
     method : GET
-    url_0 =  https://www.redcross.or.kr/redcross_whatsnew/redcross_whatsnew_news_announcement.do\
-        ?action=list&pagenum={}
+    url = http://www.mogef.go.kr/nw/ntc/nw_ntc_s001.do?pageIndex={}&bbid=news400&bbtSn=0
     header :
         None
 '''
 '''
     @post info
     method : GET
-    url : 
-        self.channel_main_url + href 
+    url : self.post_url.format(post_id)
     header :
         None
 '''
@@ -27,8 +26,10 @@ is_update = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '대한적십자사'
-        self.post_board_name = '공지사항'
+        self.channel_name = '여성가족부'
+        self.post_board_name = '공지·공고'
+        self.post_url = 'http://www.mogef.go.kr/nw/ntc/nw_ntc_s001d.do?mid=news400&bbtSn={}'
+
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)

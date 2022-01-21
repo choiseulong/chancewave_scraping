@@ -420,7 +420,11 @@ def _search_table_data_list(**kargs):
     if 'table_data_box' in var.keys():
         table_data_box = var['table_data_box']
     else :
-        table_data_box = extract_children_tag(soup, 'tbody')
+        table_data_box = extract_children_tag(soup, 'tbody', is_child_multiple=True)
+        if len(table_data_box) == 1 :
+            table_data_box = table_data_box[0]
+        else :
+            table_data_box = table_data_box[1]
         table_data_box = _handle_tbody_exception(soup, tbody=table_data_box)
     var['table_data_list'] = _seperate_parents_tag_to_child_tag_list(table_data_box)
     if not var['table_data_list'] :
@@ -461,6 +465,8 @@ def parse_view_count(**params):
 def parse_href(href):
     if href.startswith('#'):
         href = href[1:]
+    if href.startswith('../'):
+        href = href[2:]
     return href
 
 def parse_post_url(**params):
@@ -568,6 +574,7 @@ def _parse_total_table_data(**kargs):
         # 입력한 header 순번에 맞춰 해당 값을 파싱하는 함수에 전달함
         child_tag_list = _seperate_parents_tag_to_child_tag_list(table_data)
         child_tag_text_list = [extract_text(child_tag) for child_tag in child_tag_list]
+        print(child_tag_text_list)
         is_notice = _check_notice_post(child_tag_text = child_tag_text_list[0], page_count=var['page_count'])
         if not is_notice : pass
         if '공지' in child_tag_text_list[0] or not child_tag_text_list[0]: # 공지글 첫 페이지에서만 수집

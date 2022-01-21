@@ -12,7 +12,7 @@ class ProjectManager:
         return 'scraping start'
     
     def get_data(self, channel_code=''):
-        mongo = MongoServer()
+        mongo = MongoServer(dev=False)
         if channel_code:
             data = mongo.get_data(channel_code)
         else :
