@@ -9,12 +9,12 @@ class MongoServer:
 
     def __init__(self, dev):
         if dev :
+            print('dev mongodb')
             self.url = 'mongodb://admin:mysterico@k8s.mysterico.com:31489'
         else :
             self.url = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/'
         self.connection = MongoClient(self.url)
         self.db = self.connection.get_database('scraping')
-        # self.collection = self.db.get_collection('220120_test')
         self.collection = self.db.get_collection('data')
 
     def fine_one(self, query):
