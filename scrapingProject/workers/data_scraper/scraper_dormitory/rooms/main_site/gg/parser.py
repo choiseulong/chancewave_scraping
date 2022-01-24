@@ -29,10 +29,8 @@ def post_list_parsing_process(**params):
         for date \
         in search_value_in_json_data_using_path(json_data, '$..ADD_COLUMN04')
     ]
-    
     result = merge_var_to_dict(key_list, var)
-    print(result, len(result))
-    # return result
+    return result
 
 
 def post_content_parsing_process(**params):
@@ -58,11 +56,8 @@ def post_content_parsing_process(**params):
                 var['linked_post_url'].append(linkHref)
     span_text = [extract_text(span) for span in extract_children_tag(equitable_box, 'span', child_tag_attrs={}, is_child_multiple=True)]
     p_text = [extract_text(p) for p in extract_children_tag(equitable_box, 'p', child_tag_attrs={}, is_child_multiple=True)]
-
-
     info = {'응모대상' : 'post_content_target', '문의' : 'contact'}
     extraDict = {'info_title' : '공모개요'}
-
     for tit, cont in zip(span_text, p_text):
         data = [tit, cont]
         for key in info:
@@ -72,7 +67,6 @@ def post_content_parsing_process(**params):
         extraDict.update({f'info_{dictLength}' : data})
     var['extra_info'].append(extraDict)
     var['post_text_type'] = 'only_extra_info'
-    
     result = convert_merged_list_to_dict(key_list, var)
     return result
 
