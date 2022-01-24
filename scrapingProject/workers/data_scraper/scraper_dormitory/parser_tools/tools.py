@@ -574,7 +574,6 @@ def _parse_total_table_data(**kargs):
         # 입력한 header 순번에 맞춰 해당 값을 파싱하는 함수에 전달함
         child_tag_list = _seperate_parents_tag_to_child_tag_list(table_data)
         child_tag_text_list = [extract_text(child_tag) for child_tag in child_tag_list]
-        print(child_tag_text_list)
         is_notice = _check_notice_post(child_tag_text = child_tag_text_list[0], page_count=var['page_count'])
         if not is_notice : pass
         if '공지' in child_tag_text_list[0] or not child_tag_text_list[0]: # 공지글 첫 페이지에서만 수집

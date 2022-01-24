@@ -37,10 +37,7 @@ def post_list_parsing_process(**params):
                 var['view_count'].append(
                     extract_numbers_in_text(td_text)
                 )
-
-    
     result = merge_var_to_dict(key_list, var)
-    # print(result)
     return result
 
 
