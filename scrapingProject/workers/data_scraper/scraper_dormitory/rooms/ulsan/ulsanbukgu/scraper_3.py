@@ -1,15 +1,14 @@
 from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scraper as ABCScraper
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
-from .parser import *
+from .parser_3 import *
 
-# 채널 이름 : 정읍시청
+# 채널 이름 : 울산북구평생학습관
 
 #HTTP Request
 '''
     @post list
     method : GET
-    url_0 = https://www.jeongeup.go.kr/board/list.jeongeup?boardId=BBS_0000012\
-        &menuCd=DOM_000000101001001000&orderBy=REGISTER_DATE%20DESC&paging=ok&startPage={page_count}
+    url =  https://www.bukgu.ulsan.kr/edu/join/join1.jsp?pagenum={}
     header :
         None
 
@@ -17,13 +16,10 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : self.post_url + href
+    url : self.channel_main_url + href
     header :
         None
 
-'''
-'''
-    컨텐츠가 없는 페이지가 존재하는 것이 정상
 '''
 sleep_sec = 1
 is_update = True
@@ -31,9 +27,8 @@ is_update = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '정읍시청'
-        self.post_board_name = '공지사항'
-        self.channel_main_url = 'https://www.jeongeup.go.kr'
+        self.channel_name = '울산북구평생학습관'
+        self.post_board_name = '평생학습강좌'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)

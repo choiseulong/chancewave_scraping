@@ -315,7 +315,10 @@ def json_type_default_setting(params, target_key_info):
 def extract_text_between_prefix_and_suffix(prefix, suffix, text):
     # 주로 post_url 구성시 post_id 를 찾기위해서 href를 parsing할 경우에 사용함
     # text 에서 prefix 문자와 suffix 문자 사이의 값을 반환함
-    return text[text.find(prefix)+len(prefix):text.find(suffix)]
+    # return text[text.find(prefix)+len(prefix):text.find(suffix)]
+    truncated_front_part_text = text[text.find(prefix)+len(prefix):]
+    truncated_text = truncated_front_part_text[:truncated_front_part_text.find(suffix)]
+    return truncated_text
 
 
 def search_img_list_in_contents(contents, channel_main_url):
@@ -354,14 +357,16 @@ def _map_key_name_with_table_header(**kargs):
     table_header = var['table_header']
     included_key_info = {}
     header_info = {
-        'post_url' : ["제목", "행사명", "강좌명", "제 목"],
-        'post_title' : ["제목", "행사명", "강좌명", "제 목"],
+        'post_url' : ["제목", "행사명", "강좌명", "제 목", "글제목", "강좌명", "서비스명"],
+        'post_title' : ["제목", "행사명", "강좌명", "제 목", "글제목", "강좌명", "서비스명"],
         'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자", "날짜", "공고일"],
         'view_count' : ["조회", "조회수"],
-        'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서", "담당자", "작성부서", "기관"],
-        'post_subject' : ["분류", "구분", "분야"],
+        'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서", "담당자", "작성부서", "기관", "제공기관"],
+        'post_subject' : ["분류", "구분", "분야", "서비스유형"],
         'contact' : ["연락처"],
-        'is_going_on' : ["접수상태"]
+        'is_going_on' : ["접수상태"],
+        'post_content_target' : ["대상자", "대상"],
+        'linked_post_url' : ["바로가기"]
     }
     for header_idx, header_name in enumerate(table_header):
         for key_name in header_info:
@@ -408,6 +413,16 @@ def _compare_input_header_with_table_header(**kargs):
         if var['dev'] :
             print(f'Table Header Warning\nCHANNEL_URL : {var["channel_url"]}')
             print(f'Input Table Header : {table_header}\nPage Table Header : {table_header_list}')
+            if len(table_header) != len(table_header):
+                print(f'TABLE LENGTH DID NOT MATCH\nInput Table Header : {len(table_header)}\nPage Table Header : {len(table_header_list)}')
+            else :
+                for table_idx in range(len(table_header)):
+                    if table_header[table_idx] != table_header_list[table_idx]:
+                        print(
+                            f'HEADER NAME DID NOT MATCH INDEX : {table_idx}\
+                            \nInput Table Header : {table_header[table_idx]}\
+                            \nPage Table Header : {table_header_list[table_idx]}'
+                        )
         else :
             print(f'Table Header Warning\n{var["channel_main_url"]}')
     else :
@@ -467,6 +482,13 @@ def parse_href(href):
         href = href[1:]
     if href.startswith('../'):
         href = href[2:]
+    return href
+
+def parse_linked_post_url(**params):
+    child_tag = params['child_tag']
+    var = params['var']
+    a_tag = extract_children_tag(child_tag, 'a')
+    href = extract_attrs(a_tag, 'href') if a_tag.has_attr('href') else ''
     return href
 
 def parse_post_url(**params):
@@ -545,7 +567,7 @@ def parse_post_title(**params):
 def _return_raw_text(**params):
     return params['child_tag_text']
 
-parse_contact = parse_post_subject = parse_uploader\
+parse_contact = parse_post_subject = parse_uploader = parse_post_content_target\
      = _return_raw_text
     
 def _check_notice_post(child_tag_text, page_count):

@@ -17,7 +17,7 @@ from .parser_1 import *
 '''
     @post info
     method : GET
-    url : self.post_url + href
+    url : self.channel_main_url + href
     header :
         None
 
