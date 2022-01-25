@@ -1,6 +1,4 @@
 from .scraper_2 import Scraper as parents_scraper
-from .parser_2 import *
-
 
 # 채널 이름 : 울산광역시청
 
