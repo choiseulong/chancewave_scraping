@@ -7,7 +7,7 @@ from .parser import *
 '''
     @post list
     method : GET
-    url_0 =  https://www.yesan.go.kr/cop/bbs/BBSMSTR_000000000064/selectBoardList.do?pageIndex={}
+    url_0 =   https://www.yesan.go.kr/cop/bbs/BBSMSTR_000000000064/selectBoardList.do?pageIndex={}
     header :
         None
 
