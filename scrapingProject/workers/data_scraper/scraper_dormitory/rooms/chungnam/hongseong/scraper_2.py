@@ -1,14 +1,14 @@
 from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scraper as ABCScraper
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
-from .parser_1 import *
+from .parser_2 import *
 
-# 채널 이름 : 태안군청
+# 채널 이름 : 홍성군청
 
 #HTTP Request
 '''
     @post list
     method : GET
-    url_0 =  https://www.taean.go.kr/cop/bbs/BBSMSTR_000000000058/selectBoardList.do?pageIndex={}
+    url_0 =  https://www.hongseong.go.kr/bbs/BBSMSTR_000000000851/list.do?pageIndex={}
     header :
         None
 
@@ -27,10 +27,10 @@ sleep_sec = 1
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '태안군청'
-        self.post_board_name = '군정소식/공지사항'
-        self.post_url = 'https://www.taean.go.kr/cop/bbs/BBSMSTR_000000000058/selectBoardArticle.do?'
-    
+        self.channel_name = '홍성군청'
+        self.post_board_name = '인구정책'
+        self.post_url = 'https://www.hongseong.go.kr/bbs/BBSMSTR_000000000851/view.do?nttId={}'
+
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)
