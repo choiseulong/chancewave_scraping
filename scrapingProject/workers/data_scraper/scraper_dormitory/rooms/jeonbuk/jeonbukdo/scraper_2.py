@@ -1,15 +1,15 @@
 from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scraper as ABCScraper
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
-from .parser import *
+from .parser_2 import *
 
-# 채널 이름 : 장수군청
+# 채널 이름 : 전라북도일자리센터
 
 #HTTP Request
 '''
     @post list
     method : GET
-    url_0 = https://www.wanju.go.kr/board/list.wanju?boardId=BBS_0000107\
-        &menuCd=DOM_000000102001001000&startPage={page_count}
+    url_0 = https://www.jeonbuk.go.kr/board/list.jeonbuk?boardId=BBS_0000020\
+        &menuCd=DOM_000000103003001000&paging=ok&startPage={}
     header :
         None
 
@@ -17,7 +17,7 @@ from .parser import *
 '''
     @post info
     method : GET
-    url : self.post_url + href
+    url : self.channel_main_url + href
     header :
         None
 
@@ -28,9 +28,9 @@ is_update = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '장수군청'
-        self.post_board_name = '읍면공지사항'
-
+        self.channel_name = '전라북도일자리센터'
+        self.post_board_name = '공지사항'
+        
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)
