@@ -15,7 +15,7 @@ from urllib.parse import urlencode
     @post list
 
     method : GET
-    url : https://www.nowon.kr/www/user/bbs/BD_selectBbsList.do?q_bbsCode=1002&q_estnColumn1=11&q_currPage={page_count}
+    url : https://www.dobong.go.kr/bbs.asp?intPage={page_count}&code=10004125
     header :
         None
 
@@ -23,7 +23,7 @@ from urllib.parse import urlencode
 '''
     @post info
     method : GET
-    url : https://www.nowon.kr/health/user/bbs/BD_selectBbs.do?q_bbsCode=1002&q_bbscttSn={postId}
+    url : https://www.dobong.go.kr/bbs.asp?bmode=D&pcode={postId}&intPage=2&code=10004125
     header :
         None
 

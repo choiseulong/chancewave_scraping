@@ -13,7 +13,7 @@ from urllib.parse import urlencode
     @post list
 
     method : GET
-    url : https://www.sb.go.kr/cop/bbs/selectBoardList.do?bbsId=B0316_main&bbsTyCode=BBST01&bbsAttrbCode=BBSA23&pageIndex={page_count}
+    url : https://www.sb.go.kr/cop/bbs/selectBoardList.do?bbsId=B0316_main&nttId=0&bbsTyCode=BBST01&bbsAttrbCode=BBSA23&searchCnd=0&searchCnd2=100&pageIndex={page_count}
     header :
         None
 
@@ -73,6 +73,9 @@ def post_list_parsing_process(**params):
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('table', class_='bbsTable')
+
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
 
     # 테이블 컬럼 영역
     post_list_table_header_area_bs = post_list_table_bs.find('thead')
