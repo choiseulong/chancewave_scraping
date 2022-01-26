@@ -1,14 +1,10 @@
 from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scraper as ABCScraper
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
-from .parser import *
-
-# 채널 이름 : 대전중구청
-
-#HTTP Request
+from .parser_1 import *
 '''
     @post list
     method : GET
-    url_0 = https://www.djjunggu.go.kr/bbs/BBSMSTR_000000000136/list.do?pageIndex={}
+    url_0 = https://www.yuseong.go.kr/bbs/BBSMSTR_000000000100/list.do?pageIndex={}
     header :
         None
 '''
@@ -16,18 +12,21 @@ from .parser import *
     @post info
     method : GET
     url : 
-        self.post_url.format(post_id) +
+        self.post_url_frame(post_id)
     header :
         None
+'''
+'''
+    pdf 포함
 '''
 sleep_sec = 1
 
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '대전중구청'
-        self.post_board_name = '중구소식/공지사항'
-        self.post_url = 'https://www.djjunggu.go.kr/bbs/BBSMSTR_000000000136/view.do?nttId={}'
+        self.channel_name = '유성구청'
+        self.post_board_name = '카드로 보는 주요소식'
+        self.post_url = 'https://www.yuseong.go.kr/bbs/BBSMSTR_000000000100/view.do?nttId={}'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
