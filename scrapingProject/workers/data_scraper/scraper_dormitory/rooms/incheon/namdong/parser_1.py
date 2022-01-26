@@ -22,7 +22,7 @@ def post_list_parsing_process(**params):
         )
         var['uploaded_time'].append(
             convert_datetime_string_to_isoformat_datetime(
-                extract_text_from_single_tag(info, 'li', child_tag_attrs={'title':'작성일'})
+                extract_text_from_single_tag(info, 'li', child_tag_attrs={'title':'보도일자'})
             )
         )
     result = merge_var_to_dict(key_list, var)
@@ -30,30 +30,24 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['post_text', 'contact','view_count'],
+        'single_type' : ['post_text', 'contact', 'view_count'],
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     dt_list = extract_children_tag(soup, 'dt', is_child_multiple=True)
     for dt in dt_list:
         dt_text = extract_text(dt)
-        if '전화번호' in dt_text:
-            var['contact'] = extract_contact_numbers_from_text(
+        if '조회수' in dt_text:
+            var['view_count'] = extract_numbers_in_text(
                 extract_text(
                     find_next_tag(dt)
                 )
             )
-        elif '조회수' in dt_text:
-            var['view_count']=extract_numbers_in_text(
-                extract_text(
-                    find_next_tag(dt)
-                )
-            )
+            break
     tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'class':'con'})
     tmp_contents = decompose_tag(tmp_contents, 'p', child_tag_attrs={'class':'openNuri'})
     var['post_text'] = extract_text(tmp_contents)
-    if not var['contact']:
-        var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents)) 
+    var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents)) 
     var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
     result = convert_merged_list_to_dict(key_list, var)
     return result

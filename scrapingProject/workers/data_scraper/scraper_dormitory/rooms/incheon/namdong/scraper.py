@@ -1,10 +1,6 @@
 from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scraper as ABCScraper
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
-
-# 채널 이름 : 남동구청
-
-#HTTP Request
 '''
     @post list
     method : GET
@@ -25,7 +21,7 @@ sleep_sec = 1
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '남동구청'
+        self.channel_name = '인천남동구청'
         self.post_board_name = '새소식'
 
     def scraping_process(self, channel_code, channel_url, dev):

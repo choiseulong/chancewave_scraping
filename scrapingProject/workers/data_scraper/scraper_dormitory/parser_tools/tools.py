@@ -364,7 +364,7 @@ def _map_key_name_with_table_header(**kargs):
         'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서", "담당자", "작성부서", "기관", "제공기관", "부서명"],
         'post_subject' : ["분류", "구분", "분야", "서비스유형"],
         'contact' : ["연락처"],
-        'is_going_on' : ["접수상태"],
+        'is_going_on' : ["접수상태", "상태"],
         'post_content_target' : ["대상자", "대상"],
         'linked_post_url' : ["바로가기"]
     }
