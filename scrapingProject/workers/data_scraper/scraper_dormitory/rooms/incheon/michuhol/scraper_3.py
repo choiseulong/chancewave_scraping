@@ -1,14 +1,14 @@
 from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scraper as ABCScraper
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
-from .parser_2 import *
+from .parser_3 import *
 
-# 채널 이름 : 인천서구청
+# 채널 이름 : 미추홀구
 
 #HTTP Request
 '''
     @post list
     method : GET
-    url = https://www.seo.incheon.kr/open_content/culture/cultureListAll.do?pgno={}
+    url_0 = https://www.michuhol.go.kr/culture/board/list.do?page={}&board_code=culture_news
     header :
         None
 '''
@@ -16,7 +16,7 @@ from .parser_2 import *
     @post info
     method : GET
     url : 
-        self.channel_main_url + href
+        self.post_url + href
     header :
         None
 '''
@@ -25,8 +25,9 @@ sleep_sec = 1
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '인천서구청'
-        self.post_board_name = '서구문화체육행사'
+        self.channel_name = '미추홀구문화관광포털'
+        self.post_board_name = '행사소식'
+        self.post_url = 'https://www.michuhol.go.kr/culture/board/'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
