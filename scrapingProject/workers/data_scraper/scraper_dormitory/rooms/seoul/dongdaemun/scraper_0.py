@@ -75,8 +75,7 @@ def post_list_parsing_process(**params):
     post_list_table_bs = soup.find('table', class_='articles')
 
     if not post_list_table_bs:
-        print('PAGING END')
-        return
+        raise TypeError('CANNOT FIND LIST TABLE')
 
     # 테이블 컬럼 영역
     post_list_table_header_area_bs = post_list_table_bs.find('thead')
