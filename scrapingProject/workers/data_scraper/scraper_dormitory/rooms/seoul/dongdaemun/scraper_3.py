@@ -5,7 +5,7 @@ from urllib.parse import urlencode, parse_qs, urlparse
 
 # 채널 이름 : 동대문
 
-# 타겟 : 구정소식
+# 타겟 : 유관기관소식
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -13,7 +13,7 @@ from urllib.parse import urlencode, parse_qs, urlparse
     @post list
 
     method : GET
-    url : https://www.ddm.go.kr/ddm/gujungNews.jsp?pageNo={page_count}
+    url : https://www.ddm.go.kr/ddm/publicBusiness.jsp?pageNo={page_count}
     header :
         None
 
@@ -21,7 +21,7 @@ from urllib.parse import urlencode, parse_qs, urlparse
 '''
     @post info
     method : GET
-    url : https://www.jungnang.go.kr/portal/bbs/view/B0000002/{postId}.do?menuNo=200473
+    url : https://www.ddm.go.kr/ddm/publicBusiness.jsp?pid={postId}&searchParam1=&searchParam2=&pageNo=1&blockNo=0
     header :
         None
 
@@ -34,7 +34,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '동대문'
-        self.post_board_name = '구정소식'
+        self.post_board_name = '유관기관소식'
         self.channel_main_url = 'https://www.ddm.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
@@ -67,12 +67,12 @@ def post_list_parsing_process(**params):
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-20 HYUN
+    # 2022-1-26 HYUN
     # html table header index
     table_column_list = ['번호', '제목', '담당부서', '작성일', '첨부']
 
     # 게시물 리스트 테이블 영역
-    post_list_table_bs = soup.find('table', class_='articles')
+    post_list_table_bs = soup.find('table', class_='basicList')
 
     if not post_list_table_bs:
         print('PAGING END')
@@ -101,7 +101,7 @@ def post_list_parsing_process(**params):
                 var['post_url'].append(make_absolute_url(
                     in_url=tmp_td.find('a').get('href'),
                     channel_main_url=var['response'].url))
-            elif idx == 4:
+            elif idx == 3:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
 
     result = merge_var_to_dict(key_list, var)
@@ -115,8 +115,7 @@ def post_content_parsing_process(**params):
         'multiple_type': ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    content_info_area = soup.find('div', id='contents')
-    content_info_area = content_info_area.find('table')
+    content_info_area = soup.find('table',  class_='veiwBox')
 
     for tmp_row_area in content_info_area.find_all('tr'):
         for tmp_info_title, tmp_info_value in zip(tmp_row_area.find_all('th'), tmp_row_area.find_all('td')):
