@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 
 # 채널 이름 : 성동구
 
-# 타겟 : 새소식
+# 타겟 : 보건소 공지사항
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -13,7 +13,7 @@ from urllib.parse import urlencode
     @post list
 
     method : GET
-    url : https://www.sd.go.kr/main/selectBbsNttList.do?bbsNo=183&pageIndex={page_count}
+    url : https://www.sd.go.kr/health/selectBbsNttList.do?bbsNo=256&&pageUnit=10&key=2422&pageIndex={page_count}
     header :
         None
 
@@ -21,7 +21,7 @@ from urllib.parse import urlencode
 '''
     @post info
     method : GET
-    url : https://www.sd.go.kr/main/selectBbsNttView.do?bbsNo=183&nttNo={postId}&&pageUnit=10&5
+    url : https://www.sd.go.kr/health/selectBbsNttView.do?bbsNo=256&nttNo={post_id}&&pageUnit=10&key=2422&5
     header :
         None
 
@@ -34,7 +34,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '성동구'
-        self.post_board_name = '새소식'
+        self.post_board_name = '보건소 공지사항'
         self.channel_main_url = 'https://www.sd.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
@@ -67,9 +67,9 @@ def post_list_parsing_process(**params):
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-19 HYUN
+    # 2022-1-26 HYUN
     # html table header index
-    table_column_list = ['번호', '제목', '작성일', '조회수', '첨부파일']
+    table_column_list = ['번호', '제목', '작성자', '작성일', '조회수', '파일']
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('div', class_='bbs__list')
@@ -103,17 +103,13 @@ def post_list_parsing_process(**params):
 
         for idx, tmp_td in enumerate(tmp_post_row.find_all('td')):
 
-            if idx == 0:
-                if tmp_td.text.find('등록된 데이터가 없습니다.') > -1:
-                    print('PAGING END')
-                    return
-            elif idx == 1:
+            if idx == 1:
                 var['post_url'].append(make_absolute_url(
                     in_url=tmp_td.find('a').get('href'),
                     channel_main_url=var['response'].url))
-            elif idx == 2:
-                var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
             elif idx == 3:
+                var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
+            elif idx == 4:
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
 
     result = merge_var_to_dict(key_list, var)
@@ -123,25 +119,26 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type': ['post_text', 'post_title', 'post_subject'],
+        'single_type': ['post_text', 'post_title', 'uploader'],
         'multiple_type': ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     content_info_area = soup.find('div', class_='bbs__view')
     content_info_area = content_info_area.find('table', class_='p-table')
     var['post_title'] = content_info_area.find('span', class_='p-table__subject_text').text.strip()
+
+    context_area = content_info_area.find('td', class_='p-table__content')
+    var['post_text'] = clean_text(context_area.text.strip())
+    var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
+
     for tmp_row_area in content_info_area.find_all('tr'):
         for tmp_info_title, tmp_info_value in zip(tmp_row_area.find_all('th'), tmp_row_area.find_all('td')):
 
             tmp_info_title_text = tmp_info_title.text.strip()
             tmp_info_value_text = tmp_info_value.text.strip()
 
-            if tmp_info_title_text == '담당부서':
-                var['post_subject'] = tmp_info_value_text
-
-    context_area = content_info_area.find('td', class_='p-table__content')
-    var['post_text'] = clean_text(context_area.text.strip())
-    var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
+            if tmp_info_title_text == '작성자':
+                var['uploader'] = tmp_info_value_text
 
     result = convert_merged_list_to_dict(key_list, var)
     print(result)

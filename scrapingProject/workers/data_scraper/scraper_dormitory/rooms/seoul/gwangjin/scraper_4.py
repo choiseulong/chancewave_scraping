@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 
 # 채널 이름 : 광진구
 
-# 타겟 : 마을공동체 공지사항
+# 타겟 : 보건소 공지
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -13,7 +13,7 @@ from urllib.parse import urlencode
     @post list
 
     method : GET
-    url : https://www.gwangjin.go.kr/portal/bbs/B0000016/list.do?menuNo=200069&pageIndex={}
+    url : https://www.gwangjin.go.kr/health/bbs/B0000001/list.do?menuNo=300240&pSiteId=health&pageIndex={}
     header :
         None
 
@@ -21,7 +21,7 @@ from urllib.parse import urlencode
 '''
     @post info
     method : GET
-    url : https://www.gwangjin.go.kr/portal/bbs/B0000016/view.do?nttId={postId}&menuNo=200069&pageIndex={}
+    url : https://www.gwangjin.go.kr/health/bbs/B0000001/view.do?nttId=5363030&menuNo=300240&pSiteId=health&pageIndex={}
     header :
         None
 
@@ -34,7 +34,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '광진구'
-        self.post_board_name = '마을공동체 공지사항'
+        self.post_board_name = '보건소 공지'
         self.channel_main_url = 'https://www.gwangjin.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):

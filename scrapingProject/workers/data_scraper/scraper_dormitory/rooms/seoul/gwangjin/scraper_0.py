@@ -74,11 +74,10 @@ def post_list_parsing_process(**params):
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('div', class_='bdList')
 
-    if post_list_table_bs.find('div', class_='nodata'):
-        print('PAGING END')
-        return
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
 
-    post_row_list = post_list_table_bs.find('ul').find_all('li')
+    post_row_list = post_list_table_bs.find('ul').find_all('li', recursive=False)
 
     for tmp_row_area in post_row_list:
         tmp_title_area = tmp_row_area.find('div', class_='s')
