@@ -354,11 +354,11 @@ def _map_key_name_with_table_header(**kargs):
     # 게시물 리스트 스크래핑 진행시 테이블 헤더로 제공되는 항목
     # api key값과 맵핑함
     var = kargs['var']
-    table_header = var['table_header']
+    input_table_header = var['table_header']
     included_key_info = {}
     header_info = {
-        'post_url' : ["제목", "행사명", "강좌명", "제 목", "글제목", "강좌명", "서비스명"],
-        'post_title' : ["제목", "행사명", "강좌명", "제 목", "글제목", "강좌명", "서비스명"],
+        'post_url' : ["제목", "행사명", "강좌명", "제 목", "글제목", "강좌명", "서비스명", "강좌명/교육기관"],
+        'post_title' : ["제목", "행사명", "강좌명", "제 목", "글제목", "강좌명", "서비스명", "강좌명/교육기관"],
         'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자", "날짜", "공고일"],
         'view_count' : ["조회", "조회수"],
         'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서", "담당자", "작성부서", "기관", "제공기관", "부서명"],
@@ -368,7 +368,7 @@ def _map_key_name_with_table_header(**kargs):
         'post_content_target' : ["대상자", "대상"],
         'linked_post_url' : ["바로가기"]
     }
-    for header_idx, header_name in enumerate(table_header):
+    for header_idx, header_name in enumerate(input_table_header):
         for key_name in header_info:
             if header_name in header_info[key_name]:
                 if header_idx not in included_key_info.keys():
@@ -397,7 +397,7 @@ def _search_table_header_list(**kargs):
     soup, var = kargs['soup'], kargs['var']
     thead = extract_children_tag(soup, 'thead')
     tabel_header_box = var['table_header_box'] if 'table_header_box' in var.keys() else extract_children_tag(thead, 'tr')
-    var['table_header_list'] = [
+    var['page_table_header'] = [
         extract_text(child) \
         for child \
         in tabel_header_box.children\
@@ -407,27 +407,38 @@ def _search_table_header_list(**kargs):
 
 def _compare_input_header_with_table_header(**kargs):
     var = kargs['var']
-    table_header = var['table_header']
-    table_header_list = var['table_header_list']
-    if table_header != table_header_list:
+    input_table_header = var['table_header']
+    page_tabel_header = var['page_table_header']
+    if input_table_header != page_tabel_header:
         if var['dev'] :
             print(f'Table Header Warning\nCHANNEL_URL : {var["channel_url"]}')
-            print(f'Input Table Header : {table_header}\nPage Table Header : {table_header_list}')
-            if len(table_header) != len(table_header):
-                print(f'TABLE LENGTH DID NOT MATCH\nInput Table Header : {len(table_header)}\nPage Table Header : {len(table_header_list)}')
+            print(f'Input Table Header : {input_table_header}\nPage Table Header : {page_tabel_header}')
+            if len(input_table_header) != len(input_table_header):
+                print(f'TABLE LENGTH DID NOT MATCH\nInput Table Header : {len(input_table_header)}\nPage Table Header : {len(page_tabel_header)}')
             else :
-                for table_idx in range(len(table_header)):
-                    if table_header[table_idx] != table_header_list[table_idx]:
+                for table_idx in range(len(input_table_header)):
+                    if input_table_header[table_idx] != page_tabel_header[table_idx]:
                         print(
                             f'HEADER NAME DID NOT MATCH INDEX : {table_idx}\
-                            \nInput Table Header : {table_header[table_idx]}\
-                            \nPage Table Header : {table_header_list[table_idx]}'
+                            \nInput Table Header : {input_table_header[table_idx]}\
+                            \nPage Table Header : {page_tabel_header[table_idx]}'
                         )
         else :
             print(f'Table Header Warning\n{var["channel_main_url"]}')
     else :
         if var['dev'] :
             print('header pass')
+    return var
+
+def _check_table_data_validation(var):
+    table_header_length = len(var['table_header']) # parser.py 에서 선언한 테이블 헤더
+    table_data_list = var['table_data_list'] # 부모 태그의 자식 태그 리스트
+    valid_child_tag_list = [] # 옳바른 자식을 담을 빈 리스트
+    for child_tag_idx, child_tag in enumerate(table_data_list):
+        seed_tag = _seperate_parents_tag_to_child_tag_list(child_tag) # 자식태그의 seed 태그 리스트
+        if len(seed_tag) == table_header_length: # 헤더 길이와 일치하다면
+            valid_child_tag_list.append(table_data_list[child_tag_idx]) # 옳바른 자식으로 편입
+    var['table_data_list'] = valid_child_tag_list # 부모 태그 내 옳바른 자식 태그 리스트
     return var
 
 def _search_table_data_list(**kargs):
@@ -442,6 +453,7 @@ def _search_table_data_list(**kargs):
             table_data_box = table_data_box[1]
         table_data_box = _handle_tbody_exception(soup, tbody=table_data_box)
     var['table_data_list'] = _seperate_parents_tag_to_child_tag_list(table_data_box)
+    var = _check_table_data_validation(var)
     if not var['table_data_list'] :
         var['table_data_list'] = 'break'
     return var
@@ -455,10 +467,21 @@ def _handle_tbody_exception(soup, tbody):
 
 def parse_is_going_on(**params):
     text = params['child_tag_text']
-    if '마감' in text:
-        return False
-    else:
-        return True
+    on_progress = ['진행', '모집중', '접수대기', '접수중', '교육중']
+    dead = ['마감', '교육완료', '접수마감']
+    result = None
+    for word in on_progress:
+        if word in text :
+            result = True
+    
+    for word in dead:
+        if word in text :
+            if type(result) == type(None):
+                result = False
+            else :
+                return 'ERROR'
+    # print(var['channel_code'], 'IS_GOING_ON PARSER VALUE DUPLICATE ERROR')
+    return result
 
 def parse_uploaded_time(**params):
     # 기본 등록일 처리.
@@ -578,16 +601,17 @@ def _check_notice_post(child_tag_text, page_count):
             return True
     return False
 
+
 def _seperate_parents_tag_to_child_tag_list(parents_tag):
     child_tag_list = [child for child in parents_tag.children if isinstance(child, bs4.element.Tag)]
     return child_tag_list
+
 
 def _parse_total_table_data(**kargs):
     var = kargs['var']
     checked_key_info, table_data_list = var['checked_key_info'], var['table_data_list']
     if var['table_data_list'] == 'break':
         return var
-
     for table_data in table_data_list :
         table_data_text = extract_text(table_data)
         if '등록된 글이 없습니다' == table_data_text:
@@ -620,6 +644,7 @@ def _parse_total_table_data(**kargs):
                     globals()[func_name](var=var, child_tag_text=child_tag_text_list[child_tag_idx], child_tag=child_tag_list[child_tag_idx])
     return var
 
+
 def _add_title_index_to_var(**kargs):
     var = kargs['var']
     checked_key_info = var['checked_key_info']
@@ -628,6 +653,7 @@ def _add_title_index_to_var(**kargs):
             var['title_idx'] = idx
             break
     return var
+
 
 def parse_board_type_html_page(soup, var, key_list):
     # 테이블 헤더, 데이블 데이터가 리스트 형식으로 담긴 태그가 있을때 사용할 수 있음
@@ -657,6 +683,7 @@ def parse_board_type_html_page(soup, var, key_list):
         if var['table_data_list'] == 'break': return
     result = merge_var_to_dict(key_list=key_list, var=var)
     return result
+
 
 def make_absolute_img_src(img_src, channel_main_url):
     """

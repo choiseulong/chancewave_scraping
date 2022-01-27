@@ -7,7 +7,7 @@ def post_list_parsing_process(**params):
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     for key in key_list :
         var[f'parse_{key}'] = globals()[f'parse_{key}']
-    # 2021-01-17 
+    # 2021-01-27
     var['table_header'] = ["번호", "제목", "작성자", "작성일", "조회"]
     result = parse_board_type_html_page(soup, var, key_list)
     return result
@@ -18,12 +18,20 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    error_page = extract_children_tag(soup, 'div', child_tag_attrs={'class':'error_01'})
+    if error_page:
+        #print('삭제된 게시글')
+        return {}
+    tmp_meta_data = extract_children_tag(soup, 'ul', child_tag_attrs={'class':'board_viewInfo'})
+    meta_data_list = extract_children_tag(tmp_meta_data, 'li', is_child_multiple=True)
+    for meta_data in meta_data_list:
+        meta_data_text = extract_text(meta_data)
+        if '작성자' in meta_data_text:
+            var['uploader'] = meta_data_text.replace('작성자', '')
+        elif '문의전화' in meta_data_text:
+            var['contact'] = meta_data_text.replace('문의전화', '')
     board_view = extract_children_tag(soup, 'div', child_tag_attrs={'class':'board_view'})
     var['post_title'] = extract_text_from_single_tag(board_view, 'h4')
-    var['contact'] = extract_contact_numbers_from_text(
-        extract_text_from_single_tag(soup, 'li', child_tag_attrs={'class' : 'date'})
-    )
-    var['uploader'] = extract_text_from_single_tag(soup, 'li', child_tag_attrs={'class' : 'writer'}).replace('작성자', '')
     tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'class':'board_viewDetail'})
     tmp_contents = decompose_tag(tmp_contents, 'div', child_tag_attrs={'class':'mt50'})
     var['post_text'] = extract_text(tmp_contents)
