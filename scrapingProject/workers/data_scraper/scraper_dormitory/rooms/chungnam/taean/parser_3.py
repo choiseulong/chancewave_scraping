@@ -1,7 +1,4 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
-
-print('hi 3')
-
 def post_list_parsing_process(**params):
     target_key_info = {
         'multiple_type' : ['uploaded_time', 'post_url', 'post_title', 'uploader', 'view_count', 'post_subject']

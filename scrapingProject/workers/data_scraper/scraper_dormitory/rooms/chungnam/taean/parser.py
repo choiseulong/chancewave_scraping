@@ -1,7 +1,4 @@
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
-
-print('hi 0')
-
 def post_list_parsing_process(**params):
     target_key_info = {
         'multiple_type' : ['post_url', 'uploaded_time', 'view_count', 'uploader', 'post_title']
@@ -49,7 +46,6 @@ def post_content_parsing_process(**params):
     var['post_text'] = extract_text(tmp_contents)
     var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
     var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents))
-    
     result = convert_merged_list_to_dict(key_list, var)
     return result
 

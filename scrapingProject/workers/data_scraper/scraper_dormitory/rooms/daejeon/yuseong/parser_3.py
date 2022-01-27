@@ -34,7 +34,6 @@ def post_list_parsing_process(**params):
             elif td_idx == 9:
                 a_tag = extract_children_tag(td, 'a')
                 href = extract_attrs(a_tag, 'href')
-                print(href)
                 var['post_url'].append(href)
             extra_info.update({f'info_{len(extra_info)}' : (header_list[td_idx], td_text)})
         var['extra_info'].append(extra_info)

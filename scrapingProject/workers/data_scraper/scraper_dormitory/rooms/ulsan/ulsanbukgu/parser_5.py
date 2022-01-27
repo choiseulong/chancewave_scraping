@@ -17,7 +17,6 @@ def post_list_parsing_process(**params):
 
 def parse_scripts_string(string, prefix):
     parse_text = extract_text_between_prefix_and_suffix(text=string, prefix=prefix, suffix=';')
-    print(parse_text)
     parse_text_split = parse_text.replace('"', '').split('::')
     if parse_text_split :
         return [i.strip() for i in parse_text_split]
