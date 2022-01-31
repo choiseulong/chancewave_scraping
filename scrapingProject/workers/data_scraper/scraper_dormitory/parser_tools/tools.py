@@ -143,6 +143,12 @@ def clean_text(text):
     except :
         return ''
 
+
+def remove_space(text):
+    result = clean_text(text)
+    return re.sub(r'\s+', '', result)
+
+
 def search_value_in_json_data_using_path(json_data, path, is_data_multiple=True, find_from_the_end=False):
     result_list = []
     if type(path) == dict :
@@ -295,6 +301,9 @@ def html_type_default_setting(params, target_key_info):
     encoding = var['response'].encoding
     if encoding == 'ISO-8859-1':
         encoding = 'EUC-KR'
+
+    if not encoding:
+        encoding = 'UTF8'
     # text = var['response'].text
     text = var['response'].content.decode(encoding,'replace')
     soup = change_to_soup(
