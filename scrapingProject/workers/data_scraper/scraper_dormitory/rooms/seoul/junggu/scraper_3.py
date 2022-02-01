@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 
 # 채널 이름 : 중구
 
-# 타겟 : 공지사항
+# 타겟 : 보건소 공지사항
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -13,7 +13,7 @@ from urllib.parse import urlencode
     @post list
 
     method : GET
-    url : https://www.junggu.seoul.kr/content.do?page={}&cmsid=14231
+    url : https://www.junggu.seoul.kr/health/content.do?cmsid=2333&sf_dept=30101590000&page={page_count}
     header :
         None
 
@@ -21,7 +21,7 @@ from urllib.parse import urlencode
 '''
     @post info
     method : GET
-    url : https://www.junggu.seoul.kr/content.do?cmsid=14231&mode=view&cid={postId}
+    url : https://www.junggu.seoul.kr/health/content.do?cmsid=2333&sf_dept=30101590000&so_dept=OR&mode=view&cid={post_id}
     header :
         None
 
@@ -34,7 +34,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '중구'
-        self.post_board_name = '공지사항'
+        self.post_board_name = '보건소 공지사항'
         self.channel_main_url = 'https://www.junggu.seoul.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
@@ -67,13 +67,12 @@ def post_list_parsing_process(**params):
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-19 HYUN
+    # 2022-1-27 HYUN
     # html table header index
     table_column_list = ['번호', '제목', '담당부서', '작성자', '작성일', '조회', '첨부']
 
     # 게시물 리스트 테이블 영역
-    post_list_table_bs = soup.find('div', class_='board_list')
-    post_list_table_bs = post_list_table_bs.find('table')
+    post_list_table_bs = soup.select_one('table.min_width_table.min_tabel')
 
     if not post_list_table_bs:
         raise TypeError('CANNOT FIND LIST TABLE')
@@ -91,10 +90,6 @@ def post_list_parsing_process(**params):
 
     post_row_list = post_list_table_bs.find('tbody').find_all('tr')
 
-    if not post_row_list:
-        print('PAGING END')
-        return
-
     for tmp_post_row in post_row_list:
 
         for idx, tmp_td in enumerate(tmp_post_row.find_all('td')):
@@ -104,7 +99,7 @@ def post_list_parsing_process(**params):
                     break
             elif idx == 1:
                 var['post_url'].append(make_absolute_url(
-                    in_url=tmp_td.find('a').get('href'),
+                    in_url='/health' + tmp_td.find('a').get('href'),
                     channel_main_url=var['response'].url))
             elif idx == 4:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
@@ -115,15 +110,13 @@ def post_list_parsing_process(**params):
     print(result)
     return result
 
-
 def post_content_parsing_process(**params):
     target_key_info = {
         'single_type': ['post_text', 'post_title', 'uploader'],
         'multiple_type': ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    content_info_area = soup.find('div', class_='board_view_02')
-    content_info_area = content_info_area.find('table')
+    content_info_area = soup.select_one('table.table_jd.board_read')
 
     for tmp_row_area in content_info_area.find_all('tr'):
         for tmp_info_title, tmp_info_value in zip(tmp_row_area.find_all('th'), tmp_row_area.find_all('td')):
@@ -143,8 +136,10 @@ def post_content_parsing_process(**params):
                 else:
                     var['uploader'] = tmp_info_value_text
 
-    var['post_title'] = content_info_area.find('th', class_='view_tit').text.strip()
-    context_area = content_info_area.find('td', class_='view_txt')
+            elif tmp_info_title_text == '제목':
+                var['post_title'] = tmp_info_value_text
+
+    context_area = content_info_area.find('td', {'colspan': '2'})
     var['post_text'] = clean_text(context_area.text.strip())
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 

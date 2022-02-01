@@ -44,24 +44,26 @@ class Scraper(ABCScraper):
         param_datetime = datetime.now()
         self.page_count = 1
 
-        already_scrap_url_list = []
+        # 2022년 11월 -> 2022년 12월 식으로 년월 단위로 페이지가 넘어감.
+        # 기간에 포함된 행사는 다른 년월에 중복해서 나오므로 중복 제거하는 로직 포함
+        already_scrap_param_list = []
 
         while True:
             print(f'PAGE {self.page_count}')
             tmp_year_month_str = param_datetime.strftime('%Y%m')
 
             self.channel_url = self.channel_url_frame.format(tmp_year_month_str)
-
             self.post_list_scraping(post_list_parsing_process, 'get')
 
+            # 중복된 게시물 제거한, 스크래핑 대상 URL
             filtered_scrap_list = []
 
             for tmp_new_scrap_target_obj in self.scraping_target:
                 tmp_url_params = parse_qs(urlparse(tmp_new_scrap_target_obj.get('post_url')).query)
                 tmp_new_scrap_param_str = 'progrmNo='+tmp_url_params['progrmNo'][0] + '&key=' + tmp_url_params['key'][0]
-                if tmp_new_scrap_param_str not in already_scrap_url_list:
+                if tmp_new_scrap_param_str not in already_scrap_param_list:
                     filtered_scrap_list.append(tmp_new_scrap_target_obj)
-                    already_scrap_url_list.append(tmp_new_scrap_param_str)
+                    already_scrap_param_list.append(tmp_new_scrap_param_str)
 
             self.scraping_target = filtered_scrap_list
 
