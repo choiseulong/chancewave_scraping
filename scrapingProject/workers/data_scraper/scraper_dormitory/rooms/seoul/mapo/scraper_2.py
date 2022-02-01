@@ -7,7 +7,7 @@ from urllib.parse import urlencode
 
 # 채널 이름 : 마포구
 
-# 타겟 : 공지사항
+# 타겟 : 문화행사
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -15,7 +15,7 @@ from urllib.parse import urlencode
     @post list
 
     method : GET
-    url : https://www.mapo.go.kr/site/main/board/notice/list?cp={page_count}
+    url : https://www.mapo.go.kr/site/main/board/culturevent/list?cp={page_count}&bcId=culturevent
     header :
         None
 
@@ -23,7 +23,7 @@ from urllib.parse import urlencode
 '''
     @post info
     method : GET
-    url : https://www.mapo.go.kr/site/main/board/notice/{postId}}
+    url : 'https://www.mapo.go.kr/site/main/board/culturevent/{post_id}
     header :
         None
 
@@ -36,7 +36,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '마포구'
-        self.post_board_name = '공지사항'
+        self.post_board_name = '문화행사'
         self.channel_main_url = 'https://www.mapo.go.kr/'
 
     def scraping_process(self, channel_code, channel_url, dev):
@@ -64,14 +64,14 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'uploader', 'uploaded_time']
+        'multiple_type': ['post_url', 'start_date']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-19 HYUN
+    # 2022-1-31 HYUN
     # html table header index
-    table_column_list = ['순번', '제목', '담당부서', '첨부파일', '작성일']
+    table_column_list = ['순번', '제목', '장소', '행사일시']
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('div', class_='bbs_list')
@@ -111,10 +111,8 @@ def post_list_parsing_process(**params):
                 var['post_url'].append(make_absolute_url(
                     in_url=tmp_td.find('a').get('href'),
                     channel_main_url=var['response'].url))
-            elif idx == 2:
-                var['uploader'].append(tmp_td.text.strip())
-            elif idx == 4:
-                var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
+            elif idx == 3:
+                var['start_date'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
 
     if processing_count == 0:
         print('PAGING END')
@@ -128,17 +126,52 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type': ['post_text', 'post_title'],
-        'multiple_type': ['post_image_url']
+        'single_type': ['post_text', 'post_title', 'uploaded_time', 'uploader', 'contact', 'post_thumbnail'],
+        'multiple_type': ['post_image_url', 'extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    var['extra_info'] = [{
+        'info_title':'공연 상세'
+    }]
     content_info_area = soup.find('div', class_='bbs_view')
     header_area = content_info_area.find('div', class_='bbs_view_tit')
     var['post_title'] = header_area.find('h3').text.strip()
 
-    context_area = content_info_area.find('div', class_='bbs_view_body')
-    var['post_text'] = clean_text(context_area.text.strip())
-    var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
+    header_info_area_list = header_area.find('div', class_='tit_info').find_all('span', recursive=False)
+    for tmp_header_info in header_info_area_list:
+        info_title_text = tmp_header_info.strong.text.strip()
+        if info_title_text == '작성일':
+            var['uploaded_time'] = convert_datetime_string_to_isoformat_datetime(tmp_header_info.span.text.strip())
+        elif info_title_text == '작성자':
+            var['uploader'] = tmp_header_info.span.text.strip()
+
+    content_info_area = content_info_area.find('div', class_='bbs_view_body')
+
+    thumbnail_area = content_info_area.find('div', class_='thumb_area')
+
+    #thumbnail 없는 경우도 있음
+    if thumbnail_area.find('img'):
+        var['post_thumbnail'] = make_absolute_url(in_url=thumbnail_area.find('img').get('src'),
+                                                  channel_main_url=var['response'].url)
+
+    post_detail_info_area = content_info_area.find('ul')
+    for info_idx, tmp_post_detail in enumerate(post_detail_info_area.find_all('li')):
+        # 본문 아닌 경우
+        if not tmp_post_detail.find('p', class_='form_con'):
+            if not tmp_post_detail.strong:
+                continue
+            info_title_text = remove_space(tmp_post_detail.strong.text)
+            info_value_text = clean_text(tmp_post_detail.find('p').text)
+
+            if info_title_text == '문의':
+                var['contact'] = info_value_text
+            elif info_title_text == '장소':
+                var['extra_info'][0]['info_1'] = [info_title_text, info_value_text]
+            elif info_title_text == '주최':
+                var['extra_info'][0]['info_2'] = [info_title_text, info_value_text]
+        else:
+            var['post_text'] = clean_text(tmp_post_detail.text.strip())
+            var['post_image_url'] = search_img_list_in_contents(tmp_post_detail, var['response'].url)
 
     result = convert_merged_list_to_dict(key_list, var)
     if var['dev']:

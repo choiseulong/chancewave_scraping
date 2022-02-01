@@ -7,7 +7,7 @@ from urllib.parse import urlencode
 
 # 채널 이름 : 용산구
 
-# 타겟 : 새소식
+# 타겟 : 타기관소식
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -15,7 +15,7 @@ from urllib.parse import urlencode
     @post list
 
     method : GET
-    url : https://www.yongsan.go.kr/portal/bbs/B0000041/list.do?menuNo=200228&pageIndex={page_count}
+    url : https://www.yongsan.go.kr/portal/bbs/B0000046/list.do?menuNo=200236&pageIndex={page_count}
     header :
         None
 
@@ -23,7 +23,7 @@ from urllib.parse import urlencode
 '''
     @post info
     method : GET
-    url : https://www.yongsan.go.kr/portal/bbs/B0000041/view.do?nttId={postId}&menuNo=200228&pageIndex=1
+    url : https://www.yongsan.go.kr/portal/bbs/B0000046/view.do?nttId={post_id}&menuNo=200236
     header :
         None
 
@@ -36,7 +36,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '용산구'
-        self.post_board_name = '새소식'
+        self.post_board_name = '타기관소식'
         self.channel_main_url = 'https://www.yongsan.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
@@ -69,9 +69,9 @@ def post_list_parsing_process(**params):
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-19 HYUN
+    # 2022-1-31 HYUN
     # html table header index
-    table_column_list = ['번호', '제목', '담당부서', '첨부파일', '작성일', '조회수']
+    table_column_list = ['번호', '제목', '첨부파일', '작성일', '조회수']
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('div', class_='bd-list')
@@ -109,9 +109,9 @@ def post_list_parsing_process(**params):
                 var['post_url'].append(make_absolute_url(
                     in_url=tmp_td.find('a').get('href'),
                     channel_main_url=var['response'].url))
-            elif idx == 4:
+            elif idx == 3:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
-            elif idx == 5:
+            elif idx == 4:
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
 
     result = merge_var_to_dict(key_list, var)
@@ -145,7 +145,6 @@ def post_content_parsing_process(**params):
                     var['uploader'] = var['uploader'] + ' ' + tmp_info_value_text
                 else:
                     var['uploader'] = tmp_info_value_text
-
             elif tmp_info_title_text == '담당부서':
                 if var.get('uploader'):
                     var['uploader'] = tmp_info_value_text + ' ' + var['uploader']

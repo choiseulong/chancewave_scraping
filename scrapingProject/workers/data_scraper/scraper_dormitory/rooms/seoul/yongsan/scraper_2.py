@@ -7,7 +7,7 @@ from urllib.parse import urlencode
 
 # 채널 이름 : 용산구
 
-# 타겟 : 새소식
+# 타겟 : 행사/교육
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -15,7 +15,7 @@ from urllib.parse import urlencode
     @post list
 
     method : GET
-    url : https://www.yongsan.go.kr/portal/bbs/B0000041/list.do?menuNo=200228&pageIndex={page_count}
+    url : https://www.yongsan.go.kr/portal/bbs/B0000042/list.do?menuNo=200229&pageIndex={page_count}
     header :
         None
 
@@ -23,7 +23,7 @@ from urllib.parse import urlencode
 '''
     @post info
     method : GET
-    url : https://www.yongsan.go.kr/portal/bbs/B0000041/view.do?nttId={postId}&menuNo=200228&pageIndex=1
+    url : https://www.yongsan.go.kr/portal/bbs/B0000042/view.do?nttId={post_id}&menuNo=200229
     header :
         None
 
@@ -36,7 +36,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '용산구'
-        self.post_board_name = '새소식'
+        self.post_board_name = '행사/교육'
         self.channel_main_url = 'https://www.yongsan.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
@@ -69,7 +69,7 @@ def post_list_parsing_process(**params):
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-19 HYUN
+    # 2022-1-31 HYUN
     # html table header index
     table_column_list = ['번호', '제목', '담당부서', '첨부파일', '작성일', '조회수']
 
