@@ -3,9 +3,9 @@ from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 import js2py
 
-# 채널 이름 : 송파구
+# 채널 이름 : 강동구
 
-# 타겟 : 공지사항
+# 타겟 : 보건소 정보마당
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -13,7 +13,7 @@ import js2py
     @post list
 
     method : GET
-    url : https://www.songpa.go.kr/www/selectBbsNttList.do?bbsNo=92&&pageUnit=10&key=2775&searchAditfield4=&searchAditfield5=&viewBgnde=&searchAditfield1=&searchAditfield2=&pageIndex={page_count}
+    url : https://www.gangdong.go.kr/health/site/main/board/notic/list?cp={page_count}&sortOrder=BA_REGDATE&sortDirection=DESC&listType=list&bcId=notic&baNotice=false&baUse=true
     header :
         None
 
@@ -21,7 +21,7 @@ import js2py
 '''
     @post info
     method : GET
-    url : https://www.songpa.go.kr/www/selectBbsNttView.do?bbsNo=92&nttNo={postId}&&pageUnit=10&key=2775&pageIndex=2
+    url : https://www.gangdong.go.kr/web/newportal/bbs/b_068/{postId}?cp=1&pageSize=20&sortOrder=BA_REGDATE&sortDirection=DESC&bcId=b_068&baCategory1=U0072&baNotice=false&baCommSelec=false&baOpenDay=true&baUse=true
     header :
         None
 
@@ -33,9 +33,9 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '송파구'
-        self.post_board_name = '공지사항'
-        self.channel_main_url = 'https://www.songpa.go.kr'
+        self.channel_name = '강동구'
+        self.post_board_name = '보건소 정보마당'
+        self.channel_main_url = 'https://www.gangdong.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
@@ -67,20 +67,20 @@ def post_list_parsing_process(**params):
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-19 HYUN
+    # 2022-2-1 HYUN
     # html table header index
-    table_column_list = ['번호', '제목', '담당부서', '작성일', '조회수', '파일']
+    table_column_list = ['번호', '제목', '작성부서', '작성일', '조회수']
 
     # 게시물 리스트 테이블 영역
-    post_list_table_bs = soup.find('table', class_='p-table')
+    post_list_table_bs = soup.find('div', class_='tb-list-out')
 
     if not post_list_table_bs:
         raise TypeError('CANNOT FIND LIST TABLE')
 
     # 테이블 컬럼 영역
-    post_list_table_header_area_bs = post_list_table_bs.find('thead')
+    post_list_table_header_area_bs = post_list_table_bs.find('ul', class_='tb-list-thead')
     # 테이블 칼럼 리스트
-    post_list_table_header_list_bs = post_list_table_header_area_bs.find_all('th')
+    post_list_table_header_list_bs = post_list_table_header_area_bs.find_all('li')
 
     # 테이블 컬럼명 검증 로직
     for column_idx, tmp_header_column in enumerate(post_list_table_header_list_bs):
@@ -88,11 +88,14 @@ def post_list_parsing_process(**params):
             print(f'IDX {column_idx} ERROR - {table_column_list[column_idx]} is {tmp_header_column.text.strip()}')
             raise('List Column Index Change')
 
-    post_row_list = post_list_table_bs.find('tbody').find_all('tr')
+    post_row_list = post_list_table_bs.find_all('ul')
+
+    if post_row_list:
+        post_row_list.pop(0)
 
     for tmp_post_row in post_row_list:
 
-        for idx, tmp_td in enumerate(tmp_post_row.find_all('td')):
+        for idx, tmp_td in enumerate(tmp_post_row.find_all('li')):
 
             if idx == 0:
                 if tmp_td.text.find('등록된 게시글이 없습니다') > -1:
@@ -121,10 +124,8 @@ def post_content_parsing_process(**params):
         'multiple_type': ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    content_info_area = soup.find('table', class_='p-table')
-
-
-    var['post_title'] = content_info_area.find('span', class_='p-table__subject_text').text.strip()
+    content_info_area = soup.find('div', class_='tb-list-out')
+    content_info_area = content_info_area.find('table')
 
     for tmp_row_area in content_info_area.find_all('tr'):
         for tmp_info_title, tmp_info_value in zip(tmp_row_area.find_all('th'), tmp_row_area.find_all('td')):
@@ -132,10 +133,12 @@ def post_content_parsing_process(**params):
             tmp_info_title_text = tmp_info_title.text.strip()
             tmp_info_value_text = tmp_info_value.text.strip()
 
-            if tmp_info_title_text == '전화번호':
+            if tmp_info_title_text == '제목':
+                var['post_title'] = tmp_info_value_text
+            elif tmp_info_title_text == '전화번호':
                 var['contact'] = tmp_info_value_text
 
-    context_area = content_info_area.find('td', class_='p-table__content')
+    context_area = content_info_area.find_all('tr').pop()
 
     var['post_text'] = clean_text(context_area.text.strip())
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)

@@ -5,7 +5,7 @@ import js2py
 
 # 채널 이름 : 송파구
 
-# 타겟 : 공지사항
+# 타겟 : 마을공동체 공지사항
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -21,7 +21,7 @@ import js2py
 '''
     @post info
     method : GET
-    url : https://www.songpa.go.kr/www/selectBbsNttView.do?bbsNo=92&nttNo={postId}&&pageUnit=10&key=2775&pageIndex=2
+    url : https://www.songpa.go.kr/www/selectBbsNttView.do?bbsNo=18&nttNo={post_id}&&pageUnit=10&key=2211&pageIndex=1
     header :
         None
 
@@ -34,7 +34,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '송파구'
-        self.post_board_name = '공지사항'
+        self.post_board_name = '마을공동체 공지사항'
         self.channel_main_url = 'https://www.songpa.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
@@ -67,9 +67,9 @@ def post_list_parsing_process(**params):
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-19 HYUN
+    # 2022-2-1 HYUN
     # html table header index
-    table_column_list = ['번호', '제목', '담당부서', '작성일', '조회수', '파일']
+    table_column_list = ['번호', '제목', '작성자', '작성일', '조회수', '파일']
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('table', class_='p-table')
@@ -117,7 +117,7 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type': ['post_text', 'post_title', 'contact'],
+        'single_type': ['post_text', 'post_title'],
         'multiple_type': ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
@@ -125,15 +125,6 @@ def post_content_parsing_process(**params):
 
 
     var['post_title'] = content_info_area.find('span', class_='p-table__subject_text').text.strip()
-
-    for tmp_row_area in content_info_area.find_all('tr'):
-        for tmp_info_title, tmp_info_value in zip(tmp_row_area.find_all('th'), tmp_row_area.find_all('td')):
-
-            tmp_info_title_text = tmp_info_title.text.strip()
-            tmp_info_value_text = tmp_info_value.text.strip()
-
-            if tmp_info_title_text == '전화번호':
-                var['contact'] = tmp_info_value_text
 
     context_area = content_info_area.find('td', class_='p-table__content')
 
