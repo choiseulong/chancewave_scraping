@@ -5,7 +5,7 @@ import js2py
 
 # 채널 이름 : 광명시
 
-# 타겟 : 공지사항
+# 타겟 : 보건소 공지사항
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -21,7 +21,7 @@ import js2py
 '''
     @post info
     method : GET
-    url : https://www.gm.go.kr/pt/user/bbs/BD_selectBbs.do?q_bbsCode=2032&q_bbscttSn={postId}
+    url : https://www.gm.go.kr/health/user/bbs/BD_selectBbs.do?q_bbsCode=2443&q_bbscttSn={post_id}
     header :
         None
 
@@ -34,7 +34,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '광명시'
-        self.post_board_name = '공지사항'
+        self.post_board_name = '보건소 공지사항'
         self.channel_main_url = 'https://www.gm.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
@@ -66,12 +66,12 @@ def post_list_parsing_process(**params):
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-18 HYUN
+    # 2022-2-3 HYUN
     # html table header index
-    table_column_list = ['번호', '제목', '담당부서', '파일', '작성일', '조회수']
+    table_column_list = ['번호', '제목', '작성자', '파일', '조회수', '작성일']
 
     # 게시물 리스트 테이블 영역
-    post_list_table_bs = soup.find('table', class_='bbsList')
+    post_list_table_bs = soup.find('div', class_='board_list').find('table')
 
     if not post_list_table_bs:
         raise TypeError('CANNOT FIND LIST TABLE')
@@ -104,9 +104,9 @@ def post_list_parsing_process(**params):
                     in_url=tmp_td.find('a').get('href'),
                     channel_main_url=var['response'].url))
             elif idx == 4:
-                var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
-            elif idx == 5:
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
+            elif idx == 5:
+                var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
 
     if preprocessing_count == 0:
         print('PAGING END')
@@ -124,32 +124,25 @@ def post_content_parsing_process(**params):
         'multiple_type': ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    content_info_area = soup.find('table', class_='bbsView')
+    content_info_area = soup.find('div', class_='board_view')
+
+    var['post_title'] = clean_text(content_info_area.find('h5', class_='view_title').text).strip()
+
+    header_info_area = content_info_area.find('table')
 
     # 작성자 영역
-    for tmp_row_area in content_info_area.find_all('tr'):
+    for tmp_row_area in header_info_area.find_all('tr'):
         for tmp_info_title, tmp_info_value in zip(tmp_row_area.find_all('th'), tmp_row_area.find_all('td')):
 
             tmp_info_title_text = tmp_info_title.text.strip()
             tmp_info_value_text = tmp_info_value.text.strip()
 
-            if tmp_info_title_text == '제목':
-                var['post_title'] = tmp_info_value_text
+            if tmp_info_title_text == '작성자':
+                var['uploader'] = tmp_info_value_text
 
-            elif tmp_info_title_text == '담당자':
-                if var.get('uploader'):
-                    var['uploader'] = var['uploader'] + ' ' + tmp_info_value_text
-                else:
-                    var['uploader'] = tmp_info_value_text
-            elif tmp_info_title_text == '담당부서':
-                if var.get('uploader'):
-                    var['uploader'] = tmp_info_value_text + ' ' + var['uploader']
-                else:
-                    var['uploader'] = tmp_info_value_text
-
-            elif tmp_info_title_text == '내용':
-                var['post_text'] = clean_text(tmp_info_value.text.strip())
-                var['post_image_url'] = search_img_list_in_contents(tmp_info_value, var['response'].url)
+    context_area = content_info_area.find('div', class_='view_con')
+    var['post_text'] = clean_text(context_area.text.strip())
+    var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 
     result = convert_merged_list_to_dict(key_list, var)
     if var['dev']:
