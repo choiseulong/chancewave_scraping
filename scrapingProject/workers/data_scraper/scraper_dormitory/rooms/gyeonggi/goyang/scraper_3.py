@@ -5,7 +5,7 @@ import js2py
 
 # 채널 이름 : 고양
 
-# 타겟 : 새소식
+# 타겟 : 보건소 공지사항
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -13,7 +13,7 @@ import js2py
     @post list
     
     method : GET
-    url = http://www.goyang.go.kr/www/user/bbs/BD_selectBbsList.do?q_bbsCode=1030&q_currPage={page_count}}&q_pClCode=&q_clCode=&q_clNm=&q_searchKey=1000&q_searchVal=
+    url = http://www.goyang.go.kr/health/user/bbs/BD_selectBbsList.do?q_bbsCode=1057&q_currPage={page_count}&q_searchKey=1000
     header :
         None
 
@@ -21,7 +21,7 @@ import js2py
 '''
     @post info
     method : GET
-    url : http://www.goyang.go.kr/www/user/bbs/BD_selectBbs.do?q_bbsCode=1030&q_bbscttSn={postId}8&q_currPage=1&q_pClCode=
+    url : http://www.goyang.go.kr/health/user/bbs/BD_selectBbs.do?q_bbsCode=1057&q_bbscttSn={post_id}&q_currPage=1&q_pClCode=
     header :
         None
 
@@ -56,7 +56,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '고양시'
-        self.post_board_name = '새소식'
+        self.post_board_name = '보건소 공지사항'
         self.channel_main_url = 'http://www.goyang.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
@@ -83,12 +83,12 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_title', 'uploader', 'view_count']
+        'multiple_type': ['post_url', 'post_title', 'uploader', 'view_count', 'uploaded_time']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-4 HYUN
+    # 2022-2-3 HYUN
     # html table header index
     table_column_list = ['번호', '제목', '담당부서', '작성일', '파일', '조회수']
 
@@ -120,7 +120,7 @@ def post_list_parsing_process(**params):
                 return
 
             if idx == 1:
-                var['post_title'].append(tmp_td.text.strip())
+                var['post_title'].append(clean_text(tmp_td.text).strip())
                 tmp_post_url = None
                 tmp_post_url = eval(tmp_td.find('a').get('onclick')[:-1].replace('fnView', 'js_fn_make_post_url'))
                 if not tmp_post_url:
@@ -129,6 +129,8 @@ def post_list_parsing_process(**params):
                 var['post_url'].append(make_absolute_url(in_url=tmp_post_url.strip(), channel_main_url=var['response'].url))
             elif idx == 2:
                 var['uploader'].append(tmp_td.text.strip())
+            elif idx == 3:
+                var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(clean_text(tmp_td.text).strip()))
             elif idx == 5:
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text))
 
@@ -140,26 +142,13 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type': ['post_text', 'contact', 'uploaded_time'],
+        'single_type': ['post_text'],
         'multiple_type': ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     content_info_area = soup.find('div', class_='bbs-article')
 
-    content_info_header_area = content_info_area.find('ul', class_='article-info')
     content_context_area = content_info_area.find('div', class_='article-detail')
-
-    for header_row_idx, tmp_header_row in enumerate(content_info_header_area.find_all('li')):
-        if header_row_idx == 0:
-            # 당당부서, 등록일시, 조회수 순으로 '|' 로 분리
-            tmp_header_info_list = tmp_header_row.text.split('|')
-            var['uploaded_time'] = convert_datetime_string_to_isoformat_datetime(tmp_header_info_list[1].strip())
-            if tmp_header_info_list[2].find('조회수') < 0:
-                raise ValueError('Please check post header info format')
-        elif header_row_idx == 1:
-            if tmp_header_row.text.find('전화번호') < 0:
-                raise ValueError('Please check post header contact format')
-            var['contact'] = tmp_header_row.text.split(':')[1].strip()
 
     var['post_text'] = clean_text(content_context_area.text)
     var['post_image_url'] = search_img_list_in_contents(content_context_area, var['response'].url)

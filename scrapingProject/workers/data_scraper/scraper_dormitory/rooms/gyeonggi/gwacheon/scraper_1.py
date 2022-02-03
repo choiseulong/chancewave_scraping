@@ -6,29 +6,25 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
 # 채널 이름 : 과천시
 
-# 타겟 : 과천소식
+# 타겟 : 중소기업 및 소상공인 지원
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
 '''
     @post list
 
-    method : POST
+    method : GET
     url :  https://www.gccity.go.kr/portal/bbs/list.do?ptIdx=111&mId=0301010000
     header :
         None
     body :
-        1. cancelUrl: /portal/bbs/list.do?ptIdx=111&mId=0301010000
-        2. page: {page_count}
-        3. searchCategory: 
-        4. searchType: 0
-        5. searchTxt:
+        None
 
 '''
 '''
     @post info
-    method : POST
-    url :  https://www.gccity.go.kr/portal/bbs/view.do?mId=0301010000&bIdx={postId}&ptIdx=111
+    method : GET
+    url :  https://www.gccity.go.kr/dept/bbs/view.do?mId=0102000000&bIdx={postId}&ptIdx=241
     header :
         None
     body :
@@ -43,7 +39,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '과천시'
-        self.post_board_name = '과천소식'
+        self.post_board_name = '중소기업 및 소상공인 지원'
         self.channel_main_url = 'https://www.gccity.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
@@ -52,16 +48,10 @@ class Scraper(ABCScraper):
         self.page_count = 1
         while True:
             print(f'PAGE {self.page_count}')
-            self.channel_url = channel_url
-            tmp_params ={
-                'cancelUrl': '/portal/bbs/list.do?ptIdx=111&mId=0301010000',
-                'page': self.page_count,
-                'searchCategory':'',
-                'searchType': '0',
-                'searchTxt':''
-            }
 
-            self.post_list_scraping(post_list_parsing_process, method='post', data=tmp_params)
+            self.channel_url = self.channel_url_frame.format(self.page_count)
+
+            self.post_list_scraping(post_list_parsing_process, 'get')
             if self.scraping_target:
                 self.target_contents_scraping()
                 self.collect_data()
@@ -85,26 +75,15 @@ def post_list_parsing_process(**params):
     site_js_object_text = str_grab(text, 'var yh = {', '};')
     site_js_object = js2py.eval_js('var yh = {' + site_js_object_text + '}')
 
-    # 2022-1-4 HYUN
+    # 2022-2-3 HYUN
     # html table header index
-    table_column_list = ['번호', '분류', '제목', '파일', '작성자', '작성일', '조회']
+    table_column_list = ['번호', '제목', '파일', '작성자', '작성일', '조회']
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('table', class_='bod_list')
 
     if not post_list_table_bs:
         raise TypeError('CANNOT FIND LIST TABLE')
-
-    paging_area = soup.find('div', class_='bod_page')
-
-    last_page_btn = paging_area.find('a', class_='btn_end')
-    if not last_page_btn:
-        raise ValueError('PAGING AREA CHANGE ERROR')
-    last_page_num = str_grab(last_page_btn.get('onclick'), 'goPage(', ');')
-
-    if var['page_count'] > int(last_page_num):
-        print('PAGE END')
-        return
 
     # 테이블 컬럼 영역
     post_list_table_header_area_bs = post_list_table_bs.find('thead')
@@ -129,7 +108,7 @@ def post_list_parsing_process(**params):
                 if tmp_td.find('img', {'alt':'공지'}) and var['page_count'] != 1:
                     break
 
-            elif idx == 2:
+            elif idx == 1:
                 # '새 글' 이 제목에 함께 포함되는 부분 제거
                 var['post_title'].append(tmp_td_text.split('\n')[0])
                 # goTo.view('list','157354','111','0301010000')
@@ -142,9 +121,9 @@ def post_list_parsing_process(**params):
                                "&ptIdx=" + move_page_js_function_params_list[2]
 
                 var['post_url'].append(make_absolute_url(in_url=tmp_post_url, channel_main_url=var['response'].url))
-            elif idx == 5:
+            elif idx == 4:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td_text))
-            elif idx == 6:
+            elif idx == 5:
                 var['view_count'].append(tmp_td_text)
 
     result = merge_var_to_dict(key_list, var)

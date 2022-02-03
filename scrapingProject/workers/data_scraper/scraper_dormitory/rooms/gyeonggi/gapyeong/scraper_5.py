@@ -4,7 +4,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
 # 채널 이름 : 가평군
 
-# 타겟 : 공지사항
+# 타겟 : 보건소 공지사항
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -12,7 +12,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
     @post list
 
     method : GET
-    url = https://www.gp.go.kr/portal/selectBbsNttList.do?key=501&bbsNo=150&searchCtgry=&pageUnit=10&searchCnd=all&searchKrwd=&integrDeptCode=&pageIndex={page_count}
+    url = https://www.gp.go.kr/health/selectBbsNttList.do?key=257&bbsNo=150&searchCtgry=&pageUnit=10&pageIndex={page_count}
     header :
         None
 
@@ -20,7 +20,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 '''
     @post info
     method : GET
-    url : https://www.gp.go.kr/portal/selectBbsNttView.do?key=501&bbsNo=150&nttNo={postId}&searchCtgry=&searchCnd=all&searchKrwd=&pageIndex=12&integrDeptCode=
+    url : https://www.gp.go.kr/health/selectBbsNttView.do?key=257&bbsNo=150&nttNo={post_id}&searchCtgry=&searchCnd=all&searchKrwd=&pageIndex=1&integrDeptCode=
     header :
         None
 
@@ -33,7 +33,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '가평군'
-        self.post_board_name = '공지사항'
+        self.post_board_name = '보건소 공지사항'
         self.channel_main_url = 'https://www.gp.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
@@ -54,10 +54,6 @@ class Scraper(ABCScraper):
                 break
             self.session.cookies.clear()
 
-    # def post_list_scraping(self):
-    ## post 방식이라면 super().post_list_scraping(postListParsingProcess, 'post', data, sleepSec)
-    #     super().post_list_scraping(postListParsingProcess, 'get', sleepSec)
-
     def target_contents_scraping(self):
         super().target_contents_scraping(post_content_parsing_process, sleepSec)
 
@@ -69,12 +65,12 @@ def post_list_parsing_process(**params):
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-3 HYUN
+    # 2022-2-3 HYUN
     # html table header index
     table_column_list = ['번호', '제목', '파일', '부서', '작성자', '작성일', '조회수']
 
     # 게시물 리스트 테이블 영역
-    post_list_table_bs = soup.find('div', class_='content').find('table', class_='bbs_default_list')
+    post_list_table_bs = soup.find('div', id='contents').find('table', class_='bbs_default_list')
 
     if not post_list_table_bs:
         raise TypeError('CANNOT FIND LIST TABLE')
