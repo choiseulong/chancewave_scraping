@@ -3,9 +3,9 @@ from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 import js2py
 
-# 채널 이름 : 군포시
+# 채널 이름 : 군포
 
-# 타겟 : 새소식
+# 타겟 : 문화행사
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -13,7 +13,7 @@ import js2py
     @post list
 
     method : GET
-    url : https://www.gunpo.go.kr/www/selectBbsNttList.do?key=3890&bbsNo=675&searchCtgry=&pageUnit=10&searchCnd=all&searchKrwd=&integrDeptCode=&pageIndex={pageCount}
+    url : https://www.gunpo.go.kr/www/selectBbsNttList.do?key=3892&bbsNo=684&searchCtgry=&pageUnit=10&searchCnd=all&searchKrwd=&integrDeptCode=&pageIndex={page_count}
     header :
         None
 
@@ -21,7 +21,7 @@ import js2py
 '''
     @post info
     method : GET
-    url : https://www.gunpo.go.kr/www/selectBbsNttView.do?key=3890&bbsNo=675&nttNo={postId}&searchCtgry=&searchCnd=all&searchKrwd=&pageIndex=1&integrDeptCode=
+    url : https://www.gunpo.go.kr/www/selectBbsNttView.do?key=3892&bbsNo=684&nttNo={post_id}&searchCtgry=&searchCnd=all&searchKrwd=&pageIndex=1&integrDeptCode=
     header :
         None
 
@@ -33,8 +33,8 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '군포시'
-        self.post_board_name = '새소식'
+        self.channel_name = '군포'
+        self.post_board_name = '문화행사'
         self.channel_main_url = 'https://www.gunpo.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
@@ -66,9 +66,9 @@ def post_list_parsing_process(**params):
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-18 HYUN
+    # 2022-2-4 HYUN
     # html table header index
-    table_column_list = ['번호', '제목', '첨부', '담당부서', '등록일', '조회', '문의처1', '문의처2']
+    table_column_list = ['번호', '제목', '첨부', '담당부서', '등록일', '조회']
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('table', class_='p-table')
@@ -119,11 +119,14 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type': ['post_text', 'post_title', 'uploader', 'contact'],
-        'multiple_type': ['post_image_url']
+        'single_type': ['post_text', 'post_title', 'uploader', 'post_subject', 'start_date', 'end_date'],
+        'multiple_type': ['post_image_url', 'extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     content_info_area = soup.find('table', class_='p-table')
+    var['extra_info'] = [{
+        'info_title': '행사상세'
+    }]
 
     for tmp_row_area in content_info_area.find_all('tr'):
         for tmp_info_title, tmp_info_value in zip(tmp_row_area.find_all('th'), tmp_row_area.find_all('td')):
@@ -134,7 +137,7 @@ def post_content_parsing_process(**params):
             if tmp_info_title_text == '제목':
                 var['post_title'] = tmp_info_value_text
 
-            elif tmp_info_title_text == '작성자':
+            elif tmp_info_title_text == '담당자':
                 if var.get('uploader') and var.get('uploader') != tmp_info_value_text:
                     var['uploader'] = var['uploader'] + ' ' + tmp_info_value_text
                 else:
@@ -149,8 +152,14 @@ def post_content_parsing_process(**params):
             elif tmp_info_title_text == '상세내용':
                 var['post_text'] = clean_text(tmp_info_value.text.strip())
                 var['post_image_url'] = search_img_list_in_contents(tmp_info_value, var['response'].url)
-            elif tmp_info_title_text == '문의처1':
-                var['contact'] = tmp_info_value_text
+            elif tmp_info_title_text == '행사시작일':
+                var['start_date'] = convert_datetime_string_to_isoformat_datetime(tmp_info_value_text)
+            elif tmp_info_title_text == '행사종료일':
+                var['end_date'] = convert_datetime_string_to_isoformat_datetime(tmp_info_value_text)
+            elif tmp_info_title_text == '카테고리':
+                var['post_subject'] = tmp_info_value_text
+            elif tmp_info_title_text == '장소':
+                var['extra_info'][0]['info_1'] =[tmp_info_title_text, tmp_info_value_text]
 
     result = convert_merged_list_to_dict(key_list, var)
     if var['dev']:
