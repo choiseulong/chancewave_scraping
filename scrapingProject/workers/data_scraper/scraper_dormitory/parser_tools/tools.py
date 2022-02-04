@@ -357,14 +357,18 @@ def _map_key_name_with_table_header(**kargs):
     input_table_header = var['table_header']
     included_key_info = {}
     header_info = {
-        'post_url' : ["제목", "행사명", "강좌명", "제 목", "글제목", "강좌명", "서비스명", "강좌명/교육기관"],
-        'post_title' : ["제목", "행사명", "강좌명", "제 목", "글제목", "강좌명", "서비스명", "강좌명/교육기관"],
-        'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자", "날짜", "공고일"],
+        'post_url' : ["제목", "행사명", "강좌명", "제 목", "글제목", "강좌명", "서비스명",\
+             "강좌명/교육기관", "공모·모집명"],
+        'post_title' : ["제목", "행사명", "강좌명", "제 목", "글제목", "강좌명", "서비스명",\
+             "강좌명/교육기관", "공모·모집명"],
+        'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자", "날짜",\
+             "공고일"],
         'view_count' : ["조회", "조회수"],
-        'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서", "담당자", "작성부서", "기관", "제공기관", "부서명"],
+        'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서", "담당자", "작성부서", "기관",\
+             "제공기관", "부서명", "글쓴이"],
         'post_subject' : ["분류", "구분", "분야", "서비스유형"],
         'contact' : ["연락처"],
-        'is_going_on' : ["접수상태", "상태"],
+        'is_going_on' : ["접수상태", "상태", "공모상태"],
         'post_content_target' : ["대상자", "대상"],
         'linked_post_url' : ["바로가기"]
     }
@@ -417,11 +421,17 @@ def _compare_input_header_with_table_header(**kargs):
                 print(f'TABLE LENGTH DID NOT MATCH\nInput Table Header : {len(input_table_header)}\nPage Table Header : {len(page_tabel_header)}')
             else :
                 for table_idx in range(len(input_table_header)):
-                    if input_table_header[table_idx] != page_tabel_header[table_idx]:
-                        print(
-                            f'HEADER NAME DID NOT MATCH INDEX : {table_idx}\
-                            \nInput Table Header : {input_table_header[table_idx]}\
-                            \nPage Table Header : {page_tabel_header[table_idx]}'
+                    try :
+                        if input_table_header[table_idx] != page_tabel_header[table_idx]:
+                            print(
+                                f'HEADER NAME DID NOT MATCH INDEX : {table_idx}\
+                                \nInput Table Header : {input_table_header[table_idx]}\
+                                \nPage Table Header : {page_tabel_header[table_idx]}'
+                            )
+                    except IndexError:
+                        # TypeError: exceptions must derive from BaseException
+                        raise(
+                            'TABLE HEADER LENGTH DID NOT MATCH'
                         )
         else :
             print(f'Table Header Warning\n{var["channel_main_url"]}')
