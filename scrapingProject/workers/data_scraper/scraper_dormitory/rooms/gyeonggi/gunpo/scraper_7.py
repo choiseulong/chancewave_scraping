@@ -3,9 +3,9 @@ from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 import js2py
 
-# 채널 이름 : 김포
+# 채널 이름 : 군포
 
-# 타겟 : 새소식
+# 타겟 : 보건소 공지사항
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -13,7 +13,7 @@ import js2py
     @post list
 
     method : GET
-    url : https://www.gimpo.go.kr/portal/selectBbsNttList.do?key=999&bbsNo=292&searchCnd=all&deleteAt=N&pageUnit=10&pageIndex={page_count}
+    url : https://www.gunpo.go.kr/health/selectBbsNttList.do?key=2467&bbsNo=1&searchCtgry=&pageUnit=8&searchCnd=all&searchKrwd=&integrDeptCode=&pageIndex={page_count}
     header :
         None
 
@@ -21,7 +21,7 @@ import js2py
 '''
     @post info
     method : GET
-    url : https://www.gimpo.go.kr/portal/selectBbsNttView.do;jsessionid=Kj8O0b3bwFRea0Q0zTXDXCT3QUkdRSGrzGyr3135JzNvQJ6FpTSiZbYPDvFyOVUo.new-gimpo-was2_servlet_engine1?key=999&bbsNo=292&searchCnd=all&deleteAt=N&pageUnit=10&pageIndex=1&nttNo={postId}
+    url : https://www.gunpo.go.kr/www/selectBbsNttView.do?key=3890&bbsNo=675&nttNo={postId}&searchCtgry=&searchCnd=all&searchKrwd=&pageIndex=1&integrDeptCode=
     header :
         None
 
@@ -33,9 +33,9 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '김포'
-        self.post_board_name = '알림사항'
-        self.channel_main_url = 'https://www.gimpo.go.kr'
+        self.channel_name = '군포'
+        self.post_board_name = '보건소 공지사항'
+        self.channel_main_url = 'https://www.gunpo.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
@@ -54,7 +54,6 @@ class Scraper(ABCScraper):
                 self.page_count += 1
             else:
                 break
-            self.session.cookies.clear()
 
     def target_contents_scraping(self):
         super().target_contents_scraping(post_content_parsing_process, sleepSec)
@@ -62,17 +61,17 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'uploader', 'view_count', 'uploaded_time']
+        'multiple_type': ['post_url', 'view_count', 'uploaded_time', 'post_subject']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-18 HYUN
+    # 2022-2-5 HYUN
     # html table header index
-    table_column_list = ['번호', '제목', '담당부서', '파일', '작성일', '조회수']
+    table_column_list = ['번호', '카테고리', '제목', '첨부', '등록일', '조회']
 
     # 게시물 리스트 테이블 영역
-    post_list_table_bs = soup.find('table', class_='bbs_ntt_list_item')
+    post_list_table_bs = soup.find('table', class_='p-table')
 
     if not post_list_table_bs:
         raise TypeError('CANNOT FIND LIST TABLE')
@@ -101,19 +100,21 @@ def post_list_parsing_process(**params):
             if idx == 0:
                 if tmp_td.text == '공지':
                     break
+
             elif idx == 1:
+                var['post_subject'].append(clean_text(tmp_td.text).strip())
+            elif idx == 2:
 
                 var['post_url'].append(make_absolute_url(
                     in_url=tmp_td.find('a').get('href'),
                     channel_main_url=var['response'].url))
-            elif idx == 2:
-                var['uploader'].append(tmp_td.text.strip())
             elif idx == 4:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
             elif idx == 5:
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
 
     result = merge_var_to_dict(key_list, var)
+
     if var['dev']:
         print(result)
     return result
@@ -121,7 +122,7 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type': ['post_text', 'post_title'],
+        'single_type': ['post_text', 'post_title', 'uploader'],
         'multiple_type': ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
@@ -136,10 +137,12 @@ def post_content_parsing_process(**params):
             if tmp_info_title_text == '제목':
                 var['post_title'] = tmp_info_value_text
 
-    context_area = content_info_area.find('td', class_='bbs_content')
+            elif tmp_info_title_text == '담당자':
+                var['uploader'] = tmp_info_value_text
 
-    var['post_text'] = clean_text(context_area.text.strip())
-    var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
+            elif tmp_info_title_text == '상세내용':
+                var['post_text'] = clean_text(tmp_info_value.text.strip())
+                var['post_image_url'] = search_img_list_in_contents(tmp_info_value, var['response'].url)
 
     result = convert_merged_list_to_dict(key_list, var)
     if var['dev']:

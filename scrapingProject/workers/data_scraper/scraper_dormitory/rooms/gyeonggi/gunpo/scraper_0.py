@@ -3,7 +3,7 @@ from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 import js2py
 
-# 채널 이름 : 군포시
+# 채널 이름 : 군포
 
 # 타겟 : 새소식
 # 중단 시점 : 마지막 페이지 도달시
@@ -33,7 +33,7 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '군포시'
+        self.channel_name = '군포'
         self.post_board_name = '새소식'
         self.channel_main_url = 'https://www.gunpo.go.kr'
 

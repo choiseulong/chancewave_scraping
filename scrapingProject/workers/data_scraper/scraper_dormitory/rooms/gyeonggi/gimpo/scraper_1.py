@@ -5,7 +5,7 @@ import js2py
 
 # 채널 이름 : 김포
 
-# 타겟 : 새소식
+# 타겟 :  중소기업정보 알림사항
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -13,7 +13,7 @@ import js2py
     @post list
 
     method : GET
-    url : https://www.gimpo.go.kr/portal/selectBbsNttList.do?key=999&bbsNo=292&searchCnd=all&deleteAt=N&pageUnit=10&pageIndex={page_count}
+    url : https://www.gimpo.go.kr/portal/selectBbsNttList.do?key=1297&bbsNo=298&searchCnd=all&deleteAt=N&pageUnit=10&pageIndex={page_count}
     header :
         None
 
@@ -21,12 +21,12 @@ import js2py
 '''
     @post info
     method : GET
-    url : https://www.gimpo.go.kr/portal/selectBbsNttView.do;jsessionid=Kj8O0b3bwFRea0Q0zTXDXCT3QUkdRSGrzGyr3135JzNvQJ6FpTSiZbYPDvFyOVUo.new-gimpo-was2_servlet_engine1?key=999&bbsNo=292&searchCnd=all&deleteAt=N&pageUnit=10&pageIndex=1&nttNo={postId}
+    url : https://www.gimpo.go.kr/portal/selectBbsNttView.do;jsessionid=nX0bm66FShUC4hjRdVk2YGXjN5j8vhYcKk4dcQrMJLzGJYaGpOAQOBP91LbDbgil.new-gimpo-was2_servlet_engine1?key=1297&bbsNo=298&searchCnd=all&deleteAt=N&pageUnit=10&pageIndex=1&nttNo={post_id}
     header :
         None
 
 '''
-sleepSec = 0
+sleepSec = 0.5
 isUpdate = True
 
 
@@ -34,7 +34,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '김포'
-        self.post_board_name = '알림사항'
+        self.post_board_name = '중소기업정보 알림사항'
         self.channel_main_url = 'https://www.gimpo.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
@@ -67,7 +67,7 @@ def post_list_parsing_process(**params):
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-18 HYUN
+    # 2022-2-5 HYUN
     # html table header index
     table_column_list = ['번호', '제목', '담당부서', '파일', '작성일', '조회수']
 
@@ -126,6 +126,9 @@ def post_content_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     content_info_area = soup.find('table', class_='p-table')
+
+    if not content_info_area:
+        return None
 
     for tmp_row_area in content_info_area.find_all('tr'):
         for tmp_info_title, tmp_info_value in zip(tmp_row_area.find_all('th'), tmp_row_area.find_all('td')):

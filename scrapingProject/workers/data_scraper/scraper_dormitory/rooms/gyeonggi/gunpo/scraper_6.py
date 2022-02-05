@@ -5,7 +5,7 @@ import js2py
 
 # 채널 이름 : 군포
 
-# 타겟 : 문화
+# 타겟 : 행사
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -13,7 +13,7 @@ import js2py
     @post list
 
     method : GET
-    url : https://www.gunpo.go.kr/portal/edcClturEventList.do?key=1008281&bbsNo=684&searchCtgry=%%EB%%AC%%B8%%ED%%99%%94&pageUnit=10&searchCnd=all&searchKrwd=&integrDeptCode=&pageIndex={page_count}
+    url : https://www.gunpo.go.kr/portal/edcClturEventList.do?key=1008282&bbsNo=684&searchCtgry=%%ED%%96%%89%%EC%%82%%AC/%%EC%%B6%%95%%EC%%A0%%9C&pageUnit=10&searchCnd=all&searchKrwd=&integrDeptCode=&pageIndex={page_count}
     header :
         None
 
@@ -21,7 +21,7 @@ import js2py
 '''
     @post info
     method : GET
-    url : https://www.gunpo.go.kr/portal/edcClturEventView.do?key=1008281&bbsNo=684&nttNo={post_id}&searchCtgry=%%EB%%AC%%B8%%ED%%99%%94
+    url : https://www.gunpo.go.kr/portal/edcClturEventView.do?key=1008282&bbsNo=684&nttNo={post_id}&searchCtgry=%%ED%%96%%89%%EC%%82%%AC/%%EC%%B6%%95%%EC%%A0%%9C
     header :
         None
 
@@ -34,7 +34,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '군포'
-        self.post_board_name = '문화'
+        self.post_board_name = '행사'
         self.channel_main_url = 'https://www.gunpo.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
