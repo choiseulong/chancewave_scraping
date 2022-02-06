@@ -74,6 +74,9 @@ def post_list_parsing_process(**params):
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('div', class_='bbs-list')
 
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
+
     # 테이블 컬럼 영역
     post_list_table_header_area_bs = post_list_table_bs.find('thead')
     # 테이블 칼럼 리스트
@@ -117,13 +120,14 @@ def post_list_parsing_process(**params):
         return
 
     result = merge_var_to_dict(key_list, var)
-    print(result)
+    if var['dev']:
+        print(result)
     return result
 
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type': ['post_text', 'post_title', 'uploader', 'post_subject', 'contact'],
+        'single_type': ['post_text', 'uploader', 'contact'],
         'multiple_type': ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
@@ -137,9 +141,16 @@ def post_content_parsing_process(**params):
             if tmp_info_title_text == '제목':
                 var['post_title'] = tmp_info_value_text
             elif tmp_info_title_text == '작성자':
-                var['uploader'] = tmp_info_value_text
+                if var.get('uploader'):
+                    var['uploader'] = var['uploader'] + ' ' + tmp_info_value_text
+                else:
+                    var['uploader'] = tmp_info_value_text
             elif tmp_info_title_text == '담당부서':
-                var['post_subject'] = tmp_info_value_text
+                if var.get('uploader'):
+                    var['uploader'] = tmp_info_value_text + ' ' + var['uploader']
+                else:
+                    var['uploader'] = tmp_info_value_text
+
             elif tmp_info_title_text == '문의전화':
                 var['contact'] = tmp_info_value_text
 
@@ -149,5 +160,6 @@ def post_content_parsing_process(**params):
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 
     result = convert_merged_list_to_dict(key_list, var)
-    print(result)
+    if var['dev']:
+        print(result)
     return result

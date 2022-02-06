@@ -61,7 +61,7 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_subject', 'view_count', 'uploaded_time']
+        'multiple_type': ['post_url', 'uploader', 'view_count', 'uploaded_time']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
@@ -72,6 +72,8 @@ def post_list_parsing_process(**params):
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('div', class_='bbs__list')
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
     post_list_table_bs = post_list_table_bs.find('table', class_='p-table')
 
     if not post_list_table_bs and soup.find('div', class_='p-empty'):
@@ -104,20 +106,21 @@ def post_list_parsing_process(**params):
                     in_url=page_move_function_str,
                     channel_main_url=var['response'].url))
             elif idx == 2:
-                var['post_subject'].append(tmp_td.text.strip())
+                var['uploader'].append(tmp_td.text.strip())
             elif idx == 3:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
             elif idx == 4:
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
 
     result = merge_var_to_dict(key_list, var)
-    print(result)
+    if var['dev']:
+        print(result)
     return result
 
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type': ['post_text','uploader', 'post_title', 'contact'],
+        'single_type': ['post_text', 'post_title', 'contact'],
         'multiple_type': ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
@@ -132,14 +135,13 @@ def post_content_parsing_process(**params):
             tmp_info_title_text = tmp_info_title.text.strip()
             tmp_info_value_text = tmp_info_value.text.strip()
 
-            if tmp_info_title_text == '담당자명':
-                var['uploader'] = tmp_info_value_text
-            elif tmp_info_title_text == '연락처':
+            if tmp_info_title_text == '연락처':
                 var['contact'] = tmp_info_value_text
             elif tmp_info_title_text == '내용':
                 var['post_text'] = clean_text(tmp_info_value.text.strip())
                 var['post_image_url'] = search_img_list_in_contents(tmp_info_value, var['response'].url)
 
     result = convert_merged_list_to_dict(key_list, var)
-    print(result)
+    if var['dev']:
+        print(result)
     return result

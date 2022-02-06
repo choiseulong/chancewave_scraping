@@ -39,7 +39,7 @@ class Scraper(ABCScraper):
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
-        param_datetime = datetime.now() - timedelta(days=180)
+        param_datetime = datetime.now()
         self.page_count = 1
 
         # 사이트에서 월별 조회, 월의 첫날과 마지막날을 값으로 조회함 ex) 2021-01-01 2021-01-31
