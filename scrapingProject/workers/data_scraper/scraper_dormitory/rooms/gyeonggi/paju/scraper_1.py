@@ -141,7 +141,7 @@ def post_content_parsing_process(**params):
                     var['end_date'] = convert_datetime_string_to_isoformat_datetime(date_info_str_list[0])
             elif tmp_info_title_text in extra_info_column_list:
                 tmp_extra_info_index = extra_info_column_list.index(tmp_info_title_text)
-                var['extra_info'][0]['info_' + str(tmp_extra_info_index)] = [tmp_info_title_text, tmp_info_value_text]
+                var['extra_info'][0]['info_' + str(tmp_extra_info_index + 1)] = [tmp_info_title_text, tmp_info_value_text]
 
     context_area = soup.find('div', class_='detail_view_area')
     var['post_text'] = clean_text(context_area.text.strip())

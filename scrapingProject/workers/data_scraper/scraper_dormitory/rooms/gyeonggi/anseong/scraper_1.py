@@ -132,7 +132,7 @@ def post_content_parsing_process(**params):
 
             elif tmp_info_title_text in extra_info_column_list:
                 tmp_extra_info_index = extra_info_column_list.index(tmp_info_title_text)
-                var['extra_info'][0]['info_' + str(tmp_extra_info_index)] = [tmp_info_title_text, tmp_info_value_text]
+                var['extra_info'][0]['info_' + str(tmp_extra_info_index + 1)] = [tmp_info_title_text, tmp_info_value_text]
 
             elif tmp_info_title_text == '모집현황':
                 if tmp_info_value_text.find('모집중') > -1:

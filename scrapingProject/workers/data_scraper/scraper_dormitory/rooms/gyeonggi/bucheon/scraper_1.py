@@ -155,7 +155,7 @@ def post_content_parsing_process(**params):
                 var['post_content_target'] = tmp_info_value_text
             elif tmp_info_title_text in extra_info_column_list:
                 tmp_extra_info_index = extra_info_column_list.index(tmp_info_title_text)
-                var['extra_info'][0]['info_' + str(tmp_extra_info_index)] = [tmp_info_title_text, tmp_info_value_text]
+                var['extra_info'][0]['info_' + str(tmp_extra_info_index + 1)] = [tmp_info_title_text, tmp_info_value_text]
             elif tmp_info_title_text == '강좌소개':
                 var['post_text'] = tmp_info_value_text
             elif tmp_info_title_text == '문의전화':

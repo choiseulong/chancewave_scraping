@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 
 # 채널 이름 : 평택시
 
-# 타겟 : 평택소식
+# 타겟 : 기업지원소식
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -13,7 +13,7 @@ from urllib.parse import urlencode
     @post list
 
     method : GET
-    url = https://www.pyeongtaek.go.kr/pyeongtaek/bbs/list.do?ptIdx=41&mId=0401010000&bIdx=
+    url = https://www.pyeongtaek.go.kr/pyeongtaek/bbs/list.do?ptIdx=59&mId=1001000000&bIdx=&page={page_count}
     header :
         None
 
@@ -21,7 +21,7 @@ from urllib.parse import urlencode
 '''
     @post info
     method : GET
-    url : https://www.pyeongtaek.go.kr/pyeongtaek/bbs/view.do?mId=0401010000&bIdx={postId}&ptIdx=41
+    url : https://www.pyeongtaek.go.kr/pyeongtaek/bbs/view.do?mId=1001000000&bIdx={post_id}&ptIdx=59
     header :
         None
 
@@ -34,23 +34,19 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '평택시'
-        self.post_board_name = '평택소식'
+        self.post_board_name = '기업지원소식'
         self.channel_main_url = 'https://www.pyeongtaek.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
-        self.channel_url = 'https://www.pyeongtaek.go.kr/pyeongtaek/bbs/list.do?ptIdx=41&mId=0401010000&bIdx='
         self.session = set_headers(self.session)
         self.page_count = 1
         while True:
             print(f'PAGE {self.page_count}')
 
-            list_params = {
-                'page': self.page_count
-            }
             self.channel_url = self.channel_url_frame.format(self.page_count)
 
-            self.post_list_scraping(post_list_parsing_process, 'post', data=list_params)
+            self.post_list_scraping(post_list_parsing_process, 'get')
             if self.scraping_target:
                 self.target_contents_scraping()
                 self.collect_data()
@@ -70,9 +66,9 @@ def post_list_parsing_process(**params):
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-13 HYUN
+    # 2022-2-7 HYUN
     # html table header index
-    table_column_list = ['번호', '제목', '담당부서', '작성일', '파일', '조회']
+    table_column_list = ['번호', '제목', '작성자', '작성일', '파일', '조회']
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('table', class_='tableSt_list')
@@ -102,7 +98,9 @@ def post_list_parsing_process(**params):
         for idx, tmp_td in enumerate(tmp_post_row.find_all('td')):
 
             if idx == 0:
-                pass
+                if tmp_td.find('img', {'alt':'공지글'}) and var['page_count'] != 1:
+                    break
+
             elif idx == 1:
                 var['post_title'].append(tmp_td.text.strip())
                 page_move_function_str = tmp_td.find('a').get('onclick').strip()

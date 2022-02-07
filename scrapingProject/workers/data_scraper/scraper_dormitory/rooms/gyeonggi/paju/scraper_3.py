@@ -189,7 +189,7 @@ def post_content_parsing_process(**params):
                     var['post_image_url'] = search_img_list_in_contents(tmp_info_value, var['response'].url)
                 elif tmp_info_title_text in extra_info_column_list:
                     tmp_extra_info_index = extra_info_column_list.index(tmp_info_title_text)
-                    var['extra_info'][0]['info_' + str(tmp_extra_info_index)] = [tmp_info_title_text, tmp_info_value_text]
+                    var['extra_info'][0]['info_' + str(tmp_extra_info_index + 1)] = [tmp_info_title_text, tmp_info_value_text]
     else:
         content_info_area = soup.find('table', class_='board-view')
         extra_info_column_list = ['기관', '시간', '장소', '재료비', '강사명', '접수방법']
@@ -236,7 +236,7 @@ def post_content_parsing_process(**params):
                     var['post_content_target'] = tmp_info_value_text
                 elif tmp_info_title_text in extra_info_column_list:
                     tmp_extra_info_index = extra_info_column_list.index(tmp_info_title_text)
-                    var['extra_info'][0]['info_' + str(tmp_extra_info_index)] = [tmp_info_title_text, tmp_info_value_text]
+                    var['extra_info'][0]['info_' + str(tmp_extra_info_index + 1)] = [tmp_info_title_text, tmp_info_value_text]
 
         context_area = content_info_area.find('td', class_='content')
         var['post_text'] = clean_text(context_area.text.strip())
