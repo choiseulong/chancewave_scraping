@@ -401,7 +401,6 @@ def _search_table_header_list(**kargs):
     soup, var = kargs['soup'], kargs['var']
     thead = extract_children_tag(soup, 'thead')
     tabel_header_box = var['table_header_box'] if 'table_header_box' in var.keys() else extract_children_tag(thead, 'tr')
-    print(var['table_header_box'])
     var['page_table_header'] = [
         extract_text(child) \
         for child \

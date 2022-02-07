@@ -1,10 +1,11 @@
 from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scraper as ABCScraper
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
-from .parser_5 import *
+from .parser_2 import *
+
 '''
     @post list
     method : GET
-    url =  http://urcbsbukgu.or.kr/?page_id=1380&mode=list&board_page={}
+    url_0 = https://www.busanjin.go.kr/artschool/board/list.busanjin?boardId=BBS_0000114&menuCd=DOM_000000305001000000&paging=ok&startPage={}
     header :
         None
 '''
@@ -17,11 +18,12 @@ from .parser_5 import *
         None
 
 '''
-sleep_sec=1
+sleep_sec = 1
+
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '부산북구구포이음도시재생현장지원센터'
+        self.channel_name = '부산진구청소년예술학교'
         self.post_board_name = '공지사항'
 
     def scraping_process(self, channel_code, channel_url, dev):
