@@ -13,7 +13,7 @@ from urllib.parse import urlencode
     @post list
 
     method : GET
-    url = https://www.pyeongtaek.go.kr/health/bbs/list.do?ptIdx=41&mId=0501000000&8page={page_count}
+    url = https://www.pyeongtaek.go.kr/pyeongtaek/bbs/list.do?ptIdx=449&mId=0402050000&bIdx=&page={page_count}
     header :
         None
 
@@ -21,7 +21,7 @@ from urllib.parse import urlencode
 '''
     @post info
     method : GET
-    url : https://www.pyeongtaek.go.kr/health/bbs/view.do?mId=0501000000&bIdx={post_id}&ptIdx=41
+    url : https://www.pyeongtaek.go.kr/pyeongtaek/bbs/view.do?mId=0402050000&bIdx={post_id}&ptIdx=449
     header :
         None
 

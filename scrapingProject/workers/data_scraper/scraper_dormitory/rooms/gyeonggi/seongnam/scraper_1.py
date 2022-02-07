@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 
 # 채널 이름 : 성남시
 
-# 타겟 : 새소식
+# 타겟 : 행사/강좌/공모
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -13,7 +13,7 @@ from urllib.parse import urlencode
     @post list
 
     method : GET
-    url : https://www.seongnam.go.kr/city/1000052/30001/bbsList.do?currentPage={}&idx=&searchCategory=&searchSelect=title&searchWord=
+    url : https://www.seongnam.go.kr/city/1000053/30003/bbsList.do?currentPage={page_count}&searchSelect=title&searchAddSelect=&searchAddWord=&searchIngState=A&searchCategory=&orderByNm=idx+DESC&idx=&subTabIdx=&type=list
     header :
         None
 
@@ -21,7 +21,7 @@ from urllib.parse import urlencode
 '''
     @post info
     method : GET
-    url : https://www.seongnam.go.kr/city/1000052/30001/bbsView.do?idx={postId}
+    url : https://www.seongnam.go.kr/city/1000053/30003/bbsView.do?idx={post_id}
     header :
         None
 
@@ -34,7 +34,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '성남시'
-        self.post_board_name = '새소식'
+        self.post_board_name = '행사/강좌/공모'
         self.channel_main_url = 'https://www.seongnam.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
@@ -61,14 +61,14 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'view_count', 'uploaded_time']
+        'multiple_type': ['post_url', 'is_going_on']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-18 HYUN
+    # 2022-2-7 HYUN
     # html table header index
-    table_column_list = ['번호', '제목', '등록일', '조회수', '작성부서']
+    table_column_list = ['번호', '분류', '행사명', '행사기간', '상태', '대상']
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('table', class_='board-list')
@@ -101,15 +101,18 @@ def post_list_parsing_process(**params):
                 pass
                 # if tmp_td.text.strip() == '공지':
                 #     break
-            elif idx == 1:
-                page_idx = tmp_td.find('a').get('href').strip()[1:]
-                var['post_url'].append(make_absolute_url(
-                    in_url='/city/1000052/30001/bbsView.do?'+'idx=' + page_idx,
-                    channel_main_url=var['response'].url))
             elif idx == 2:
-                var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
-            elif idx == 3:
-                var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
+
+                page_idx_area_str = tmp_td.find('a').get('onclick')
+                page_idx = str_grab(page_idx_area_str, "dataView('", "');")
+                var['post_url'].append(make_absolute_url(
+                    in_url='/city/1000053/30003/bbsView.do?idx=' + page_idx,
+                    channel_main_url=var['response'].url))
+            elif idx == 4:
+                if tmp_td.text.find('진행중') > -1:
+                    var['is_going_on'].append(True)
+                else:
+                    var['is_going_on'].append(False)
 
     result = merge_var_to_dict(key_list, var)
     if var['dev']:
@@ -119,19 +122,43 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type': ['post_text', 'post_title', 'uploader'],
-        'multiple_type': ['post_image_url']
+        'single_type': ['post_text', 'post_title', 'uploader', 'post_subject', 'contact', 'start_date', 'end_date',
+                        'uploaded_time', 'post_content_target'],
+        'multiple_type': ['post_image_url', 'extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+
+    var['extra_info'] = [{
+        'info_title': '내용 상세'
+    }]
+    extra_info_column_list = ['행사시간']
     content_info_area = soup.find('table', class_='board-view')
     for tmp_row_area in content_info_area.find_all('tr'):
         for tmp_info_title, tmp_info_value in zip(tmp_row_area.find_all('th'), tmp_row_area.find_all('td')):
 
             tmp_info_title_text = tmp_info_title.text.strip()
-            tmp_info_value_text = tmp_info_value.text.strip()
+            tmp_info_value_text = clean_text(tmp_info_value.text).strip()
 
-            if tmp_info_title_text == '제목':
+            if tmp_info_title_text == '행사명':
                 var['post_title'] = tmp_info_value_text
+            elif tmp_info_title_text == '분류':
+                var['post_subject'] = tmp_info_value_text
+            elif tmp_info_title_text == '행사(접수)기간':
+                tmp_date_period_str = tmp_info_value_text
+                date_info_str_list = [f.strip() for f in tmp_date_period_str.split('~')]
+                if len(date_info_str_list) == 2:
+
+                    var['start_date'] = convert_datetime_string_to_isoformat_datetime(date_info_str_list[0])
+                    var['end_date'] = convert_datetime_string_to_isoformat_datetime(date_info_str_list[1])
+                else:
+                    var['start_date'] = convert_datetime_string_to_isoformat_datetime(date_info_str_list[0])
+                    var['end_date'] = convert_datetime_string_to_isoformat_datetime(date_info_str_list[0])
+            elif tmp_info_title_text == '등록일':
+                var['uploaded_time'] = convert_datetime_string_to_isoformat_datetime(tmp_info_value_text)
+            elif tmp_info_title_text == '연락처':
+                var['contact'] = tmp_info_value_text
+            elif tmp_info_title_text == '대상':
+                var['post_content_target'] = tmp_info_value_text
             elif tmp_info_title_text == '작성자':
                 if var.get('uploader'):
                     var['uploader'] = var['uploader'] + ' ' + tmp_info_value_text
@@ -142,6 +169,9 @@ def post_content_parsing_process(**params):
                     var['uploader'] = tmp_info_value_text + ' ' + var['uploader']
                 else:
                     var['uploader'] = tmp_info_value_text
+            elif tmp_info_title_text in extra_info_column_list:
+                tmp_extra_info_index = extra_info_column_list.index(tmp_info_title_text)
+                var['extra_info'][0]['info_' + str(tmp_extra_info_index)] = [tmp_info_title_text, tmp_info_value_text]
 
     context_area = content_info_area.find('td', class_='content')
     var['post_text'] = clean_text(context_area.text.strip())

@@ -130,7 +130,7 @@ def post_content_parsing_process(**params):
         for tmp_info_title, tmp_info_value in zip(tmp_row_area.find_all('th'), tmp_row_area.find_all('td')):
 
             tmp_info_title_text = tmp_info_title.text.strip()
-            tmp_info_value_text = tmp_info_value.text.strip()
+            tmp_info_value_text = clean_text(tmp_info_value.text).strip()
 
             if tmp_info_title_text == '제목':
                 var['post_title'] = tmp_info_value_text

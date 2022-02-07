@@ -5,7 +5,7 @@ import js2py
 
 # 채널 이름 : 광주시
 
-# 타겟 : 새소식
+# 타겟 : 교육소식
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -13,7 +13,7 @@ import js2py
     @post list
 
     method : GET
-    url : https://www.gjcity.go.kr/portal/bbs/list.do?ptIdx=1&mId=0201010000&page={}
+    url : https://www.gjcity.go.kr/depart/bbs/list.do?ptIdx=68&mId=0205060000&page={page_count}
     header :
         None
 
@@ -21,7 +21,7 @@ import js2py
 '''
     @post info
     method : GET
-    url : https://www.gjcity.go.kr/portal/bbs/view.do?bIdx={postId}&ptIdx=1&mId=0201010000
+    url : https://www.gjcity.go.kr/depart/bbs/view.do?bIdx={post_id}&ptIdx=68&mId=0205060000
     header :
         None
 
@@ -34,7 +34,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '광주시'
-        self.post_board_name = '새소식'
+        self.post_board_name = '교육소식'
         self.channel_main_url = 'https://www.gjcity.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
@@ -66,9 +66,9 @@ def post_list_parsing_process(**params):
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-18 HYUN
+    # 2022-2-7 HYUN
     # html table header index
-    table_column_list = ['번호', '제목', '파일', '담당부서', '작성일', '조회']
+    table_column_list = ['번호', '제목', '파일', '작성일', '조회']
 
     site_js_object_text = str_grab(text, 'var yh = {', '};')
     site_js_object = js2py.eval_js('var yh = {' + site_js_object_text + '}')
@@ -105,9 +105,9 @@ def post_list_parsing_process(**params):
                 var['post_url'].append(make_absolute_url(
                     in_url=tmp_td.find('a').get('data-action') + '&mId=' + site_js_object['mId'],
                     channel_main_url=var['response'].url))
-            elif idx == 4:
+            elif idx == 3:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
-            elif idx == 5:
+            elif idx == 4:
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
 
     if preprocessing_count == 0:
@@ -122,7 +122,7 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type': ['post_text', 'post_title', 'uploader', 'contact'],
+        'single_type': ['post_text', 'post_title', 'uploader'],
         'multiple_type': ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
@@ -132,10 +132,7 @@ def post_content_parsing_process(**params):
     uploader_area = [f for f in header_area.findAll('li', class_='view_write') if f.span.text.strip() == '작성자'][0]
     uploader_area.span.clear()
     var['post_title'] = content_info_area.find('h4').text.strip()
-    var['uploader'] = clean_text(str_grab(uploader_area.text, ':', '(').strip())
-    if not var['uploader']:
-        var['uploader'] = clean_text(str_grab(uploader_area.text, ':', '')).strip()
-    var['contact'] = clean_text(str_grab(uploader_area.text, '(', ')').strip())
+    var['uploader'] = clean_text(str_grab(uploader_area.text, ':', '')).strip()
 
     context_area = content_info_area.find('div', class_='view_cont')
 
