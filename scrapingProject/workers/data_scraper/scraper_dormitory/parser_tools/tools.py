@@ -133,7 +133,7 @@ def erase_html_tags(text):
 
 def clean_text(text):
     try :
-        erase_space = ['\r', '&lsquo;', '&rsquo;', '\u200b']
+        erase_space = ['\r', '&lsquo;', '&rsquo;', '\u200b', '/ufeff', '\ufeff']
         leave_space = ['\xa0', '\n', '\t', '&nbsp;']
         for _ in erase_space:
             text = text.replace(_, '')
@@ -362,7 +362,7 @@ def _map_key_name_with_table_header(**kargs):
         'post_title' : ["제목", "행사명", "강좌명", "제 목", "글제목", "강좌명", "서비스명",\
              "강좌명/교육기관", "공모·모집명"],
         'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자", "날짜",\
-             "공고일"],
+             "공고일", "입력일"],
         'view_count' : ["조회", "조회수"],
         'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서", "담당자", "작성부서", "기관",\
              "제공기관", "부서명", "글쓴이", "추진부서"],
@@ -497,9 +497,10 @@ def parse_uploaded_time(**params):
     # 기본 등록일 처리.
     # 예외 케이스로 등록일을 처리할 경우 직접 작성
     # parse_view_count 를 작성해서 처리하거나 포스트 개별 페이지 파싱에서 처리함
-    text = params['child_tag_text']
+    text = params['child_tag_text'].replace(' ', '')
     if text.endswith('.'):
         text = text[:-1]
+    
     result = convert_datetime_string_to_isoformat_datetime(text)
     return result
 

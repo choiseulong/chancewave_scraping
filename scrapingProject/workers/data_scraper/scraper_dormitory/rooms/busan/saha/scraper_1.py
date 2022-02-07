@@ -1,11 +1,11 @@
 from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scraper as ABCScraper
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
-from .parser import *
+from .parser_1 import *
 '''
     @post list
     method : GET
-    url_0 =   https://www.bsseogu.go.kr/board/list.bsseogu?boardId=BBS_0000039\
-        &menuCd=DOM_000000103001012000&orderBy=REGISTER_DATE%20DESC&paging=ok&startPage={page_count}
+    url =  http://www.saha.go.kr/portal/bbs/list.do?ptIdx=23&mId=0301020000&page=2&backUrl=/portal/bbs/write.do?\
+        ptIdx=23&backResetUrl=/portal/bbs/list.do?ptIdx=23&searchType=b_title
     header :
         None
 '''
@@ -13,19 +13,22 @@ from .parser import *
     @post info
     method : GET
     url : 
-        self.post_url + href
+        self.post_url.format()
     header :
         None
 
+'''
+'''
+    base64
 '''
 sleep_sec = 1
 
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '부산서구청'
-        self.post_board_name = '알림사항'
-        self.post_url = 'https://www.bsseogu.go.kr/board/'
+        self.channel_name = '부산사하구청'
+        self.post_board_name = '주요행사안내'
+        self.post_url = 'http://www.saha.go.kr/portal/bbs/view.do?bIdx={}&ptIdx={}&mId={}'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
