@@ -500,7 +500,7 @@ def parse_uploaded_time(**params):
     # 예외 케이스로 등록일을 처리할 경우 직접 작성
     # parse_view_count 를 작성해서 처리하거나 포스트 개별 페이지 파싱에서 처리함
     text = params['child_tag_text']
-    if len(text) == 12:
+    if 10 <= len(text) <= 12:
         text = text.replace(' ', '')
     if text.endswith('.'):
         text = text[:-1]
