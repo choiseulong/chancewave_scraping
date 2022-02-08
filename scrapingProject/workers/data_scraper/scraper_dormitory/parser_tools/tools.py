@@ -370,7 +370,9 @@ def _map_key_name_with_table_header(**kargs):
         'contact' : ["연락처"],
         'is_going_on' : ["접수상태", "상태", "공모상태"],
         'post_content_target' : ["대상자", "대상"],
-        'linked_post_url' : ["바로가기"]
+        'linked_post_url' : ["바로가기"],
+        'start_date' : ["시작일"],
+        'end_date' : ["종료일"]
     }
     for header_idx, header_name in enumerate(input_table_header):
         for key_name in header_info:
@@ -497,12 +499,16 @@ def parse_uploaded_time(**params):
     # 기본 등록일 처리.
     # 예외 케이스로 등록일을 처리할 경우 직접 작성
     # parse_view_count 를 작성해서 처리하거나 포스트 개별 페이지 파싱에서 처리함
-    text = params['child_tag_text'].replace(' ', '')
+    text = params['child_tag_text']
+    if len(text) == 12:
+        text = text.replace(' ', '')
     if text.endswith('.'):
         text = text[:-1]
     
     result = convert_datetime_string_to_isoformat_datetime(text)
     return result
+
+parse_start_date = parse_end_date = parse_uploaded_time
 
 def parse_view_count(**params):
     # 기본 조회수 처리.
