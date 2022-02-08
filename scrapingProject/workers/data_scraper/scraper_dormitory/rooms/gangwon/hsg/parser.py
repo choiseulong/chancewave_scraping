@@ -2,7 +2,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type' : ['uploaded_time', 'post_url', 'post_title', 'uploader', 'view_count']
+        'multiple_type' : ['uploaded_time', 'post_url', 'post_title', 'uploader', 'view_count', 'post_thumbnail']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     tmp_post_list = extract_children_tag(soup, 'li', child_tag_attrs={'class' :'li1'}, is_child_multiple=True)
@@ -28,7 +28,18 @@ def post_list_parsing_process(**params):
                 var['view_count'].append(
                     extract_numbers_in_text(span_text)
                 )
+        img = extract_children_tag(post, 'img')
+        if img :
+            src = extract_attrs(img, 'src')
+            var['post_thumbnail'].append(
+                var['channel_main_url'] + src
+            )
+        else:
+            var['post_thumbnail'].append(
+                None
+            )
     result = merge_var_to_dict(key_list, var)
+    print(result)
     return result
 
 def post_content_parsing_process(**params):
@@ -48,4 +59,5 @@ def post_content_parsing_process(**params):
     var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents)) 
     var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
     result = convert_merged_list_to_dict(key_list, var)
+    print(result)
     return result
