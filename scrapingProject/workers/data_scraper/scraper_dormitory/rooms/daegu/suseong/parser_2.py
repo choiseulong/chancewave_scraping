@@ -7,7 +7,6 @@ def post_list_parsing_process(**params):
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     cont_body = extract_children_tag(soup, 'div', child_tag_attrs={'class':'cont_body'})
     post_list = extract_children_tag(cont_body, 'li', is_child_multiple=True)
-    print(post_list[1])
     for post in post_list:
         
         var['post_title'].append(

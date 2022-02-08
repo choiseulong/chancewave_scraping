@@ -26,7 +26,6 @@ def post_list_parsing_process(**params):
         else :
             print(var['channel_code'], 'is_going_on 확인 필요')
             var['is_going_on'].append(True)
-
     result = merge_var_to_dict(key_list, var)
     return result
 
@@ -46,6 +45,5 @@ def post_content_parsing_process(**params):
     var['extra_info'].append(extra_info)
     var['post_text_type'] = 'only_extra_info'
     result = convert_merged_list_to_dict(key_list, var)
-    print(result)
     return result
 
