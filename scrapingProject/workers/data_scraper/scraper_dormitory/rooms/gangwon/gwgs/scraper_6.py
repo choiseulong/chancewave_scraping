@@ -1,15 +1,14 @@
 from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scraper as ABCScraper
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
-from .parser import *
+from .parser_6 import *
 
-# 채널 이름 : 태백시청
+# 채널 이름 : 고성군청
 
 #HTTP Request
 '''
     @post list
     method : GET
-    url_0 = https://cityhall.chuncheon.go.kr/board/list.chuncheon?\
-        boardId=BBS_0000257&menuCd=DOM_000000505003005000&startPage={}
+    url_0 = https://www.gwgs.go.kr/prog/bbsArticle/BBSMSTR_000000000479/list.do?pageIndex={}
     header :
         None
 '''
@@ -17,7 +16,7 @@ from .parser import *
     @post info
     method : GET
     url : 
-        self.post_url + href
+        self.post_url.format(post_id)
     header :
         None
 '''
@@ -26,9 +25,9 @@ sleep_sec = 1
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '태백시청'
-        self.post_board_name = '새소식'
-        self.post_url = 'http://www.taebaek.go.kr/www'
+        self.channel_name = '고성군청'
+        self.post_board_name = '유관기관소식'
+        self.post_url = 'https://www.gwgs.go.kr/prog/bbsArticle/BBSMSTR_000000000479/view.do?nttId={}'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)

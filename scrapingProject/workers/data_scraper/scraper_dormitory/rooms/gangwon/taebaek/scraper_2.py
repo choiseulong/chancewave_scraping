@@ -1,6 +1,6 @@
 from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scraper as ABCScraper
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
-from .parser import *
+from .parser_2 import *
 
 # 채널 이름 : 태백시청
 
@@ -8,8 +8,7 @@ from .parser import *
 '''
     @post list
     method : GET
-    url_0 = https://cityhall.chuncheon.go.kr/board/list.chuncheon?\
-        boardId=BBS_0000257&menuCd=DOM_000000505003005000&startPage={}
+    url_0 = http://www.taebaek.go.kr/www/selectBbsNttList.do?key=1597&bbsNo=138&pageUnit=10&searchCnd=all&pageIndex={}
     header :
         None
 '''
@@ -27,7 +26,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '태백시청'
-        self.post_board_name = '새소식'
+        self.post_board_name = '청년알림판'
         self.post_url = 'http://www.taebaek.go.kr/www'
 
     def scraping_process(self, channel_code, channel_url, dev):

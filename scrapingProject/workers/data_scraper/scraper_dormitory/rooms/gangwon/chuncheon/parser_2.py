@@ -8,9 +8,15 @@ def post_list_parsing_process(**params):
     for key in key_list :
         var[f'parse_{key}'] = globals()[f'parse_{key}']
     # 2021-02-09 
-    var['table_header'] = ["번호", "제목", "작성자", "작성일", "조회수"]
-    # gangwon__taebaek_1 ['번호', '제목', '작성자', '게시일', '조회수']
+    var['table_header_box'] = extract_children_tag(soup, 'div', child_tag_attrs={'class':'board-head'})
+    var['table_data_box'] = extract_children_tag(soup, 'ul', child_tag_attrs={'class':'board-body'})
+    var['table_header'] = ["번호", "제목", "작성자", "작성일", "첨부", "조회"]
     result = parse_board_type_html_page(soup, var, key_list)
+    return result
+
+def parse_uploaded_time(**params):
+    text = params['child_tag_text'].replace('작성일', '').strip()
+    result = convert_datetime_string_to_isoformat_datetime(text)
     return result
 
 def post_content_parsing_process(**params):
@@ -19,7 +25,7 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    tmp_contents = extract_children_tag(soup, 'td', child_tag_attrs={'class':'bbs_content'})
+    tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'class':'board-con'})
     var['post_text'] = extract_text(tmp_contents)
     var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents)) 
     var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
