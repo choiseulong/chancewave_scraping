@@ -8,7 +8,8 @@ import re
 from pytz import timezone
 from w3lib.html import remove_tags
 from urllib.parse import urljoin
-
+from http.client import HTTPResponse as urlopen_response
+from requests.models import Response as req_response
 
 def change_to_soup(reponse_text):
     # response.text 를 soup로 변환
@@ -294,13 +295,19 @@ def html_type_default_setting(params, target_key_info):
     # BeautifulSoup 객체에서 데이터를 파싱할 수 없을 경우 사용함
     var = reflect_params(locals(), params)
     var, key_list = reflect_key(var, target_key_info)
-    encoding = var['response'].encoding
-    if encoding == 'ISO-8859-1':
-        encoding = 'EUC-KR'
-    if type(encoding) == type(None):
-        encoding = 'UTF-8'
+    if type(var['response']) == urlopen_response:
+        data = var['response'].read()
+        text = data.decode('UTF-8')
+    elif type(var['response']) == req_response :
+        encoding = var['response'].encoding
+        if encoding == 'ISO-8859-1':
+            encoding = 'EUC-KR'
+        if type(encoding) == type(None):
+            encoding = 'UTF-8'
 
-    text = var['response'].content.decode(encoding,'replace')
+        text = var['response'].content.decode(encoding,'replace')
+    else :
+        raise('RESPONSE TYPE ERROR')
     soup = change_to_soup(
         text
     )

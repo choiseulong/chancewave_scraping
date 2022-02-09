@@ -2,6 +2,7 @@ from time import sleep
 import json
 from datetime import datetime
 from pytz import timezone
+from urllib.request import urlopen
 from ..parser_tools.tools import *
 import urllib3
 
@@ -55,6 +56,16 @@ def post_method_response(session, url, data={}, sleep_sec=2, jsonize=False):
         status = 'ok'
     sleep(sleep_sec)
     return status, response
+
+
+def urlopen_response(channel_url, sleep_sec=2):
+    response = urlopen(channel_url)
+    status_code = 'fail'
+    if response.code == 200:
+        status_code = 'ok'
+    sleep(sleep_sec)
+    return status_code, response
+
 
 def filtering_channel_path_in_globals(Globals):
     channel_code_list = []

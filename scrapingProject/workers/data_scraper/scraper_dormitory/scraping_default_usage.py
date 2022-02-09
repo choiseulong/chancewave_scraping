@@ -68,6 +68,8 @@ class Scraper(metaclass=ABCMeta):
             status, response = get_method_response(self.session, self.channel_url, sleep_sec)
         elif method == 'post':
             status, response = post_method_response(self.session, self.channel_url, data, sleep_sec, jsonize)
+        elif method == 'urlopen':
+            status, response = urlopen_response(self.channel_url, sleep_sec)
 
         if status == 'ok':
             self.scraping_target = post_list_parsing_process(
@@ -77,7 +79,7 @@ class Scraper(metaclass=ABCMeta):
                 page_count = self.page_count,
                 channel_main_url = self.channel_main_url,
                 channel_url = self.channel_url,
-                dev = self.dev
+                dev = self.dev,
             )
 
     def target_contents_scraping(self, post_content_parsing_process, sleep_sec=2):
