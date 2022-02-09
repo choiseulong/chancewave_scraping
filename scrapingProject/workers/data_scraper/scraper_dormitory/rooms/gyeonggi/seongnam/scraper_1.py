@@ -171,7 +171,7 @@ def post_content_parsing_process(**params):
                     var['uploader'] = tmp_info_value_text
             elif tmp_info_title_text in extra_info_column_list:
                 tmp_extra_info_index = extra_info_column_list.index(tmp_info_title_text)
-                var['extra_info'][0]['info_' + str(tmp_extra_info_index)] = [tmp_info_title_text, tmp_info_value_text]
+                var['extra_info'][0]['info_' + str(tmp_extra_info_index + 1)] = [tmp_info_title_text, tmp_info_value_text]
 
     context_area = content_info_area.find('td', class_='content')
     var['post_text'] = clean_text(context_area.text.strip())
