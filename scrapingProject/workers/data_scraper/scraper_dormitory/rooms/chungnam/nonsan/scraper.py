@@ -27,7 +27,7 @@ sleep_sec = 1
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '공주시청'
+        self.channel_name = '논산시청'
         self.post_board_name = '공지사항'
         self.post_url = 'https://www.nonsan.go.kr/kor/html/sub03/030101.html'
 

@@ -33,7 +33,7 @@ def post_list_parsing_process(**params):
                 )
     
     result = merge_var_to_dict(key_list, var)
-    # print(result)
+    
     return result
 
 

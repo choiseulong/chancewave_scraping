@@ -8,7 +8,8 @@ import re
 from pytz import timezone
 from w3lib.html import remove_tags
 from urllib.parse import urljoin
-
+from http.client import HTTPResponse as urlopen_response
+from requests.models import Response as req_response
 
 def change_to_soup(reponse_text):
     # response.text 를 soup로 변환
@@ -133,7 +134,7 @@ def erase_html_tags(text):
 
 def clean_text(text):
     try :
-        erase_space = ['\r', '&lsquo;', '&rsquo;', '\u200b']
+        erase_space = ['\r', '&lsquo;', '&rsquo;', '\u200b', '/ufeff', '\ufeff']
         leave_space = ['\xa0', '\n', '\t', '&nbsp;']
         for _ in erase_space:
             text = text.replace(_, '')
@@ -294,13 +295,19 @@ def html_type_default_setting(params, target_key_info):
     # BeautifulSoup 객체에서 데이터를 파싱할 수 없을 경우 사용함
     var = reflect_params(locals(), params)
     var, key_list = reflect_key(var, target_key_info)
-    encoding = var['response'].encoding
-    if encoding == 'ISO-8859-1':
-        encoding = 'EUC-KR'
-    if type(encoding) == type(None):
-        encoding = 'UTF-8'
+    if type(var['response']) == urlopen_response:
+        data = var['response'].read()
+        text = data.decode('UTF-8')
+    elif type(var['response']) == req_response :
+        encoding = var['response'].encoding
+        if encoding == 'ISO-8859-1':
+            encoding = 'EUC-KR'
+        if type(encoding) == type(None):
+            encoding = 'UTF-8'
 
-    text = var['response'].content.decode(encoding,'replace')
+        text = var['response'].content.decode(encoding,'replace')
+    else :
+        raise('RESPONSE TYPE ERROR')
     soup = change_to_soup(
         text
     )
@@ -315,7 +322,10 @@ def json_type_default_setting(params, target_key_info):
 def extract_text_between_prefix_and_suffix(prefix, suffix, text):
     # 주로 post_url 구성시 post_id 를 찾기위해서 href를 parsing할 경우에 사용함
     # text 에서 prefix 문자와 suffix 문자 사이의 값을 반환함
-    return text[text.find(prefix)+len(prefix):text.find(suffix)]
+    # return text[text.find(prefix)+len(prefix):text.find(suffix)]
+    truncated_front_part_text = text[text.find(prefix)+len(prefix):]
+    truncated_text = truncated_front_part_text[:truncated_front_part_text.find(suffix)]
+    return truncated_text
 
 
 def search_img_list_in_contents(contents, channel_main_url):
@@ -351,19 +361,27 @@ def _map_key_name_with_table_header(**kargs):
     # 게시물 리스트 스크래핑 진행시 테이블 헤더로 제공되는 항목
     # api key값과 맵핑함
     var = kargs['var']
-    table_header = var['table_header']
+    input_table_header = var['table_header']
     included_key_info = {}
     header_info = {
-        'post_url' : ["제목", "행사명", "강좌명", "제 목"],
-        'post_title' : ["제목", "행사명", "강좌명", "제 목"],
-        'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자", "날짜", "공고일"],
+        'post_url' : ["제목", "행사명", "강좌명", "제 목", "글제목", "강좌명", "서비스명",\
+             "강좌명/교육기관", "공모·모집명", "글 제목"],
+        'post_title' : ["제목", "행사명", "강좌명", "제 목", "글제목", "강좌명", "서비스명",\
+             "강좌명/교육기관", "공모·모집명", "글 제목"],
+        'uploaded_time' : ["작성일", "등록일", "게시일", "등록일자", "일자", "작성일자", "날짜",\
+             "공고일", "입력일"],
         'view_count' : ["조회", "조회수"],
-        'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서", "담당자", "작성부서", "기관"],
-        'post_subject' : ["분류", "구분", "분야"],
+        'uploader' : ["작성자", "담당부서", "게시자", "등록자", "부서", "담당자", "작성부서", "읍면동", "기관",\
+             "제공기관", "부서명", "글쓴이", "추진부서", "이름", "기관명", "담당기관"],
+        'post_subject' : ["분류", "구분", "분야", "서비스유형"],
         'contact' : ["연락처"],
-        'is_going_on' : ["접수상태"]
+        'is_going_on' : ["접수상태", "상태", "공모상태"],
+        'post_content_target' : ["대상자", "대상"],
+        'linked_post_url' : ["바로가기"],
+        'start_date' : ["시작일"],
+        'end_date' : ["종료일"]
     }
-    for header_idx, header_name in enumerate(table_header):
+    for header_idx, header_name in enumerate(input_table_header):
         for key_name in header_info:
             if header_name in header_info[key_name]:
                 if header_idx not in included_key_info.keys():
@@ -392,7 +410,7 @@ def _search_table_header_list(**kargs):
     soup, var = kargs['soup'], kargs['var']
     thead = extract_children_tag(soup, 'thead')
     tabel_header_box = var['table_header_box'] if 'table_header_box' in var.keys() else extract_children_tag(thead, 'tr')
-    var['table_header_list'] = [
+    var['page_table_header'] = [
         extract_text(child) \
         for child \
         in tabel_header_box.children\
@@ -402,17 +420,44 @@ def _search_table_header_list(**kargs):
 
 def _compare_input_header_with_table_header(**kargs):
     var = kargs['var']
-    table_header = var['table_header']
-    table_header_list = var['table_header_list']
-    if table_header != table_header_list:
+    input_table_header = var['table_header']
+    page_tabel_header = var['page_table_header']
+    if input_table_header != page_tabel_header:
         if var['dev'] :
             print(f'Table Header Warning\nCHANNEL_URL : {var["channel_url"]}')
-            print(f'Input Table Header : {table_header}\nPage Table Header : {table_header_list}')
+            print(f'Input Table Header : {input_table_header}\nPage Table Header : {page_tabel_header}')
+            if len(input_table_header) != len(input_table_header):
+                print(f'TABLE LENGTH DID NOT MATCH\nInput Table Header : {len(input_table_header)}\nPage Table Header : {len(page_tabel_header)}')
+            else :
+                for table_idx in range(len(input_table_header)):
+                    try :
+                        if input_table_header[table_idx] != page_tabel_header[table_idx]:
+                            print(
+                                f'HEADER NAME DID NOT MATCH INDEX : {table_idx}\
+                                \nInput Table Header : {input_table_header[table_idx]}\
+                                \nPage Table Header : {page_tabel_header[table_idx]}'
+                            )
+                    except IndexError:
+                        # TypeError: exceptions must derive from BaseException
+                        raise(
+                            'TABLE HEADER LENGTH DID NOT MATCH'
+                        )
         else :
             print(f'Table Header Warning\n{var["channel_main_url"]}')
     else :
         if var['dev'] :
             print('header pass')
+    return var
+
+def _check_table_data_validation(var):
+    table_header_length = len(var['table_header']) # parser.py 에서 선언한 테이블 헤더
+    table_data_list = var['table_data_list'] # 부모 태그의 자식 태그 리스트
+    valid_child_tag_list = [] # 옳바른 자식을 담을 빈 리스트
+    for child_tag_idx, child_tag in enumerate(table_data_list):
+        seed_tag = _seperate_parents_tag_to_child_tag_list(child_tag) # 자식태그의 seed 태그 리스트
+        if len(seed_tag) == table_header_length: # 헤더 길이와 일치하다면
+            valid_child_tag_list.append(table_data_list[child_tag_idx]) # 옳바른 자식으로 편입
+    var['table_data_list'] = valid_child_tag_list # 부모 태그 내 옳바른 자식 태그 리스트
     return var
 
 def _search_table_data_list(**kargs):
@@ -427,6 +472,7 @@ def _search_table_data_list(**kargs):
             table_data_box = table_data_box[1]
         table_data_box = _handle_tbody_exception(soup, tbody=table_data_box)
     var['table_data_list'] = _seperate_parents_tag_to_child_tag_list(table_data_box)
+    var = _check_table_data_validation(var)
     if not var['table_data_list'] :
         var['table_data_list'] = 'break'
     return var
@@ -440,20 +486,36 @@ def _handle_tbody_exception(soup, tbody):
 
 def parse_is_going_on(**params):
     text = params['child_tag_text']
-    if '마감' in text:
-        return False
-    else:
-        return True
+    on_progress = ['진행', '모집중', '접수대기', '접수중', '교육중']
+    dead = ['마감', '교육완료', '접수마감']
+    result = None
+    for word in on_progress:
+        if word in text :
+            result = True
+    
+    for word in dead:
+        if word in text :
+            if type(result) == type(None):
+                result = False
+            else :
+                return 'ERROR'
+    # print(var['channel_code'], 'IS_GOING_ON PARSER VALUE DUPLICATE ERROR')
+    return result
 
 def parse_uploaded_time(**params):
     # 기본 등록일 처리.
     # 예외 케이스로 등록일을 처리할 경우 직접 작성
     # parse_view_count 를 작성해서 처리하거나 포스트 개별 페이지 파싱에서 처리함
     text = params['child_tag_text']
+    if 10 <= len(text) <= 12:
+        text = text.replace(' ', '')
     if text.endswith('.'):
         text = text[:-1]
+    
     result = convert_datetime_string_to_isoformat_datetime(text)
     return result
+
+parse_start_date = parse_end_date = parse_uploaded_time
 
 def parse_view_count(**params):
     # 기본 조회수 처리.
@@ -467,6 +529,13 @@ def parse_href(href):
         href = href[1:]
     if href.startswith('../'):
         href = href[2:]
+    return href
+
+def parse_linked_post_url(**params):
+    child_tag = params['child_tag']
+    var = params['var']
+    a_tag = extract_children_tag(child_tag, 'a')
+    href = extract_attrs(a_tag, 'href') if a_tag.has_attr('href') else ''
     return href
 
 def parse_post_url(**params):
@@ -545,7 +614,7 @@ def parse_post_title(**params):
 def _return_raw_text(**params):
     return params['child_tag_text']
 
-parse_contact = parse_post_subject = parse_uploader\
+parse_contact = parse_post_subject = parse_uploader = parse_post_content_target\
      = _return_raw_text
     
 def _check_notice_post(child_tag_text, page_count):
@@ -556,16 +625,17 @@ def _check_notice_post(child_tag_text, page_count):
             return True
     return False
 
+
 def _seperate_parents_tag_to_child_tag_list(parents_tag):
     child_tag_list = [child for child in parents_tag.children if isinstance(child, bs4.element.Tag)]
     return child_tag_list
+
 
 def _parse_total_table_data(**kargs):
     var = kargs['var']
     checked_key_info, table_data_list = var['checked_key_info'], var['table_data_list']
     if var['table_data_list'] == 'break':
         return var
-
     for table_data in table_data_list :
         table_data_text = extract_text(table_data)
         if '등록된 글이 없습니다' == table_data_text:
@@ -574,7 +644,6 @@ def _parse_total_table_data(**kargs):
         # 입력한 header 순번에 맞춰 해당 값을 파싱하는 함수에 전달함
         child_tag_list = _seperate_parents_tag_to_child_tag_list(table_data)
         child_tag_text_list = [extract_text(child_tag) for child_tag in child_tag_list]
-        print(child_tag_text_list)
         is_notice = _check_notice_post(child_tag_text = child_tag_text_list[0], page_count=var['page_count'])
         if not is_notice : pass
         if '공지' in child_tag_text_list[0] or not child_tag_text_list[0]: # 공지글 첫 페이지에서만 수집
@@ -599,6 +668,7 @@ def _parse_total_table_data(**kargs):
                     globals()[func_name](var=var, child_tag_text=child_tag_text_list[child_tag_idx], child_tag=child_tag_list[child_tag_idx])
     return var
 
+
 def _add_title_index_to_var(**kargs):
     var = kargs['var']
     checked_key_info = var['checked_key_info']
@@ -607,6 +677,7 @@ def _add_title_index_to_var(**kargs):
             var['title_idx'] = idx
             break
     return var
+
 
 def parse_board_type_html_page(soup, var, key_list):
     # 테이블 헤더, 데이블 데이터가 리스트 형식으로 담긴 태그가 있을때 사용할 수 있음
@@ -636,6 +707,7 @@ def parse_board_type_html_page(soup, var, key_list):
         if var['table_data_list'] == 'break': return
     result = merge_var_to_dict(key_list=key_list, var=var)
     return result
+
 
 def make_absolute_img_src(img_src, channel_main_url):
     """

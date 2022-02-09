@@ -63,7 +63,7 @@ class ScrapingManager:
         print(group_name, channel_code, 'init')
         session = self.get_requests_session()
         tmp_scraper_file_name_list = get_scraper_file_list_from_group_room(group_name, room_name)
-        tmp_room_num = channel_code[-1]
+        tmp_room_num = channel_code.split('_')[1]
         scraper_room_address = None
         for tmp_scraper_file_name in tmp_scraper_file_name_list:
             # module 이름으로 변형 위해 python 확장자 제거
@@ -83,7 +83,7 @@ class ScrapingManager:
         for channel_code_with_location in channel_url_list:
             group_name, room_name, channel_code, channel_url = self.parse_scraping_parameters(channel_code_with_location)
             tmp_scraper_file_name_list = get_scraper_file_list_from_group_room(group_name, room_name)
-            tmp_room_num = channel_code[-1]
+            tmp_room_num = channel_code.split('_')[1]
             scraper_room_address = None
             for tmp_scraper_file_name in tmp_scraper_file_name_list:
                 # module 이름으로 변형 위해 python 확장자 제거

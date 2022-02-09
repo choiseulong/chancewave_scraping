@@ -23,7 +23,7 @@ def post_content_parsing_process(**params):
     var['contact'] = extract_contact_numbers_from_text(
         extract_text_from_single_tag(soup, 'li', child_tag_attrs={'class' : 'date'})
     )
-    var['uploader'] = extract_text_from_single_tag(soup, 'li', child_tag_attrs={'class' : 'writer'})
+    var['uploader'] = extract_text_from_single_tag(soup, 'li', child_tag_attrs={'class' : 'writer'}).replace('작성자', '')
     tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'class':'board_viewDetail'})
     tmp_contents = decompose_tag(tmp_contents, 'div', child_tag_attrs={'class':'mt50'})
     var['post_text'] = extract_text(tmp_contents)

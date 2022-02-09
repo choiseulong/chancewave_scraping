@@ -26,7 +26,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '대전중구청'
-        self.post_board_name = '공지사항'
+        self.post_board_name = '중구소식/공지사항'
         self.post_url = 'https://www.djjunggu.go.kr/bbs/BBSMSTR_000000000136/view.do?nttId={}'
 
     def scraping_process(self, channel_code, channel_url, dev):

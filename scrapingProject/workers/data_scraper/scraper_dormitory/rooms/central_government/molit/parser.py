@@ -30,9 +30,7 @@ def post_list_parsing_process(**params):
                 var['view_count'].append(
                     extract_numbers_in_text(td_text)
                 )
-    
     result = merge_var_to_dict(key_list, var)
-    # print(result)
     return result
 
 def post_content_parsing_process(**params):
@@ -52,7 +50,5 @@ def post_content_parsing_process(**params):
     bd_view_cont = extract_children_tag(soup, 'div', {'class' : 'bd_view_cont'}, is_child_multiple=False)
     var['post_text'] = clean_text(extract_text(bd_view_cont))
     var['post_image_url'] = search_img_list_in_contents(bd_view_cont, var['channel_main_url'])
-    
     result = convert_merged_list_to_dict(key_list, var)
-    # print(result)
     return result

@@ -22,6 +22,9 @@ from .parser import *
         None
 
 '''
+'''
+    컨텐츠가 없는 페이지가 존재하는 것이 정상
+'''
 sleep_sec = 1
 is_update = True
 

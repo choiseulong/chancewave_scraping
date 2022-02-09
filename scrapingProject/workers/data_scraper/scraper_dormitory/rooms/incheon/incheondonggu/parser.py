@@ -7,7 +7,7 @@ def post_list_parsing_process(**params):
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     for key in key_list :
         var[f'parse_{key}'] = globals()[f'parse_{key}']
-    # 2021-01-17 
+    # 2021-01-26
     var['table_header'] = ["NO", "제목", "첨부", "담당부서", "날짜", "조회수"]
     result = parse_board_type_html_page(soup, var, key_list)
     return result

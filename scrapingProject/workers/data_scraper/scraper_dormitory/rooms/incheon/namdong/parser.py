@@ -30,7 +30,7 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['post_text', 'contact',],
+        'single_type' : ['post_text', 'contact','view_count'],
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
@@ -43,7 +43,12 @@ def post_content_parsing_process(**params):
                     find_next_tag(dt)
                 )
             )
-            break
+        elif '조회수' in dt_text:
+            var['view_count']=extract_numbers_in_text(
+                extract_text(
+                    find_next_tag(dt)
+                )
+            )
     tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'class':'con'})
     tmp_contents = decompose_tag(tmp_contents, 'p', child_tag_attrs={'class':'openNuri'})
     var['post_text'] = extract_text(tmp_contents)

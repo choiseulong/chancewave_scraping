@@ -14,7 +14,6 @@ def post_list_parsing_process(**params):
             var['post_url_frame'].format(data['서비스ID'])
         )
     result = merge_var_to_dict(key_list, var)
-    print(result)
     return result
 
 def post_content_parsing_process(**params):
@@ -39,6 +38,5 @@ def post_content_parsing_process(**params):
     var['post_text_type'] = 'both'
     var['extra_info'].append(extra_info)
     result = convert_merged_list_to_dict(key_list, var)
-    print(result)
     return result
 

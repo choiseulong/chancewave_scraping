@@ -29,7 +29,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '장수군청'
-        self.post_board_name = '공지사항'
+        self.post_board_name = '읍면공지사항'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)

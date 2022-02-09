@@ -33,10 +33,7 @@ def post_list_parsing_process(**params):
                 var['view_count'].append(
                     extract_numbers_in_text(liText)
                 )
-
-    
     result = merge_var_to_dict(key_list, var)
-    # print(result)
     return result
 
 def parse_href(text):
@@ -62,7 +59,5 @@ def post_content_parsing_process(**params):
     tb_contents = extract_children_tag(soup, 'div', {'class' : 'tb_contents'}, is_child_multiple=False)
     var['post_text'] = clean_text(extract_text(tb_contents))
     var['post_image_url'] = search_img_list_in_contents(tb_contents, var['channel_main_url'])
-    
     result = convert_merged_list_to_dict(key_list, var)
-    # print(result)
     return result

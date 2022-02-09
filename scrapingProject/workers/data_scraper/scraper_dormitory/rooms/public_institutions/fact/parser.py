@@ -10,7 +10,6 @@ def post_list_parsing_process(**params):
     # 2021-01-10
     var['table_header'] = ["번호", "제목", "첨부파일", "게시자", "등록일", "조회수"]
     result = parse_board_type_html_page(soup, var, key_list)
-    print(result)
     return result
 
 def post_content_parsing_process(**params):

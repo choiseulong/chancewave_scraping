@@ -27,7 +27,7 @@ sleep_sec = 1
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '부산시청'
+        self.channel_name = '부산광역시청'
         self.post_board_name = '공지사항'
 
     def scraping_process(self, channel_code, channel_url, dev):

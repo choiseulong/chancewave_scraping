@@ -1,10 +1,6 @@
 from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scraper as ABCScraper
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
-
-# 채널 이름 : 대구남구청
-
-#HTTP Request
 '''
     @post list
     method : GET

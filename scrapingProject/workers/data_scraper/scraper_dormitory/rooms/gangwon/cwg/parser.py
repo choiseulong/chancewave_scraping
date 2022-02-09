@@ -18,9 +18,16 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    tmp_meta_data = extract_children_tag(soup, 'th', child_tag_attrs={'scope':'row'}, is_child_multiple=True)
+    for meta_data in tmp_meta_data:
+        meta_data_name = extract_text(meta_data)
+        if '연락처' in meta_data_name:
+            var['contact'] = extract_text(find_next_tag(meta_data))
+            break
     tmp_contents = extract_children_tag(soup, 'td', child_tag_attrs={'class':'p-table__content'})
     var['post_text'] = extract_text(tmp_contents)
-    var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents)) 
+    if not var['contact']:
+        var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents)) 
     var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
     result = convert_merged_list_to_dict(key_list, var)
     return result

@@ -24,6 +24,7 @@ class Scraper(metaclass=ABCMeta):
         self.collected_data_list = []
         self.channel_name = ''
         self.post_board_name = ''
+        self.empty_contents_dict = {}
 
         # additional urls
         self.post_url = ''
@@ -67,6 +68,8 @@ class Scraper(metaclass=ABCMeta):
             status, response = get_method_response(self.session, self.channel_url, sleep_sec)
         elif method == 'post':
             status, response = post_method_response(self.session, self.channel_url, data, sleep_sec, jsonize)
+        elif method == 'urlopen':
+            status, response = urlopen_response(self.channel_url, sleep_sec)
 
         if status == 'ok':
             self.scraping_target = post_list_parsing_process(
@@ -76,7 +79,7 @@ class Scraper(metaclass=ABCMeta):
                 page_count = self.page_count,
                 channel_main_url = self.channel_main_url,
                 channel_url = self.channel_url,
-                dev = self.dev
+                dev = self.dev,
             )
 
     def target_contents_scraping(self, post_content_parsing_process, sleep_sec=2):
@@ -95,6 +98,8 @@ class Scraper(metaclass=ABCMeta):
             status, response = post_method_response(self.session, self.post_url, data, sleep_sec)
         elif 'post_url' in target.keys():
             post_url = target['post_url']
+            if type(post_url) == type(None):
+                return self.empty_contents_dict
             status, response = get_method_response(self.session, post_url, sleep_sec)
 
         if status == 'ok':
@@ -134,8 +139,10 @@ class Scraper(metaclass=ABCMeta):
                     post_url_can_use = False
                 else :
                     post_url_can_use = True
-            else :
+            elif 'contents_req_params' not in target_info.keys() and 'post_url' in target_info.keys() :
                 post_url_can_use = True
+            else:
+                post_url_can_use = None
             data_frame = get_post_data_frame(self.channel_code, self.channel_url, post_url_can_use, self.channel_name, self.post_board_name)
             data_frame_with_target_info = enter_data_into_data_frame(data_frame, target_info)
             data_frame_with_target_contents = enter_data_into_data_frame(data_frame_with_target_info, target_contents)

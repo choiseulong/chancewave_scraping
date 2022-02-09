@@ -1,13 +1,10 @@
 from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scraper as ABCScraper
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
-
-# 채널 이름 : 인천광역시청
-
-#HTTP Request
 '''
     @post list
     method : GET
+
     url_0 = https://www.seogu.gwangju.kr/board.es?mid=a10311010100&bid=0034&act=listC&nPage={}
     header :
         None
