@@ -141,11 +141,11 @@ def post_content_parsing_process(**params):
                 date_info_str_list = [f.strip() for f in tmp_date_period_str.split('~')]
                 if len(date_info_str_list) == 2:
 
-                    var['start_date'] = datetime.strptime(date_info_str_list[0], '%Y년 %m월 %d일 %H시 %M분')
-                    var['end_date'] = datetime.strptime(date_info_str_list[1], '%Y년 %m월 %d일 %H시 %M분')
+                    var['start_date'] = datetime.strptime(date_info_str_list[0], '%Y년 %m월 %d일 %H시 %M분').isoformat()
+                    var['end_date'] = datetime.strptime(date_info_str_list[1], '%Y년 %m월 %d일 %H시 %M분').isoformat()
                 else:
-                    var['start_date'] = datetime.strptime(date_info_str_list[0], '%Y년 %m월 %d일 %H시 %M분')
-                    var['end_date'] = datetime.strptime(date_info_str_list[0], '%Y년 %m월 %d일 %H시 %M분')
+                    var['start_date'] = datetime.strptime(date_info_str_list[0], '%Y년 %m월 %d일 %H시 %M분').isoformat()
+                    var['end_date'] = datetime.strptime(date_info_str_list[0], '%Y년 %m월 %d일 %H시 %M분').isoformat()
 
     context_area = content_info_area.find('pre', class_='board_content')
     var['post_text'] = clean_text(context_area.text.strip())

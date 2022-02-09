@@ -3,9 +3,9 @@ from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 import js2py
 
-# 채널 이름 : 영동군
+# 채널 이름 : 옥천군
 
-# 타겟 : 교육강좌
+# 타겟 : 보건소 공지사항
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -13,7 +13,7 @@ import js2py
     @post list
 
     method : GET
-    url : https://yd21.go.kr/kr/html/sub05/050904.html?mode=L&GotoPage={page_count}
+    url : https://www.oc.go.kr/health/selectBbsNttList.do?bbsNo=107&&pageUnit=10&key=1508&pageIndex={page_count}
     header :
         None
 
@@ -21,7 +21,7 @@ import js2py
 '''
     @post info
     method : GET
-    url : https://yd21.go.kr/kr/html/sub05/050904.html?mode=V&no={post_id}&GotoPage=1
+    url : https://www.oc.go.kr/health/selectBbsNttView.do?bbsNo=107&nttNo={post_id}&&pageUnit=10&key=1508&pageIndex=1
     header :
         None
 
@@ -33,9 +33,9 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '영동군'
-        self.post_board_name = '교육강좌'
-        self.channel_main_url = 'https://yd21.go.kr'
+        self.channel_name = '옥천군'
+        self.post_board_name = '보건소 공지사항'
+        self.channel_main_url = 'https://www.oc.go.kr/'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
@@ -61,17 +61,17 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_title', 'view_count', 'uploader', 'post_subject', 'uploaded_time']
+        'multiple_type': ['post_url', 'post_title', 'view_count', 'uploader', 'uploaded_time']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
     # 2022-2-9 HYUN
     # html table header index
-    table_column_list = ['글번호', '구분', '제목', '작성자', '첨부파일', '조회수', '작성일']
+    table_column_list = ['번호', '제목', '작성자', '작성일', '조회수', '파일']
 
     # 게시물 리스트 테이블 영역
-    post_list_table_bs = soup.find('table', class_='board_list')
+    post_list_table_bs = soup.find('table', class_='p-table')
 
     if not post_list_table_bs:
         raise TypeError('CANNOT FIND LIST TABLE')
@@ -97,18 +97,16 @@ def post_list_parsing_process(**params):
                     print('PAGING END')
                     return
             elif idx == 1:
-                var['post_subject'].append(tmp_td.text.strip())
-            elif idx == 2:
                 var['post_title'].append(clean_text(tmp_td.text).strip())
                 var['post_url'].append(make_absolute_url(
                     in_url=tmp_td.find('a').get('href'),
                     channel_main_url=var['response'].url))
-            elif idx == 3:
+            elif idx == 2:
                 var['uploader'].append(tmp_td.text.strip())
-            elif idx == 5:
-                var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
-            elif idx == 6:
+            elif idx == 3:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
+            elif idx == 4:
+                var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
 
     result = merge_var_to_dict(key_list, var)
     if var['dev']:
@@ -123,7 +121,7 @@ def post_content_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
 
-    context_area = soup.find('div', class_='bbs--view--cont')
+    context_area = soup.find('td', class_='p-table__content')
 
     var['post_text'] = clean_text(context_area.text.strip())
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)

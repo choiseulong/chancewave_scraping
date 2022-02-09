@@ -147,7 +147,7 @@ def post_content_parsing_process(**params):
                 if tmp_date_period_str:
                     if tmp_date_period_str[-1] == '.':
                         tmp_date_period_str = tmp_date_period_str[:-1]
-                    var['start_date'] = datetime.strptime(tmp_date_period_str, '%Y.%m.%d')
+                    var['start_date'] = datetime.strptime(tmp_date_period_str, '%Y.%m.%d').isoformat()
 
             elif tmp_info_title_text == '작성자':
                 if var.get('uploader'):

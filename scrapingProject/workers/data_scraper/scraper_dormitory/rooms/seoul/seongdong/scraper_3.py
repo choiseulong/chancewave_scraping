@@ -122,8 +122,8 @@ def post_list_parsing_process(**params):
             elif idx == 3:
                 tmp_regist_period_str = clean_text(tmp_td.text).strip()
                 regist_period_date_list = [f.strip() for f in tmp_regist_period_str.split('~')]
-                var['start_date'].append(datetime.strptime(regist_period_date_list[0], '%Y.%m.%d %H시'))
-                var['end_date'].append(datetime.strptime(regist_period_date_list[1], '%Y.%m.%d %H시'))
+                var['start_date'].append(datetime.strptime(regist_period_date_list[0], '%Y.%m.%d %H시').isoformat())
+                var['end_date'].append(datetime.strptime(regist_period_date_list[1], '%Y.%m.%d %H시').isoformat())
             elif idx == 4:
                 if clean_text(tmp_td.text).strip() == '접수중':
                     var['is_going_on'].append(True)

@@ -153,11 +153,11 @@ def post_content_parsing_process(**params):
                         date_info_str_list = [f.strip() for f in tmp_date_period_str.split('~')]
                         if len(date_info_str_list) == 2:
 
-                            var['start_date'] = datetime.strptime(date_info_str_list[0], '%Y년 %m월 %d일')
-                            var['end_date'] = datetime.strptime(date_info_str_list[1], '%Y년 %m월 %d일')
+                            var['start_date'] = datetime.strptime(date_info_str_list[0], '%Y년 %m월 %d일').isoformat()
+                            var['end_date'] = datetime.strptime(date_info_str_list[1], '%Y년 %m월 %d일').isoformat()
                         else:
-                            var['start_date'] = datetime.strptime(date_info_str_list[0], '%Y년 %m월 %d일')
-                            var['end_date'] = datetime.strptime(date_info_str_list[0], '%Y년 %m월 %d일')
+                            var['start_date'] = datetime.strptime(date_info_str_list[0], '%Y년 %m월 %d일').isoformat()
+                            var['end_date'] = datetime.strptime(date_info_str_list[0], '%Y년 %m월 %d일').isoformat()
                     elif tmp_info_title_text == '기수별':
                         var['extra_info'][0]['info_1'] = [tmp_info_title_text, tmp_info_value_text]
                     elif tmp_info_title_text == '교육장소':
