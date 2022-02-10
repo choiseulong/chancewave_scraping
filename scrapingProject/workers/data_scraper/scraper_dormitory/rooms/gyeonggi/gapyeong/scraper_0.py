@@ -109,11 +109,8 @@ def post_list_parsing_process(**params):
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
 
     result = merge_var_to_dict(key_list, var)
-<<<<<<< HEAD
-=======
     if var['dev']:
         print(result)
->>>>>>> dev_hyun
     return result
 
 def post_content_parsing_process(**params):
@@ -155,9 +152,6 @@ def post_content_parsing_process(**params):
         raise ValueError('post_text 본문 내용 텍스트 파싱 불가 ERROR')
 
     result = convert_merged_list_to_dict(key_list, var)
-<<<<<<< HEAD
-=======
     if var['dev']:
         print(result)
->>>>>>> dev_hyun
     return result
