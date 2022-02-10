@@ -64,7 +64,7 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'uploader', 'view_count', 'uploaded_time']
+        'multiple_type': ['post_url', 'uploader', 'view_count', 'uploaded_time', 'post_subject']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
