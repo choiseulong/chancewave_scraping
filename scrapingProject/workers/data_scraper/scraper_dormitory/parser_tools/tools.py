@@ -433,7 +433,7 @@ def _compare_input_header_with_table_header(**kargs):
             print(f'Table Header Warning\nCHANNEL_URL : {var["channel_url"]}')
             print(f'Input Table Header : {input_table_header}\nPage Table Header : {page_tabel_header}')
             if len(input_table_header) != len(input_table_header):
-                print(f'TABLE LENGTH DID NOT MATCH\nInput Table Header : {len(input_table_header)}\nPage Table Header : {len(page_tabel_header)}')
+                raise Exception(f'TABLE LENGTH DID NOT MATCH\nCHANNEL_CODE: {var["channel_code"]}\nInput Table Header : {len(input_table_header)}\nPage Table Header : {len(page_tabel_header)}')
             else :
                 for table_idx in range(len(input_table_header)):
                     try :
@@ -445,7 +445,7 @@ def _compare_input_header_with_table_header(**kargs):
                             )
                     except IndexError:
                         # TypeError: exceptions must derive from BaseException
-                        raise(
+                        raise Exception(
                             'TABLE HEADER LENGTH DID NOT MATCH'
                         )
         else :

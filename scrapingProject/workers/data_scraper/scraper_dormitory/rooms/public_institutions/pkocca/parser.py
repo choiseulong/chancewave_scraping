@@ -12,7 +12,7 @@ def post_list_parsing_process(**params):
             var['channel_main_url'] + \
             extract_attrs(
                 subject, 'href'
-            )
+            ).replace('¬','&not')
         )
         var['post_title'].append(extract_text(subject)) 
         var['view_count'].append(

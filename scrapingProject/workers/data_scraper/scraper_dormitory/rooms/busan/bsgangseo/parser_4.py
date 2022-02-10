@@ -24,7 +24,7 @@ def post_list_parsing_process(**params):
                 var['post_title'].append(
                     extract_text_from_single_tag(cont, 'span', child_tag_attrs={'class':'ptit'})
                 )
-            elif td_idx == 5 :
+            elif td_idx == 6 :
                 td_text = extract_text(td)
                 if '마감' in td_text:
                     var['is_going_on'].append(

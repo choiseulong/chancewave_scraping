@@ -6,10 +6,10 @@ def post_list_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     tmp_cont_box = extract_children_tag(soup, 'div', child_tag_attrs={'class':'bbs_list'})
-    tmp_cont_box = extract_children_tag(tmp_cont_box, 'ul')
     if type(tmp_cont_box) == type(None):
         print(var['channel_code'], 'TMP_CONT_BOX ERROR')
         return
+    tmp_cont_box = extract_children_tag(tmp_cont_box, 'ul')
     cont_list = extract_children_tag(tmp_cont_box, 'li', is_child_multiple=True, is_recursive=False)
     for cont in cont_list :
         a_tag = extract_children_tag(cont, 'a')
