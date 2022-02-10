@@ -71,7 +71,7 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_subject', 'view_count', 'uploaded_time']
+        'multiple_type': ['post_url', 'uploader', 'view_count', 'uploaded_time']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
@@ -83,6 +83,9 @@ def post_list_parsing_process(**params):
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('div', class_='tableA')
     post_list_table_bs = post_list_table_bs.find('table')
+
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
 
     # 테이블 컬럼 영역
     post_list_table_header_area_bs = post_list_table_bs.find('thead')
@@ -110,7 +113,7 @@ def post_list_parsing_process(**params):
                     in_url=tmp_td.find('a').get('href'),
                     channel_main_url=var['response'].url))
             elif idx == 2:
-                var['post_subject'].append(tmp_td.text.strip())
+                var['uploader'].append(tmp_td.text.strip())
             elif idx == 4:
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
             elif idx == 5:

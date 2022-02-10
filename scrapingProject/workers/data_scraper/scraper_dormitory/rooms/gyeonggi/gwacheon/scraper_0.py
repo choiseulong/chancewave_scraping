@@ -69,6 +69,7 @@ class Scraper(ABCScraper):
                 self.page_count += 1
             else:
                 break
+            self.session.cookies.clear()
 
     def target_contents_scraping(self):
         super().target_contents_scraping(post_content_parsing_process, sleepSec)
@@ -76,7 +77,7 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_title', 'post_subject', 'uploaded_time', 'view_count']
+        'multiple_type': ['post_url', 'post_title',  'uploaded_time', 'view_count']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
@@ -90,6 +91,10 @@ def post_list_parsing_process(**params):
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('table', class_='bod_list')
+
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
+
     paging_area = soup.find('div', class_='bod_page')
 
     last_page_btn = paging_area.find('a', class_='btn_end')
@@ -120,8 +125,10 @@ def post_list_parsing_process(**params):
             # 게시물이 없는 경우 & 페이지 끝
             tmp_td_text = tmp_td.text.strip()
 
-            if idx == 1:
-                var['post_subject'].append(tmp_td_text)
+            if idx == 0:
+                if tmp_td.find('img', {'alt':'공지'}) and var['page_count'] != 1:
+                    break
+
             elif idx == 2:
                 # '새 글' 이 제목에 함께 포함되는 부분 제거
                 var['post_title'].append(tmp_td_text.split('\n')[0])
@@ -141,6 +148,11 @@ def post_list_parsing_process(**params):
                 var['view_count'].append(tmp_td_text)
 
     result = merge_var_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result
 
 def post_content_parsing_process(**params):
@@ -156,7 +168,7 @@ def post_content_parsing_process(**params):
     uploader_area = content_info_area.find('li', class_='view_write')
     if uploader_area.span.text.strip() != '작성자':
         raise ValueError('Please check uploader area')
-    var['uploader'] = uploader_area.span.nextSibling.text.split(':')[1].strip()
+    var['uploader'] = clean_text(uploader_area.span.nextSibling.text).split(':')[1].strip()
 
     context_area = soup.find('div', class_='view_cont')
 
@@ -164,4 +176,9 @@ def post_content_parsing_process(**params):
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 
     result = convert_merged_list_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result

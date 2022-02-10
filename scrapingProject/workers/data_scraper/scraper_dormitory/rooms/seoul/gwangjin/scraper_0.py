@@ -62,7 +62,7 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url','uploaded_time', 'post_subject']
+        'multiple_type': ['post_url', 'uploaded_time']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
@@ -74,11 +74,10 @@ def post_list_parsing_process(**params):
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('div', class_='bdList')
 
-    if post_list_table_bs.find('div', class_='nodata'):
-        print('PAGING END')
-        return
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
 
-    post_row_list = post_list_table_bs.find('ul').find_all('li')
+    post_row_list = post_list_table_bs.find('ul').find_all('li', recursive=False)
 
     for tmp_row_area in post_row_list:
         tmp_title_area = tmp_row_area.find('div', class_='s')
@@ -86,8 +85,6 @@ def post_list_parsing_process(**params):
                                          channel_main_url=var['response'].url)
         var['post_url'].append(tmp_post_url)
 
-        tmp_department_area = tmp_row_area.find('span', class_='dept')
-        var['post_subject'].append(tmp_department_area.text.strip())
         tmp_uploaded_time_area = tmp_row_area.find('span', class_='date')
         var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_uploaded_time_area.text.strip()))
 
@@ -109,8 +106,18 @@ def post_content_parsing_process(**params):
             tmp_info_title_text = tmp_info_title.text.strip()
             tmp_info_value_text = tmp_info_value.text.strip()
 
-            if tmp_info_title_text == '작성자':
-                var['uploader'] = tmp_info_value_text
+            if tmp_info_title_text == '부서':
+                if var.get('uploader'):
+                    var['uploader'] = tmp_info_value_text + ' ' + var['uploader']
+                else:
+                    var['uploader'] = tmp_info_value_text
+
+            elif tmp_info_title_text == '작성자':
+                if var.get('uploader'):
+                    var['uploader'] = var['uploader'] + ' ' + tmp_info_value_text
+                else:
+                    var['uploader'] = tmp_info_value_text
+
             elif tmp_info_title_text == '전화번호':
                 var['contact'] = tmp_info_value_text
             elif tmp_info_title_text == '조회수':

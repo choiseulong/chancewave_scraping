@@ -2,9 +2,9 @@ from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scrape
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
-# 채널 이름 : 경기도청
+# 채널 이름 : 구리
 
-# 타겟 : 분야별 소식
+# 타겟 : 문화행사
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -20,7 +20,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 '''
     @post info
     method : GET
-    url : https://www.gg.go.kr/bbs/boardView.do?bIdx={postId}&bsIdx=570&bcIdx=0&menuId=1590&isManager=false&isCharge=false&page=1
+    url : https://www.guri.go.kr/brd/board/1050/L/menu/1670?brdType=R&thisPage=1&bbIdx={post_id}=&searchField=&searchText=
     header :
         None
 
@@ -32,7 +32,7 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '구리시'
+        self.channel_name = '구리'
         self.post_board_name = '문화행사'
         self.channel_main_url = 'https://www.guri.go.kr'
         print(f'SCRAP {self.channel_name} - {self.post_board_name}')
@@ -64,7 +64,7 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'start_date', 'end_date', 'contact', 'post_title', 'post_subject', 'post_image_url']
+        'multiple_type': ['post_url', 'start_date', 'end_date', 'contact', 'post_title', 'post_image_url']
     }
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
@@ -75,6 +75,9 @@ def post_list_parsing_process(**params):
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('div', class_='board_wrap_bbs').find('table')
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
+
     post_row_list = post_list_table_bs.find('tbody').find_all('tr')
 
     for tmp_post_row in post_row_list:
@@ -114,13 +117,11 @@ def post_list_parsing_process(**params):
                     raise ValueError('리스트 정보 영역 확인 필요')
 
                 for header_index, (tmp_header_title, tmp_header_value) in enumerate(zip(tmp_header_title_list, tmp_header_value_list)):
-                    if tmp_header_title.split(':')[0].strip() == '담당부서':
-                        var['post_subject'].append(tmp_header_value)
-                    elif tmp_header_title.split(':')[0].strip() == '전화번호':
+                    if tmp_header_title.split(':')[0].strip() == '전화번호':
                         var['contact'].append(tmp_header_value)
                     elif tmp_header_title.split(':')[0].strip() == '행사일':
-                        tmp_start_date = None
-                        tmp_end_date = None
+                        tmp_start_date = ''
+                        tmp_end_date = ''
                         if tmp_header_value:
                             tmp_start_date = convert_datetime_string_to_isoformat_datetime(tmp_header_value)
                             tmp_end_date = convert_datetime_string_to_isoformat_datetime(tmp_header_value)
@@ -134,6 +135,11 @@ def post_list_parsing_process(**params):
                 var['post_url'].append(tmp_post_url)
 
     result = merge_var_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result
 
 def post_content_parsing_process(**params):
@@ -155,7 +161,15 @@ def post_content_parsing_process(**params):
             tmp_column_value_text = tmp_column_value_area.text.strip()
 
             if tmp_column_title_text == '담당자':
-                var['uploader'] = tmp_column_value_text
+                if var.get('uploader'):
+                    var['uploader'] = var['uploader'] + ' ' + tmp_column_value_text
+                else:
+                    var['uploader'] = tmp_column_value_text
+            elif tmp_column_title_text == '담당부서':
+                if var.get('uploader'):
+                    var['uploader'] = tmp_column_value_text + ' ' + var['uploader']
+                else:
+                    var['uploader'] = tmp_column_value_text
             elif tmp_column_title_text == '조회':
                 var['view_count'] = extract_numbers_in_text(tmp_column_value_text)
             elif tmp_column_title_text == '작성일':
@@ -167,4 +181,9 @@ def post_content_parsing_process(**params):
     var['post_image_url'] = search_img_list_in_contents(content_context_area, var['channel_main_url'])
 
     result = convert_merged_list_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result

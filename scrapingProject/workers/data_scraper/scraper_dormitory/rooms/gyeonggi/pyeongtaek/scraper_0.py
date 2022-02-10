@@ -65,7 +65,7 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_title', 'post_subject', 'view_count', 'uploaded_time']
+        'multiple_type': ['post_url', 'post_title', 'uploader', 'view_count', 'uploaded_time']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
@@ -76,6 +76,9 @@ def post_list_parsing_process(**params):
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('table', class_='tableSt_list')
+
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
 
     # 테이블 컬럼 영역
     post_list_table_header_area_bs = post_list_table_bs.find('thead')
@@ -122,13 +125,18 @@ def post_list_parsing_process(**params):
                     in_url='/pyeongtaek/bbs/view.do', channel_main_url=var['response'].url
                 ) + '?' + tmp_query_param_str)
             elif idx == 2:
-                var['post_subject'].append(tmp_td.text.strip())
+                var['uploader'].append(tmp_td.text.strip())
             elif idx == 3:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
             elif idx == 5:
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
 
     result = merge_var_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result
 
 
@@ -144,4 +152,9 @@ def post_content_parsing_process(**params):
     var['post_image_url'] = search_img_list_in_contents(content_info_area, var['response'].url)
 
     result = convert_merged_list_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result

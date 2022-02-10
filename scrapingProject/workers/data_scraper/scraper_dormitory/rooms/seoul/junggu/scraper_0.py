@@ -62,7 +62,7 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_subject', 'uploader', 'view_count', 'uploaded_time']
+        'multiple_type': ['post_url', 'view_count', 'uploaded_time']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
@@ -74,6 +74,9 @@ def post_list_parsing_process(**params):
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('div', class_='board_list')
     post_list_table_bs = post_list_table_bs.find('table')
+
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
 
     # 테이블 컬럼 영역
     post_list_table_header_area_bs = post_list_table_bs.find('thead')
@@ -103,10 +106,6 @@ def post_list_parsing_process(**params):
                 var['post_url'].append(make_absolute_url(
                     in_url=tmp_td.find('a').get('href'),
                     channel_main_url=var['response'].url))
-            elif idx == 2:
-                var['post_subject'].append(tmp_td.text.strip())
-            elif idx == 3:
-                var['uploader'].append(tmp_td.text.strip())
             elif idx == 4:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
             elif idx == 5:
@@ -118,12 +117,31 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type': ['post_text', 'post_title'],
+        'single_type': ['post_text', 'post_title', 'uploader'],
         'multiple_type': ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     content_info_area = soup.find('div', class_='board_view_02')
     content_info_area = content_info_area.find('table')
+
+    for tmp_row_area in content_info_area.find_all('tr'):
+        for tmp_info_title, tmp_info_value in zip(tmp_row_area.find_all('th'), tmp_row_area.find_all('td')):
+
+            tmp_info_title_text = tmp_info_title.text.strip()
+            tmp_info_value_text = tmp_info_value.text.strip()
+
+            if tmp_info_title_text == '작성자':
+                if var.get('uploader'):
+                    var['uploader'] = var['uploader'] + ' ' + tmp_info_value_text
+                else:
+                    var['uploader'] = tmp_info_value_text
+
+            elif tmp_info_title_text == '담당부서':
+                if var.get('uploader'):
+                    var['uploader'] = tmp_info_value_text + ' ' + var['uploader']
+                else:
+                    var['uploader'] = tmp_info_value_text
+
     var['post_title'] = content_info_area.find('th', class_='view_tit').text.strip()
     context_area = content_info_area.find('td', class_='view_txt')
     var['post_text'] = clean_text(context_area.text.strip())

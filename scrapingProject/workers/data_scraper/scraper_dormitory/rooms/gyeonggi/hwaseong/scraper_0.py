@@ -4,7 +4,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 
 # 채널 이름 : 하남시
 
-# 타겟 : 공지사항
+# 타겟 : 시정알림방
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -12,7 +12,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
     @post list
 
     method : GET
-    url = 
+    url : https://www.hscity.go.kr/www/user/bbs/BD_selectBbsList.do?q_bbsCode=1019&q_bbscttSn=&q_seachType=where&q_deptCodeSelect=1001&q_deptCode=&q_searchWhereTy=AND&q_searchVal=&q_currPage={page_count}&q_sortName=&q_sortOrder=&
     header :
         None
 
@@ -20,7 +20,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 '''
     @post info
     method : GET
-    url : 
+    url : https://www.hscity.go.kr/www/user/bbs/BD_selectBbs.do?q_bbsCode=1019&q_bbscttSn={post_id}
     header :
         None
 
@@ -59,7 +59,7 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_title', 'post_subject']
+        'multiple_type': ['post_url', 'post_title']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
@@ -70,6 +70,9 @@ def post_list_parsing_process(**params):
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('div', class_='board_list')
+
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
 
     # 테이블 컬럼 영역
     post_list_table_header_area_bs = post_list_table_bs.find('thead')
@@ -95,10 +98,13 @@ def post_list_parsing_process(**params):
             if idx == 2:
                 var['post_title'].append(tmp_td.text.strip())
                 var['post_url'].append(make_absolute_url(in_url=tmp_td.find('a').get('href').strip(), channel_main_url=var['response'].url))
-            elif idx == 3:
-                var['post_subject'].append(tmp_td.text.strip())
 
     result = merge_var_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result
 
 def post_content_parsing_process(**params):
@@ -111,32 +117,35 @@ def post_content_parsing_process(**params):
 
     content_info_row_list = content_info_area.find_all('tr')
 
-    is_checked_context = False
-    valid_column_count = 0
-    valid_column_title_list = ['등록일시', '담당자', '연락처', '내용']
     for tmp_info_row in content_info_row_list:
         tmp_column_title_area_list = tmp_info_row.find_all('th')
         tmp_column_value_area_list = tmp_info_row.find_all('td')
         for tmp_column_title_area, tmp_column_value_area in zip(tmp_column_title_area_list, tmp_column_value_area_list):
             tmp_column_title_text = tmp_column_title_area.text.strip()
-            tmp_column_value_text = tmp_column_value_area.text.strip()
+            tmp_column_value_text = clean_text(tmp_column_value_area.text).strip()
 
             if tmp_column_title_text == '등록일시':
-                valid_column_count += 1
                 var['uploaded_time'] = convert_datetime_string_to_isoformat_datetime(tmp_column_value_text)
             elif tmp_column_title_text == '담당자':
-                valid_column_count += 1
-                var['uploader'] = tmp_column_value_text
+                if var.get('uploader'):
+                    var['uploader'] = var['uploader'] + ' ' + tmp_column_value_text
+                else:
+                    var['uploader'] = tmp_column_value_text
+            elif tmp_column_title_text == '담당부서':
+                if var.get('uploader'):
+                    var['uploader'] = tmp_column_value_text + ' ' + var['uploader']
+                else:
+                    var['uploader'] = tmp_column_value_text
             elif tmp_column_title_text == '연락처':
-                valid_column_count += 1
                 var['contact'] = tmp_column_value_text
             elif tmp_column_title_text == '내용':
-                valid_column_count += 1
                 var['post_text'] = clean_text(tmp_column_value_text)
                 var['post_image_url'] = search_img_list_in_contents(tmp_column_value_area, var['response'].url)
 
-    if valid_column_count != len(valid_column_title_list):
-        raise ValueError('COLUMN TITLE TEXT IS CHANGED')
-
     result = convert_merged_list_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result

@@ -64,7 +64,7 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_subject', 'view_count', 'uploader', 'uploaded_time']
+        'multiple_type': ['post_url', 'view_count', 'uploaded_time']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
@@ -75,6 +75,9 @@ def post_list_parsing_process(**params):
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('div', class_='bbs__list')
+
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
 
     last_page_area_text = post_list_table_bs.find('div', class_='bbs_info').text
     last_page_num = str_grab(last_page_area_text, '/', '페이지').strip()
@@ -113,22 +116,23 @@ def post_list_parsing_process(**params):
                 var['post_url'].append(make_absolute_url(
                     in_url=tmp_td.find('a').get('href'),
                     channel_main_url=var['response'].url))
-            elif idx == 2:
-                var['post_subject'].append(tmp_td.text.strip())
-            elif idx == 3:
-                var['uploader'].append(tmp_td.text.strip())
             elif idx == 4:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
             elif idx == 5:
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
 
     result = merge_var_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result
 
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type': ['post_text', 'post_title'],
+        'single_type': ['post_text', 'post_title', 'uploader', 'contact'],
         'multiple_type': ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
@@ -137,9 +141,33 @@ def post_content_parsing_process(**params):
     content_info_area = content_info_area.find('table', class_='p-table')
     var['post_title'] = content_info_area.find('span', class_='p-table__subject_text').text.strip()
 
+    for tmp_row_area in content_info_area.find_all('tr'):
+        for tmp_info_title, tmp_info_value in zip(tmp_row_area.find_all('th'), tmp_row_area.find_all('td')):
+
+            tmp_info_title_text = tmp_info_title.text.strip()
+            tmp_info_value_text = tmp_info_value.text.strip()
+
+            if tmp_info_title_text == '연락처':
+                var['contact'] = tmp_info_value_text
+            elif tmp_info_title_text == '작성자':
+                if var.get('uploader'):
+                    var['uploader'] = var['uploader'] + ' ' + tmp_info_value_text
+                else:
+                    var['uploader'] = tmp_info_value_text
+            elif tmp_info_title_text == '부서':
+                if var.get('uploader'):
+                    var['uploader'] = tmp_info_value_text + ' ' + var['uploader']
+                else:
+                    var['uploader'] = tmp_info_value_text
+
     context_area = content_info_area.find('td', class_='p-table__content')
     var['post_text'] = clean_text(context_area.text.strip())
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 
     result = convert_merged_list_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result

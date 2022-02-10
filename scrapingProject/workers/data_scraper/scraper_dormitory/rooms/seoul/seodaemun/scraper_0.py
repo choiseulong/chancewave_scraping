@@ -62,7 +62,7 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_subject', 'view_count', 'uploaded_time']
+        'multiple_type': ['post_url', 'view_count', 'uploaded_time']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
@@ -103,14 +103,17 @@ def post_list_parsing_process(**params):
                 }
                 query = urlencode(tmp_query_param)
                 var['post_url'].append(var['response'].url + '&' + query )
-            elif idx == 2:
-                var['post_subject'].append(tmp_td.text.strip())
             elif idx == 3:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
             elif idx == 4:
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
 
     result = merge_var_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result
 
 
@@ -131,11 +134,7 @@ def post_content_parsing_process(**params):
             if tmp_info_title_text == '제목':
                 var['post_title'] = tmp_info_value_text
             elif tmp_info_title_text == '담당자':
-                uploader_info_list = tmp_info_value_text.split(' ')
-                if len(uploader_info_list) == 2:
-                    var['uploader'] = uploader_info_list[1]
-                else:
-                    var['uploader'] = ''
+                var['uploader'] = tmp_info_value_text
             elif tmp_info_title_text == '연락처':
                 var['contact'] = tmp_info_value_text
 
@@ -144,4 +143,9 @@ def post_content_parsing_process(**params):
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 
     result = convert_merged_list_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result

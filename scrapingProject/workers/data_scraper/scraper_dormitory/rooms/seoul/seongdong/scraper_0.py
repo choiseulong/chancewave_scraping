@@ -73,6 +73,8 @@ def post_list_parsing_process(**params):
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('div', class_='bbs__list')
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
     post_list_table_bs = post_list_table_bs.find('table', class_='p-table')
 
     paging_area = soup.find('div', class_='p-pagination')

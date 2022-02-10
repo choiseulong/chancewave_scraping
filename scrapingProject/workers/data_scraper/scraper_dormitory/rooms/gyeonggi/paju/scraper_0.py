@@ -69,6 +69,9 @@ def post_list_parsing_process(**params):
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('ul', class_='summary-list')
 
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
+
     if post_list_table_bs.text.find('게시물이 없습니다') > -1:
         print('PAGING END')
         return
@@ -107,6 +110,11 @@ def post_list_parsing_process(**params):
         ) + '?' + tmp_query_param_str)
 
     result = merge_var_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result
 
 
@@ -156,4 +164,9 @@ def post_content_parsing_process(**params):
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 
     result = convert_merged_list_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result

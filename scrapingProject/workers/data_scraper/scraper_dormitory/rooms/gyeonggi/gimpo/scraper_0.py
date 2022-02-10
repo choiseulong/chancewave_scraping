@@ -3,7 +3,7 @@ from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 import js2py
 
-# 채널 이름 : 김포시
+# 채널 이름 : 김포
 
 # 타겟 : 새소식
 # 중단 시점 : 마지막 페이지 도달시
@@ -33,7 +33,7 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '김포시'
+        self.channel_name = '김포'
         self.post_board_name = '알림사항'
         self.channel_main_url = 'https://www.gimpo.go.kr'
 
@@ -54,6 +54,7 @@ class Scraper(ABCScraper):
                 self.page_count += 1
             else:
                 break
+            self.session.cookies.clear()
 
     def target_contents_scraping(self):
         super().target_contents_scraping(post_content_parsing_process, sleepSec)
@@ -61,7 +62,7 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_subject', 'view_count', 'uploaded_time']
+        'multiple_type': ['post_url', 'uploader', 'view_count', 'uploaded_time']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
@@ -72,6 +73,9 @@ def post_list_parsing_process(**params):
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('table', class_='bbs_ntt_list_item')
+
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
 
     if soup.find('div', class_='p-empty'):
         print('PAGING END')
@@ -103,13 +107,18 @@ def post_list_parsing_process(**params):
                     in_url=tmp_td.find('a').get('href'),
                     channel_main_url=var['response'].url))
             elif idx == 2:
-                var['post_subject'].append(tmp_td.text.strip())
+                var['uploader'].append(tmp_td.text.strip())
             elif idx == 4:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
             elif idx == 5:
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
 
     result = merge_var_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result
 
 
@@ -136,4 +145,9 @@ def post_content_parsing_process(**params):
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 
     result = convert_merged_list_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result

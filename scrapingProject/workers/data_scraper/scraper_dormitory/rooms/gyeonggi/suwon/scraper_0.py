@@ -3,7 +3,7 @@ from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 from urllib.parse import urlencode
 
-# 채널 이름 : 수원시
+# 채널 이름 : 수원
 
 # 타겟 : 시정소식
 # 중단 시점 : 마지막 페이지 도달시
@@ -33,7 +33,7 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '수원시'
+        self.channel_name = '수원'
         self.post_board_name = '시정소식'
         self.channel_main_url = 'https://www.suwon.go.kr'
 
@@ -61,7 +61,7 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_subject', 'view_count', 'uploader', 'uploaded_time']
+        'multiple_type': ['post_url', 'view_count', 'uploader', 'uploaded_time']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
@@ -72,6 +72,9 @@ def post_list_parsing_process(**params):
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('table', class_='p-table')
+
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
 
     if post_list_table_bs.find('div', class_='p-empty'):
         print('PAGING END')
@@ -90,6 +93,8 @@ def post_list_parsing_process(**params):
     post_row_list = post_list_table_bs.find('tbody').find_all('tr')
 
     for tmp_post_row in post_row_list:
+        tmp_department_str = ''
+        tmp_uploader_str = ''
 
         for idx, tmp_td in enumerate(tmp_post_row.find_all('td')):
 
@@ -108,15 +113,21 @@ def post_list_parsing_process(**params):
                     in_url='/web/board/BD_board.view.do?'+'seq=' + tmp_seq + '&bbsCd=' + tmp_bbs_cd,
                     channel_main_url=var['response'].url))
             elif idx == 2:
-                var['uploader'].append(tmp_td.text.strip())
+                tmp_uploader_str = tmp_td.text.strip()
             elif idx == 3:
-                var['post_subject'].append(tmp_td.text.strip())
+                tmp_department_str = tmp_td.text.strip()
             elif idx == 4:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
             elif idx == 5:
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
+        var['uploader'].append(' '.join([tmp_department_str, tmp_uploader_str]).strip())
 
     result = merge_var_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result
 
 
@@ -143,4 +154,9 @@ def post_content_parsing_process(**params):
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 
     result = convert_merged_list_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result

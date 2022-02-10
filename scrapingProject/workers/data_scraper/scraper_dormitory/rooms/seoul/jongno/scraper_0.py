@@ -62,7 +62,7 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_subject', 'view_count', 'uploaded_time']
+        'multiple_type': ['post_url', 'view_count', 'uploaded_time']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
@@ -73,6 +73,9 @@ def post_list_parsing_process(**params):
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('table', class_='list_type01')
+
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
 
     # 테이블 컬럼 영역
     post_list_table_header_area_bs = post_list_table_bs.find('thead')
@@ -104,8 +107,6 @@ def post_list_parsing_process(**params):
                 var['post_url'].append(make_absolute_url(
                     in_url='/portal/bbs/selectBoardArticle.do?bbsId=BBSMSTR_000000000201&menuNo=1752&menuId=1752&nttId='+tmp_post_id,
                     channel_main_url=var['response'].url))
-            elif idx == 4:
-                var['post_subject'].append(tmp_td.text.strip())
             elif idx == 5:
                 tmp_date_str = tmp_td.text.strip()
                 date_time_object = datetime.strptime(tmp_date_str, '%Y년%m월%d일')
@@ -133,7 +134,17 @@ def post_content_parsing_process(**params):
             tmp_info_value_text = tmp_info_value.text.strip()
 
             if tmp_info_title_text == '등록자':
-                var['uploader'] = tmp_info_value_text
+                if var.get('uploader'):
+                    var['uploader'] = var['uploader'] + ' ' + tmp_info_value_text
+                else:
+                    var['uploader'] = tmp_info_value_text
+
+            elif tmp_info_title_text == '담당부서':
+                if var.get('uploader'):
+                    var['uploader'] = tmp_info_value_text + ' ' + var['uploader']
+                else:
+                    var['uploader'] = tmp_info_value_text
+
             elif tmp_info_title_text == '제목':
                 var['post_title'] = tmp_info_value_text
             elif tmp_info_title_text == '문의처':

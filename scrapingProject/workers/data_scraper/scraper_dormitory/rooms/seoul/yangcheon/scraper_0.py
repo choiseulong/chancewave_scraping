@@ -64,7 +64,7 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_subject', 'view_count', 'uploaded_time']
+        'multiple_type': ['post_url', 'view_count', 'uploaded_time']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
@@ -75,6 +75,9 @@ def post_list_parsing_process(**params):
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('table', class_='basic-list')
+
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
 
     # 테이블 컬럼 영역
     post_list_table_header_area_bs = post_list_table_bs.find('thead')
@@ -117,8 +120,6 @@ def post_list_parsing_process(**params):
                 var['post_url'].append(make_absolute_url(
                     in_url='/site/yangcheon/ex/bbs/View.do?' + tmp_query,
                     channel_main_url=var['response'].url))
-            elif idx == 2:
-                var['post_subject'].append(tmp_td.text.strip())
             elif idx == 3:
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
             elif idx == 4:
@@ -147,7 +148,15 @@ def post_content_parsing_process(**params):
             elif tmp_info_title_text == '제목':
                 var['post_title'] = str_grab(str(tmp_info_value), "wdigm_title_check('", "')").strip()
             elif tmp_info_title_text == '담당자':
-                var['uploader'] = tmp_info_value_text
+                if var.get('uploader'):
+                    var['uploader'] = var['uploader'] + ' ' + tmp_info_value_text
+                else:
+                    var['uploader'] = tmp_info_value_text
+            elif tmp_info_title_text == '담당부서':
+                if var.get('uploader'):
+                    var['uploader'] = tmp_info_value_text + ' ' + var['uploader']
+                else:
+                    var['uploader'] = tmp_info_value_text
     context_area = content_info_area.find('div', class_='view_contents')
     var['post_text'] = clean_text(context_area.text.strip())
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)

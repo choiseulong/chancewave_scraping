@@ -3,7 +3,7 @@ from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 from urllib.parse import urlencode
 
-# 채널 이름 : 부천시
+# 채널 이름 : 부천
 
 # 타겟 : 시정소식
 # 중단 시점 : 마지막 페이지 도달시
@@ -33,7 +33,7 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '부천시'
+        self.channel_name = '부천'
         self.post_board_name = '새소식'
         self.channel_main_url = 'https://www.bucheon.go.kr'
 
@@ -61,7 +61,7 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_subject', 'uploader', 'view_count', 'uploaded_time']
+        'multiple_type': ['post_url', 'view_count', 'uploaded_time']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
@@ -72,6 +72,9 @@ def post_list_parsing_process(**params):
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('table', class_='table-style')
+
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
 
     if not post_list_table_bs and soup.find('div', class_='p-empty'):
         print('PAGING END')
@@ -104,16 +107,17 @@ def post_list_parsing_process(**params):
                 var['post_url'].append(make_absolute_url(
                     in_url=page_move_function_str,
                     channel_main_url=var['response'].url))
-            elif idx == 2:
-                var['post_subject'].append(tmp_td.text.strip())
-            elif idx == 3:
-                var['uploader'].append(tmp_td.text.strip())
             elif idx == 4:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
             elif idx == 5:
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
 
     result = merge_var_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result
 
 
@@ -134,11 +138,24 @@ def post_content_parsing_process(**params):
             if tmp_info_title_text == '전화번호':
                 var['contact'] = tmp_info_value_text
             elif tmp_info_title_text == '작성자':
-                var['uploader'] = tmp_info_value_text
+                if var.get('uploader'):
+                    var['uploader'] = var['uploader'] + ' ' + tmp_info_value_text
+                else:
+                    var['uploader'] = tmp_info_value_text
+            elif tmp_info_title_text == '부서':
+                if var.get('uploader'):
+                    var['uploader'] = tmp_info_value_text + ' ' + var['uploader']
+                else:
+                    var['uploader'] = tmp_info_value_text
 
     context_area = content_info_area.find('div', class_='board-cons')
     var['post_text'] = clean_text(context_area.text.strip())
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 
     result = convert_merged_list_to_dict(key_list, var)
+<<<<<<< HEAD
+=======
+    if var['dev']:
+        print(result)
+>>>>>>> dev_hyun
     return result
