@@ -19,10 +19,10 @@ schedule = Celery('scheduler')
 
 # celery app env
 schedule.conf.update(
-    # broker_url = 'amqp://username:password@localhost//',
-    # result_backend = 'mongodb://admin:mysterico@k8s.mysterico.com:31489/?authSource=admin',
-    broker_url = 'amqp://CHANCEWAVE:MYSTERICO@message_broker_container//',
-    result_backend = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/?authSource=admin',
+    broker_url = 'amqp://username:password@localhost//',
+    result_backend = 'mongodb://admin:mysterico@k8s.mysterico.com:31489/?authSource=admin',
+    # broker_url = 'amqp://CHANCEWAVE:MYSTERICO@message_broker_container//',
+    # result_backend = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/?authSource=admin',
     timezone = 'Asia/Seoul',
 
     # 2021-12-31 추가
@@ -59,4 +59,5 @@ def make_session():
 def job(scraper_room_address, channel_code, channel_url):
     session = make_session()
     scraper = importlib.import_module(scraper_room_address).Scraper(session)
-    scraper.scraping_process(channel_code, channel_url, dev=False)
+    scraper.scraping_process(channel_code, channel_url, dev=True) # 로컬 테스트 
+    # scraper.scraping_process(channel_code, channel_url, dev=False)
