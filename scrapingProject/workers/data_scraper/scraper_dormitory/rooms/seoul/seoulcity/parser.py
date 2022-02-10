@@ -28,6 +28,8 @@ def post_list_parsing_process(**params):
         in item_div
     ]
     result = merge_var_to_dict(key_list, var)
+    if var['dev']:
+        print(result)
     return result
  
 def post_content_parsing_process(**params):
@@ -81,6 +83,8 @@ def post_content_parsing_process(**params):
         if uploader else None
     
     result = convert_merged_list_to_dict(key_list, var)
+    if var['dev']:
+        print(result)
     return result
 
 def search_total_post_count(result):

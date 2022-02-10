@@ -1,6 +1,5 @@
 from celery import Celery
 import importlib
-from requests import Session
 from requests.adapters import HTTPAdapter
 from requests.sessions import Session
 from urllib3.util import Retry

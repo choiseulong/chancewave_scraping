@@ -13,7 +13,7 @@ from urllib.parse import urlencode, parse_qs, urlparse
     @post list
 
     method : GET
-    url : https://www.ddm.go.kr/ddm/cultureBBS.jsp?pageNo={page_count}
+    url : https://www.ddm.go.kr/www/selectBbsNttList.do?key=206&bbsNo=243&searchCtgry=&searchCnd=all&searchKrwd=&integrDeptCode=&pageIndex={page_count}
     header :
         None
 
@@ -21,7 +21,7 @@ from urllib.parse import urlencode, parse_qs, urlparse
 '''
     @post info
     method : GET
-    url : https://www.ddm.go.kr/ddm/cultureBBSview.jsp?pid={postId}&searchParam1=&searchParam2=&pageNo=1&blockNo=0
+    url : https://www.ddm.go.kr/www/selectBbsNttView.do?key=206&bbsNo=243&nttNo={post_id}&searchCtgry=&searchCnd=all&searchKrwd=&integrDeptCode=&pageIndex=1
     header :
         None
 
@@ -62,17 +62,17 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'uploaded_time']
+        'multiple_type': ['post_url', 'uploader', 'uploaded_time']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
     # 2022-1-26 HYUN
     # html table header index
-    table_column_list = ['번호', '제목', '담당부서', '작성일', '첨부']
+    table_column_list = ['번호', '제목', '작성일', '첨부', '부서']
 
     # 게시물 리스트 테이블 영역
-    post_list_table_bs = soup.find('table', class_='basicList')
+    post_list_table_bs = soup.find('table', class_='p-table')
 
     if not post_list_table_bs:
         raise TypeError('CANNOT FIND LIST TABLE')
@@ -100,8 +100,10 @@ def post_list_parsing_process(**params):
                 var['post_url'].append(make_absolute_url(
                     in_url=tmp_td.find('a').get('href'),
                     channel_main_url=var['response'].url))
-            elif idx == 3:
+            elif idx == 2:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
+            elif idx == 4:
+                var['uploader'].append(tmp_td.text.strip())
 
     result = merge_var_to_dict(key_list, var)
     print(result)
@@ -110,38 +112,22 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type': ['post_text', 'post_title', 'uploader', 'contact', 'view_count'],
+        'single_type': ['post_text', 'post_title', 'contact'],
         'multiple_type': ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    content_info_area = soup.find('table',  class_='veiwBox')
 
-    for tmp_row_area in content_info_area.find_all('tr'):
-        for tmp_info_title, tmp_info_value in zip(tmp_row_area.find_all('th'), tmp_row_area.find_all('td')):
+    content_info_area = soup.find('div',  class_='bbs__view')
 
-            tmp_info_title_text = tmp_info_title.text.strip()
-            tmp_info_value_text = tmp_info_value.text.strip()
+    title_area = content_info_area.find('div', class_='bbs_view_title')
+    var['post_title'] = clean_text(title_area.text).strip()
 
-            if tmp_info_title_text == '작성자':
-                if var.get('uploader'):
-                    var['uploader'] = var['uploader'] + ' ' + tmp_info_value_text
-                else:
-                    var['uploader'] = tmp_info_value_text
+    content_info_area = content_info_area.find('table', class_='p-table')
 
-            elif tmp_info_title_text == '담당부서':
-                if var.get('uploader'):
-                    var['uploader'] = tmp_info_value_text + ' ' + var['uploader']
-                else:
-                    var['uploader'] = tmp_info_value_text
+    contact_area = content_info_area.find('th', text='전화번호').find_next_sibling('td')
+    var['contact'] = contact_area.text
 
-            elif tmp_info_title_text == '제목':
-                var['post_title'] = tmp_info_value_text
-            elif tmp_info_title_text == '전화번호':
-                var['contact'] = tmp_info_value_text
-            elif tmp_info_title_text == '조회수':
-                var['view_count'] = extract_numbers_in_text(tmp_info_value_text)
-
-    context_area = soup.find('td', class_='adminCon')
+    context_area = soup.find('td', class_='p-table__content')
     var['post_text'] = clean_text(context_area.text.strip())
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 

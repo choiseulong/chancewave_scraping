@@ -155,7 +155,7 @@ def post_content_parsing_process(**params):
 
             if tmp_info_title_text == '모집인원':
                 var['extra_info'].append({
-                    tmp_info_title_text: tmp_info_value_text
+                    tmp_info_title_text: clean_text(tmp_info_value_text)
                 })
             elif tmp_info_title_text == '프로그램내용':
                 var['post_text'] = clean_text(tmp_info_value.text.strip())

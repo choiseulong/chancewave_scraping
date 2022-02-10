@@ -1,13 +1,11 @@
 from workers.data_scraper.scraper_dormitory.scraping_default_usage import Scraper as ABCScraper
 from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
-import js2py
-from urllib.parse import urlencode
+from urllib.parse import urlencode, parse_qs, urlparse
 
+# 채널 이름 : 은평
 
-# 채널 이름 : 노원구
-
-# 타겟 : 행사/강좌
+# 타겟 : 강좌/교육
 # 중단 시점 : 마지막 페이지 도달시
 
 # HTTP Request
@@ -15,7 +13,7 @@ from urllib.parse import urlencode
     @post list
 
     method : GET
-    url : https://www.nowon.kr/www/user/bbs/BD_selectBbsList.do?q_bbsCode=1002&q_estnColumn1=11&q_currPage={page_count}
+    url : https://www.ep.go.kr/www/selectBbsNttList.do?key=744&bbsNo=42&pageIndex={page_count}
     header :
         None
 
@@ -23,7 +21,7 @@ from urllib.parse import urlencode
 '''
     @post info
     method : GET
-    url : https://www.nowon.kr/www/user/bbs/BD_selectBbs.do?q_bbsCode=1002&q_bbscttSn={postId}
+    url : https://www.ep.go.kr/CmsWeb/viewPage.req?idx=PG0000001131&boardDataId={postId}&CP0000000002_BO0000000087_Action=boardView&CP0000000002_BO0000000087_ViewName=board/BoardView
     header :
         None
 
@@ -35,9 +33,9 @@ isUpdate = True
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '노원구'
-        self.post_board_name = '행사/강좌'
-        self.channel_main_url = 'https://www.nowon.kr/'
+        self.channel_name = '은평'
+        self.post_board_name = '강좌/교육'
+        self.channel_main_url = 'https://www.ep.go.kr'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
@@ -64,18 +62,21 @@ class Scraper(ABCScraper):
 
 def post_list_parsing_process(**params):
     target_key_info = {
-        'multiple_type': ['post_url', 'post_subject', 'view_count', 'uploaded_time']
+        'multiple_type': ['post_url']
     }
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-24 HYUN
+    # 2022-2-10 HYUN
     # html table header index
-    table_column_list = ['번호', '분류', '제목', '담당부서', '등록일', '조회', '파일']
+    table_column_list = ['강좌명', '번호', '담당부서', '신청기간', '교육기간', '등록일']
 
     # 게시물 리스트 테이블 영역
-    post_list_table_bs = soup.find('div', class_='content-body')
-    post_list_table_bs = post_list_table_bs.find('table', class_='table')
+    post_list_table_bs = soup.find('div', class_='bbs__list')
+    post_list_table_bs = soup.find('table', class_='p-table')
+
+    if not post_list_table_bs:
+        raise TypeError('CANNOT FIND LIST TABLE')
 
     # 테이블 컬럼 영역
     post_list_table_header_area_bs = post_list_table_bs.find('thead')
@@ -90,27 +91,18 @@ def post_list_parsing_process(**params):
 
     post_row_list = post_list_table_bs.find('tbody').find_all('tr')
 
+    if not post_row_list:
+        print('PAGING END')
+        return
+
     for tmp_post_row in post_row_list:
+
         for idx, tmp_td in enumerate(tmp_post_row.find_all('td')):
 
             if idx == 0:
-                if tmp_td.text.find('데이터가 존재하지 않습니다') > -1:
-                    print('PAGING END')
-                    return
-            elif idx == 1:
-                var['post_subject'].append(tmp_td.text.strip())
-            elif idx == 2:
                 var['post_url'].append(make_absolute_url(
                     in_url=tmp_td.find('a').get('href'),
                     channel_main_url=var['response'].url))
-            elif idx == 4:
-                var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
-            elif idx == 5:
-                var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
-
-    if not post_row_list:
-        error_msg = 'PAGING PARSING ERROR END'
-        raise TypeError(error_msg)
 
     result = merge_var_to_dict(key_list, var)
     if var['dev']:
@@ -120,39 +112,52 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type': ['post_text', 'post_title', 'uploader', 'contact', 'start_date', 'end_date'],
-        'multiple_type': ['post_image_url']
+        'single_type': ['post_text', 'post_title', 'uploader', 'start_date', 'end_date', 'contact', 'view_count', 'post_content_target'],
+        'multiple_type': ['post_image_url', 'extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    content_info_area = soup.find('div', class_='article-view')
+    content_info_area = soup.find('div', class_='bbs__view')
+    title_area = content_info_area.find('span', class_='p-table__subject_text')
+    var['post_title'] = clean_text(title_area.text).strip()
 
-    var['post_title'] = content_info_area.find('h1', class_='article-subject').text.strip()
+    content_info_area = content_info_area.find('table')
 
-    content_info_area = content_info_area.find('table', class_='table-article')
+    header_info_area = content_info_area.find('div', class_='p-author__info')
+    uploader_area = header_info_area.find('em', text='작성자 :').nextSibling
+    view_count_area = header_info_area.find('em', text='조회 :').find_next_sibling('span')
+    var['uploader'] = clean_text(uploader_area.text).strip()
+    var['view_count'] = extract_numbers_in_text(view_count_area.text)
+
+    var['extra_info'] = [{
+        'info_title':'강좌/교육 상세'
+    }]
+
+    extra_info_column_list = ['수강료', '교육장소', '신청방법']
 
     for tmp_row_area in content_info_area.find_all('tr'):
         for tmp_info_title, tmp_info_value in zip(tmp_row_area.find_all('th'), tmp_row_area.find_all('td')):
 
             tmp_info_title_text = tmp_info_title.text.strip()
-            tmp_info_value_text = tmp_info_value.text.strip()
+            tmp_info_value_text = clean_text(tmp_info_value.text).strip()
 
-            if tmp_info_title_text == '전화번호':
-                var['contact'] = tmp_info_value_text
-            elif tmp_info_title_text == '부서/팀':
-                var['uploader'] = tmp_info_value_text
-            elif tmp_info_title_text == '기간':
-                tmp_event_period_str = tmp_info_value_text
-                event_period_date_list = tmp_event_period_str.split('~')
-                if not event_period_date_list:
-                    var['start_date'] = ''
-                    var['end_date'] = ''
-                elif len(event_period_date_list) == 2:
-                    var['start_date'] = convert_datetime_string_to_isoformat_datetime(event_period_date_list[0].strip())
-                    var['end_date'] = convert_datetime_string_to_isoformat_datetime(event_period_date_list[1].strip())
+            if tmp_info_title_text == '담당부서':
+                if var.get('uploader'):
+                    var['uploader'] = tmp_info_value_text + ' ' + var['uploader']
                 else:
-                    var['start_date'] = convert_datetime_string_to_isoformat_datetime(event_period_date_list[0].strip())
+                    var['uploader'] = tmp_info_value_text
+            elif tmp_info_title_text == '신청기간':
+                var['start_date'] = tmp_info_value_text
+            elif tmp_info_title_text == '교육기간':
+                var['end_date'] = tmp_info_value_text
+            elif tmp_info_title_text == '문의':
+                var['contact'] = tmp_info_value_text
+            elif tmp_info_title_text == '교육대상':
+                var['post_content_target'] = tmp_info_value_text
+            elif tmp_info_title_text in extra_info_column_list:
+                tmp_extra_info_index = extra_info_column_list.index(tmp_info_title_text)
+                var['extra_info'][0]['info_' + str(tmp_extra_info_index)] = [tmp_info_title_text, tmp_info_value_text]
 
-    context_area = soup.find('div', class_='article-body')
+    context_area = soup.find('td', class_='p-table__content')
     var['post_text'] = clean_text(context_area.text.strip())
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 

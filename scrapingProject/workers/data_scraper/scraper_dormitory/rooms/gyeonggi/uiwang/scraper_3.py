@@ -99,11 +99,13 @@ def post_list_parsing_process(**params):
         for idx, tmp_td in enumerate(tmp_post_row.find_all('td')):
 
             if idx == 0:
-                if tmp_td.text.strip() == '공지' and var['page_count'] != 2:
+                if tmp_td.text.strip() == '공지' and var['page_count'] != 1:
                     break
 
             elif idx == 1:
                 page_move_function_str = tmp_td.find('a').get('href').strip()
+                if page_move_function_str == '#':
+                    break
                 var['post_url'].append(make_absolute_url(
                     in_url=page_move_function_str,
                     channel_main_url=var['response'].url))

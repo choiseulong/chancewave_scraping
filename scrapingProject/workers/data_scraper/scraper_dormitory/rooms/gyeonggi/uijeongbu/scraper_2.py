@@ -90,21 +90,12 @@ def post_list_parsing_process(**params):
 
     post_row_list = post_list_table_bs.find('tbody').find_all('tr')
 
-    process_row_count = 0
     for tmp_post_row in post_row_list:
         tmp_department_str = ''
         tmp_uploader_str = ''
-        is_notify = False
         for idx, tmp_td in enumerate(tmp_post_row.find_all('td')):
 
-            if idx == 0:
-                if tmp_td.find('img', {'alt': '공지글'}) and var['page_count'] != 1:
-                    is_notify = True
-                    break
-                else:
-                    process_row_count += 1
-
-            elif idx == 1:
+            if idx == 1:
                 page_move_function_str = tmp_td.find('a').get('onclick').strip()
                 page_move_function_params_str = str_grab(page_move_function_str, 'boardView(', '; return')
                 tmp_form_id = str_grab(page_move_function_params_str, "'", "',", index=1)
@@ -132,14 +123,11 @@ def post_list_parsing_process(**params):
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
             elif idx == 6:
                 var['view_count'].append(extract_numbers_in_text(tmp_td.text.strip()))
-        if not is_notify:
+
+        if (tmp_department_str + ' ' + tmp_uploader_str).strip():
             var['uploader'].append(
                 (tmp_department_str + ' ' + tmp_uploader_str).strip()
             )
-
-    if not process_row_count:
-        print('PAGE END')
-        return
 
     result = merge_var_to_dict(key_list, var)
     if var['dev']:
@@ -157,12 +145,14 @@ def post_content_parsing_process(**params):
 
     header_area = content_info_area.find('div', class_='view_info')
 
-    uploader_area = header_area.find_all('li', class_='view_write')[1]
-    uploader_area.find('span').decompose()
-    uploader_area_str = uploader_area.text.strip()
+    uploader_area_list = header_area.find_all('li', class_='view_write')
+    if len(uploader_area_list) == 2:
+        uploader_area = uploader_area_list[1]
+        uploader_area.find('span').decompose()
+        uploader_area_str = uploader_area.text.strip()
 
-    if str_grab(uploader_area_str, '(', ')'):
-        var['contact'] = str_grab(uploader_area_str, '(', ')').strip()
+        if str_grab(uploader_area_str, '(', ')'):
+            var['contact'] = str_grab(uploader_area_str, '(', ')').strip()
 
     var['post_title'] = content_info_area.find('h4').text.strip()
 

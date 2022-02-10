@@ -109,12 +109,12 @@ def post_list_parsing_process(**params):
                 # doBbsFView(cbIdx, bcIdx, Gbn, parentSeq)
                 # doBbsFView('239','126615','16010100','126615');return false;
 
-                page_move_function_str = tmp_td.find('a').get('onclick')
+                page_move_function_str = clean_text(tmp_td.find('a').get('onclick'))
                 tmp_parameter_str = str_grab(page_move_function_str, 'doBbsFView(', ');')
                 parameter_list = eval('[' + tmp_parameter_str + ']')
 
                 tmp_cb_idx = parameter_list[0]
-                tmp_bc_idx = parameter_list[1]
+                tmp_bc_idx = parameter_list[3]
 
                 tmp_query_param = {
                     'cbIdx': tmp_cb_idx,
