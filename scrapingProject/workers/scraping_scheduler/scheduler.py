@@ -53,11 +53,12 @@ def make_session():
     return session
 
 # job
-# 10시간 time limit 
+# 1시간 time limit 
 # retry 간격 3분 디폴트
-@schedule.task(time_limit=36000, retries=3)
+@schedule.task(time_limit=3600, retries=3)
 def job(scraper_room_address, channel_code, channel_url):
     session = make_session()
     scraper = importlib.import_module(scraper_room_address).Scraper(session)
     scraper.scraping_process(channel_code, channel_url, dev=True) # 로컬 테스트 
     # scraper.scraping_process(channel_code, channel_url, dev=False)
+    return {'channel_code':channel_code, 'status':'SUCCESS', 'date_done':datetime.now().isoformat()}
