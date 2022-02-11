@@ -4,7 +4,19 @@ from requests.adapters import HTTPAdapter
 from requests.sessions import Session
 from urllib3.util import Retry
 from datetime import datetime
+import traceback as tb
 import logging
+import json
+import sys, os
+from ..data_server.mongo_server import MongoServer
+
+# python print disable
+def blockPrint():
+    sys.stdout = open(os.devnull, 'w')
+
+# Restore
+# def enablePrint():
+#     sys.stdout = sys.__stdout__
 
 # 로깅 레벨 CRITICAL로 선언 
 urllib3_logger = logging.getLogger('urllib3')
@@ -20,7 +32,7 @@ schedule.conf.update(
     # broker_url = 'amqp://CHANCEWAVE:MYSTERICO@message_broker_container//',
     # result_backend = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/?authSource=admin',
     timezone = 'Asia/Seoul',
-
+    enable_utc = False,
     # 2021-12-31 추가
     broker_heartbeat=None
 )
@@ -53,6 +65,8 @@ def make_session():
 # retry 간격 3분 디폴트
 @schedule.task(time_limit=3600, retries=3)
 def job(scraper_room_address, channel_code, channel_url):
+    blockPrint()
+    traceback = ''
     try :
         session = make_session()
         scraper = importlib.import_module(scraper_room_address).Scraper(session)
@@ -60,12 +74,10 @@ def job(scraper_room_address, channel_code, channel_url):
         # scraper.scraping_process(channel_code, channel_url, dev=False)
         status = 'SUCCESS'
         traceback = None
-        result = None
         error_type = None
     except Exception as e:
-        result = e
         status = 'FAILURE'
-        traceback = traceback.format_exc()
+        traceback = tb.format_exc()
         error_type = e.__class__.__name__
 
     return {
@@ -73,6 +85,5 @@ def job(scraper_room_address, channel_code, channel_url):
         'status':status, 
         'date_done':datetime.now().isoformat(), 
         'traceback':traceback,
-        'result' : result,
         'error_type' : error_type
     }

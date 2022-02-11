@@ -13,7 +13,7 @@ class MongoServer:
             self.url = 'mongodb://admin:mysterico@k8s.mysterico.com:31489'
             self.connection = MongoClient(self.url)
             self.db = self.connection.get_database('scraping')
-            self.collection = self.db.get_collection('data')
+            self.collection = self.db.get_collection('220211_2')
         else :
             self.url = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/'
             self.connection = MongoClient(self.url)
