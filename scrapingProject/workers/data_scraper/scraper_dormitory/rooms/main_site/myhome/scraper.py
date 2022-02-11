@@ -48,7 +48,6 @@ class Scraper(ABCScraper):
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :
-            print(self.page_count)
             self.channel_url = self.channel_url_frame.format(self.page_count)
             self.response = self.session.get(self.channel_url)
             self.scraping_target = post_list_parsing_process(
