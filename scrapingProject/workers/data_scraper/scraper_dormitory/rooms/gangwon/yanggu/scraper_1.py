@@ -43,13 +43,13 @@ class Scraper(ABCScraper):
                     page_url_frame + href[1:]
                 )
 
-    def scraping_process(self, channel_code, channel_url, dev):
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
         self.session = set_headers(self.session)
         self.search_bbs_data(channel_url)
         self.page_count = 1
         for channel_url in self.channel_url_list:
             self.channel_url = channel_url
-            super().scraping_process(channel_code, channel_url, dev)
+            super().scraping_process(channel_code, channel_url, dev, full_channel_code)
             self.post_list_scraping()
             if self.scraping_target :
                 self.target_contents_scraping()

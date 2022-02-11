@@ -17,14 +17,13 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['contact','post_text_type','start_date', 'end_date'],
+        'single_type' : ['contact','start_date', 'end_date'],
         'multiple_type' : ['extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     tbody = extract_children_tag(soup, 'tbody')
     th_list = extract_children_tag(tbody, 'th', is_child_multiple=True)
     extra_info = {'info_title':'강의정보'}
-    var['post_text_type'] = 'only_extra_info'
     for th in th_list :
         th_text = extract_text(th)
         td_text = extract_text(find_next_tag(th))
@@ -49,7 +48,7 @@ def post_content_parsing_process(**params):
                 )
         elif '프로그램명' in th_text:
             var['post_title'] = td_text
-    var['extra_info'] = extra_info
+    var['extra_info'].append(extra_info)
     result = convert_merged_list_to_dict(key_list, var)
     return result
 

@@ -64,13 +64,13 @@ def make_session():
 # 1시간 time limit 
 # retry 간격 3분 디폴트
 @schedule.task(time_limit=3600, retries=3)
-def job(scraper_room_address, channel_code, channel_url):
-    blockPrint()
+def job(scraper_room_address, channel_code, channel_url, full_channel_code):
+    # blockPrint()
     traceback = ''
     try :
         session = make_session()
         scraper = importlib.import_module(scraper_room_address).Scraper(session)
-        scraper.scraping_process(channel_code, channel_url, dev=True) # 로컬 테스트 
+        scraper.scraping_process(channel_code, channel_url, dev=True, full_channel_code=full_channel_code) # 로컬 테스트 
         # scraper.scraping_process(channel_code, channel_url, dev=False)
         status = 'SUCCESS'
         traceback = None

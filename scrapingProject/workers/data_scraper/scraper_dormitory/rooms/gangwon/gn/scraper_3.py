@@ -24,8 +24,8 @@ class Scraper(ABCScraper):
         self.channel_name = '강릉시청'
         self.post_board_name = '강연·강좌'
 
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.session = set_headers(self.session)
         self.page_count = 1
         self.channel_main_url = 'https://www.gn.go.kr/www'

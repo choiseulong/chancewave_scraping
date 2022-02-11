@@ -27,7 +27,6 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url', 'extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    var['post_text_type'] = 'only_extra_info'
     info_box = extract_children_tag(soup, 'div', child_tag_attrs={'class':'infobox'})
     info_text_split = extract_text(info_box).split(' / ')
     for info in info_text_split:

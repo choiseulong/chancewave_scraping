@@ -37,8 +37,8 @@ class Scraper(ABCScraper):
         self.post_board_name = '문화'
         self.channel_main_url = 'https://www.gunpo.go.kr'
 
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
 
         self.session = set_headers(self.session)
         self.session.get('https://www.gunpo.go.kr/portal/edcClturEventList.do?key=1008282&bbsNo=684&searchCtgry=%%ED%%96%%89%%EC%%82%%AC/%%EC%%B6%%95%%EC%%A0%%9C', verify=False)

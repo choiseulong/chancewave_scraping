@@ -31,7 +31,6 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type':['post_text_type'],
         'multiple_type' : ['extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
@@ -43,7 +42,6 @@ def post_content_parsing_process(**params):
         meta_data_value = extract_text(find_next_tag(meta_data))
         extra_info.update({f'info_{len(extra_info)}' : (meta_data_name, meta_data_value)})
     var['extra_info'].append(extra_info)
-    var['post_text_type'] = 'only_extra_info'
     result = convert_merged_list_to_dict(key_list, var)
     return result
 

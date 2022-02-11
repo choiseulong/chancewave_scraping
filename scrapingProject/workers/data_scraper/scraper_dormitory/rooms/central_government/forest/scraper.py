@@ -36,8 +36,8 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://www.forest.go.kr'
         self.post_url = 'https://www.forest.go.kr/kfsweb/cop/bbs/selectBoardArticle.do?nttId={}&bbsId=BBSMSTR_1031&searchtitle=title&mn=NKFS_04_01_01'
         
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :

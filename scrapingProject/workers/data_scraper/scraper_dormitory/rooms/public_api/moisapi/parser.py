@@ -18,7 +18,7 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['post_text', 'contact', 'post_content_target', 'post_text_type'],
+        'single_type' : ['post_text', 'contact', 'post_content_target'],
         'multiple_type' : ['extra_info']
     }
     var, json_data, key_list = json_type_default_setting(params, target_key_info)
@@ -35,7 +35,6 @@ def post_content_parsing_process(**params):
             var['post_content_target'] = data[key]
         else :
             extra_info.update({f'info_{len(extra_info)}' : (key, data[key])})
-    var['post_text_type'] = 'both'
     var['extra_info'].append(extra_info)
     result = convert_merged_list_to_dict(key_list, var)
     return result

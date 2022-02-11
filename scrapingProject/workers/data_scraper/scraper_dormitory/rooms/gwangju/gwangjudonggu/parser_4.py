@@ -36,7 +36,7 @@ def post_content_parsing_process(**params):
             var['contact'] = meta_data_value
         elif '담당자' in meta_data_title:
             var['uploader'] = meta_data_value
-    var['extra_info'] = extra_info
+    var['extra_info'].append(extra_info) 
     tmp_contents = extract_children_tag(soup, 'td', child_tag_attrs={'class':'txtarea'})
     var['post_text'] = extract_text(tmp_contents)
     if not var['contact']:

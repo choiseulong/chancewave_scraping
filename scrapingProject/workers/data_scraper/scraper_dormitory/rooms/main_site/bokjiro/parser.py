@@ -61,12 +61,11 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['post_subject', 'post_text_type', 'post_text', 'linked_post_url']
+        'single_type' : ['post_subject', 'post_text', 'linked_post_url']
     }
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
     textList = [ _.text for _ in extract_children_tag(soup, 'script', child_tag_attrs={}, is_child_multiple=True) if _.text]
     json_data = extract_text_list_from_json_data(textList)
-    var['post_text_type'] = 'both'
     var['post_subject'] = search_value_in_json_data_using_path(json_data, '$..wlfareInfoReldBztpCdNm', is_data_multiple=False)
     linked_post_url = search_value_in_json_data_using_path(json_data, '$..etcCn', is_data_multiple=False)
     var['linked_post_url'] = linked_post_url if linked_post_url else None

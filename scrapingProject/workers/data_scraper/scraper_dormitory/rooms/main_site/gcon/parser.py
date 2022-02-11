@@ -42,10 +42,9 @@ def post_list_parsing_process(**params):
 def post_content_parsing_process(**params):
     target_key_info = {
         'multiple_type' : ['extra_info'],
-        'single_type' : ['post_text_type', 'post_thumbnail']
+        'single_type' : ['post_thumbnail']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    var['post_text_type'] = 'only_extra_info'
     commBoxList = extract_children_tag(soup, 'div', child_tag_attrs={"class" : "commBox"}, is_child_multiple=True)
     extraDict = {'info_title' : '사업 상세'}
     for commBox in commBoxList:
