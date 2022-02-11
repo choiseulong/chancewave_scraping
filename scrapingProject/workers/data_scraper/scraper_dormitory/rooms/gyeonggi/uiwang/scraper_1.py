@@ -107,6 +107,8 @@ def post_list_parsing_process(**params):
 
             elif idx == 1:
                 page_move_function_str = tmp_td.find('a').get('href').strip()
+                if page_move_function_str == '#':
+                    break
                 var['post_url'].append(make_absolute_url(
                     in_url=page_move_function_str,
                     channel_main_url=var['response'].url))
