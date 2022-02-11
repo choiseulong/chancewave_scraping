@@ -3,8 +3,8 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 def post_list_parsing_process(**params):
     target_key_info = {
         'multiple_type' : [
-            'view_count', 'post_title', 'uploader', 'post_url',
-            'uploaded_time', 'contents_req_params', 'post_subject'
+            'view_count', 'post_title', 'uploader',
+            'uploaded_time', 'post_url', 'post_subject'
         ]
     }
     var, json_data, key_list = json_type_default_setting(params, target_key_info)
@@ -23,7 +23,11 @@ def post_list_parsing_process(**params):
         for num \
         in postNumber
     ]
-    var['post_url'] = [var['post_url_frame'].format(num) for num in postNumber]
+    value_list = search_value_in_json_data_using_path(json_data, '$..BBS_SEQ')
+    for seq in value_list:
+        var['post_url'].append(
+            var['post_url_frame'].format(seq)
+        )
     for key in pathInfo :
         value_list = search_value_in_json_data_using_path(json_data, pathInfo[key])
         if key == 'uploaded_time':
@@ -32,24 +36,20 @@ def post_list_parsing_process(**params):
             value_list = [int(count) for count in value_list]
         var[key] = value_list
 
-    
     result = merge_var_to_dict(key_list, var)
     return result
 
     
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['post_text'],
-        'multiple_type' : ['post_image_url', 'contact']
+        'single_type' : ['post_text', 'contact'],
+        'multiple_type' : ['post_image_url']
     }
     var, json_data, key_list = json_type_default_setting(params, target_key_info)
-
-    post_text = search_value_in_json_data_using_path(json_data, '$..CONTENTS', is_data_multiple=False)
-    soup = change_to_soup(post_text)
-    soupText = extract_text(soup)
-    var['post_text'] = clean_text(soupText)
-    var['contact'] = extract_contact_numbers_from_text(soupText)
-    var['post_image_url'] = search_img_list_in_contents(soup, var['channel_main_url'])
-    
+    contents = json_data['data']['CONTENTS']
+    tmp_contents = change_to_soup(contents)
+    var['post_text'] = extract_text(tmp_contents)
+    var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents)) 
+    var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
     result = convert_merged_list_to_dict(key_list, var)
     return result

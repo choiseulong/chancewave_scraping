@@ -8,6 +8,8 @@ def post_list_parsing_process(**params):
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     cont_box = extract_children_tag(soup, 'tbody')
     cont_list = extract_children_tag(cont_box, 'tr', is_child_multiple=True)
+    if type(cont_list) == type(None):
+        return
     for cont in cont_list:
         td_list = extract_children_tag(cont, 'td', is_child_multiple=True)
         for td_idx, td in enumerate(td_list):

@@ -8,6 +8,7 @@ from datetime import datetime
 from pytz import timezone
 from glob import glob
 import logging
+import traceback
 import os
 
 # 로깅 레벨 CRITICAL로 선언 
@@ -53,11 +54,31 @@ def make_session():
     return session
 
 # job
-# 10시간 time limit 
+# 1시간 time limit 
 # retry 간격 3분 디폴트
-@schedule.task(time_limit=36000, retries=3)
+@schedule.task(time_limit=3600, retries=3)
 def job(scraper_room_address, channel_code, channel_url):
-    session = make_session()
-    scraper = importlib.import_module(scraper_room_address).Scraper(session)
-    scraper.scraping_process(channel_code, channel_url, dev=True) # 로컬 테스트 
-    # scraper.scraping_process(channel_code, channel_url, dev=False)
+    try :
+        session = make_session()
+        scraper = importlib.import_module(scraper_room_address).Scraper(session)
+        scraper.scraping_process(channel_code, channel_url, dev=True) # 로컬 테스트 
+        # scraper.scraping_process(channel_code, channel_url, dev=False)
+        status = 'SUCCESS'
+        traceback = None
+        result = None
+        error_type = None
+    except Exception as e:
+        result = e
+        status = 'FAILURE'
+        traceback = traceback.format_exc()
+        error_type = e.__class__.__name__
+
+
+    return {
+        'channel_code':channel_code, 
+        'status':status, 
+        'date_done':datetime.now().isoformat(), 
+        'traceback':traceback,
+        'result' : result,
+        'error_type' : error_type
+    }

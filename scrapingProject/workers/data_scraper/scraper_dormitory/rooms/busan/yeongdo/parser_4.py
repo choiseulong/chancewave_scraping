@@ -6,7 +6,7 @@ def post_list_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     post_list = extract_children_tag(soup, 'li', child_tag_attrs={'class':'li1'}, is_child_multiple=True)
-    if type(post_list) == None:
+    if type(post_list) == type(None):
         return
     for post in post_list:
         var['post_title'].append(

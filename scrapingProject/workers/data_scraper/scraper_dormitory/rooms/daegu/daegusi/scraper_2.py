@@ -24,13 +24,14 @@ class Scraper(ABCScraper):
         super().__init__(session)
         self.channel_name = '대구평생학습진흥원'
         self.post_board_name = '공지사항'
-        self.post_url = 'https://tong.daegu.go.kr/dle/bbs/view.do?menu_idx=8&master_idx=1&bbs_idx={}'
+        self.cont_url_frame = 'https://tong.daegu.go.kr/dle/bbs/view.do?menu_idx=8&master_idx={}&bbs_idx={}'
 
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :
+            self.post_url = self.cont_url_frame.replace('{}', str(self.page_count), 1)
             self.channel_url = self.channel_url_frame.format(self.page_count)
             self.post_list_scraping()
             if self.scraping_target :

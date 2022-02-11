@@ -23,6 +23,7 @@ def post_list_parsing_process(**params):
         )
         date_text = extract_text_from_single_tag(cont, 'span', child_tag_attrs={'class':'date'})
         parsed_date_text = parse_date_text(date_text)
+        print(parsed_date_text)
         if parsed_date_text:
             var['start_date'].append(
                 convert_datetime_string_to_isoformat_datetime(parsed_date_text)
@@ -36,7 +37,24 @@ def parse_date_text(text):
     date_text_split = text.split(' : ')
     if len(date_text_split) == 2:
         date_text_split = text.split(' : ')[1]
-        parsed_date_text = date_text_split[:date_text_split.find('(')-1].replace(' ', '')
+        parsed_date_text = date_text_split[:date_text_split.find('(')-1].replace(' ', '')\
+            .replace('년', '.').replace('월', '.').replace('일', '.').replace('-', '.')
+        if '오후' in parsed_date_text:
+            cutting_idx = parsed_date_text.find('오후')
+            parsed_date_text = parsed_date_text[:cutting_idx]
+        elif '오전' in parsed_date_text:
+            cutting_idx = parsed_date_text.find('오전')
+            parsed_date_text = parsed_date_text[:cutting_idx]
+        print(parsed_date_text)
+        parsed_date_text_split = parsed_date_text.split('.')
+        if len(parsed_date_text_split) == 3 :
+            if not parsed_date_text_split[2] :
+                parsed_date_text_split[2] = "1"
+            elif int(parsed_date_text_split[2]) == 0:
+                parsed_date_text_split[2] = "1"
+        parsed_date_text = '.'.join(parsed_date_text_split)
+        if parsed_date_text.endswith('.'):
+            parsed_date_text = parsed_date_text[:-1]
         return parsed_date_text
     else :
         return None

@@ -33,7 +33,7 @@ class Scraper(metaclass=ABCMeta):
 
         #env
         self.dev = False
-        self.limit_page_count = 6
+        self.limit_page_count = 3 # 2page 까지 수집
 
     @abstractmethod
     def scraping_process(self, channel_code, channel_url, dev=False):

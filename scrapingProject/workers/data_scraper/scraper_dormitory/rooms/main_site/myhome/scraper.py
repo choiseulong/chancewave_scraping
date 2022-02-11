@@ -42,14 +42,24 @@ class Scraper(ABCScraper):
         self.channel_name = '마이홈'
         self.post_board_name = '입주자모집공고'
         self.post_url = "https://www.myhome.go.kr/hws/portal/sch/selectRsdtRcritNtcDetailView.do?pblancId={}"
-    
+
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
-        self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"))
-        self.session = set_headers(self.session, self.additional_key_value, is_update)
+        self.session = set_headers(self.session)
         self.page_count = 1
         while True :
-            self.post_list_scraping()
+            print(self.page_count)
+            self.channel_url = self.channel_url_frame.format(self.page_count)
+            self.response = self.session.get(self.channel_url)
+            self.scraping_target = post_list_parsing_process(
+                    response = self.response, 
+                    channel_code = self.channel_code, 
+                    post_url_frame = self.post_url,
+                    page_count = self.page_count,
+                    channel_main_url = self.channel_main_url,
+                    channel_url = self.channel_url,
+                    dev = self.dev,
+            )
             if self.scraping_target :
                 self.target_contents_scraping()
                 self.collect_data()
@@ -58,15 +68,19 @@ class Scraper(ABCScraper):
             else:
                 break
 
-    def post_list_scraping(self):
-        data = {
-            "pageIndex" : self.page_count,
-            "srchSuplyTy" : ""
-        }
-        super().post_list_scraping(post_list_parsing_process, 'post', data, sleep_sec)
-
     def target_contents_scraping(self):
-        super().target_contents_scraping(post_content_parsing_process, sleep_sec)
+        for target in self.scraping_target:
+            post_url = target['post_url']
+            response = self.session.get(post_url)
+            post_content = post_content_parsing_process(
+                response = response, 
+                channel_url = self.channel_url,
+                post_url_frame = self.post_url,
+                channel_main_url = self.channel_main_url,
+                channel_code = self.channel_code,
+                dev = self.dev
+            )
+            self.scraping_target_contents.append(post_content)
     
 
 
