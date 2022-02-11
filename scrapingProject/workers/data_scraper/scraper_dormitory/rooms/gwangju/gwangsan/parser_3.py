@@ -39,7 +39,6 @@ def post_list_parsing_process(**params):
                 )
 
     result = merge_var_to_dict(key_list, var)
-    print(result)
     # 2021-02-11
     # var['table_header'] = ['강좌명/교육기관', '접수기간', '교육기간', '교육대상', '신청/정원', '수강료']
     return result
@@ -50,12 +49,10 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    var['post_text_type'] = 'only_extra_info'
     view_img = extract_children_tag(soup, 'div', child_tag_attrs={'class':'view_img'})
     img = extract_children_tag(view_img, 'img')
     src = extract_attrs(img, 'src')
     var['post_image_url'] = var['channel_main_url'] + src
-    var['post_text_type'] = 'only_extra_info'
     extra_info = []
     tmp_meta_data_box = extract_children_tag(soup, 'div', child_tag_attrs={'class':'mt80'}, is_child_multiple=True)
     for meta_data_box in tmp_meta_data_box:
@@ -75,8 +72,7 @@ def post_content_parsing_process(**params):
             elif meta_data_title == '교육문의':
                 var['contact'] = meta_data_value
         extra_info.append(extra_info_con)
-    var['extra_info'] = extra_info
+    var['extra_info'].append(extra_info)
     result = convert_merged_list_to_dict(key_list, var)
-    print(result)
     return result
 

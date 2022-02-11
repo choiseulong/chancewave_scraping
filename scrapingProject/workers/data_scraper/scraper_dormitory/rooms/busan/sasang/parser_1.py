@@ -48,11 +48,10 @@ def parse_date_text(text):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['post_text', 'view_count', 'post_text_type'],
+        'single_type' : ['post_text', 'view_count'],
         'multiple_type' : ['post_image_url', 'extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    var['post_text_type'] = 'both'
     basic = extract_children_tag(soup, 'dd', child_tag_attrs={'class':'basic'})
     basic_list = extract_children_tag(basic, 'li', is_child_multiple=True)
     for li in basic_list:

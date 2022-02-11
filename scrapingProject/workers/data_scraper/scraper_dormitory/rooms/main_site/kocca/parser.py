@@ -56,11 +56,9 @@ def post_list_parsing_process(**params):
 def post_content_parsing_process(**params):
     target_key_info = {
         'multiple_type' : ['extra_info'],
-        'single_type' : ['post_text_type', 'post_text', 'contact']
+        'single_type' : [ 'post_text', 'contact']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    var['post_text_type'] = 'both'
-
     extraDict = {'info_title' : '지원사업 상세'}
     tender_con_list = extract_children_tag(soup, 'div', {"class" : "tender_con"}, is_child_multiple=True)
     for tender_con in tender_con_list :

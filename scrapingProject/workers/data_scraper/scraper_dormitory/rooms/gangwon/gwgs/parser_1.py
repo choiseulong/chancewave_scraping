@@ -55,11 +55,10 @@ def parse_date_text_other(text):
     
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['post_text', 'contact', 'uploader', 'post_text_type'],
+        'single_type' : ['post_text', 'contact', 'uploader'],
         'multiple_type' : ['post_image_url', 'extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    var['post_text_type'] = 'both'
     tmp_meta_data = extract_children_tag(soup, 'div', child_tag_attrs={'class':'caption-info'})
     meta_data_list = extract_children_tag(tmp_meta_data, 'div', child_tag_attrs={'class':'li'}, is_child_multiple=True)
     extra_info = {'info_title' : '교육정보'}

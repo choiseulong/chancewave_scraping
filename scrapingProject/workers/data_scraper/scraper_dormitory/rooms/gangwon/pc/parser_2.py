@@ -61,11 +61,10 @@ def parse_date_text(text):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['post_text', 'contact', 'post_text_type'],
+        'single_type' : ['post_text', 'contact'],
         'multiple_type' : ['post_image_url', 'extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    var['post_text_type'] = 'both'
     extra_info = {'info_title':'공연상세'}
     info_box = extract_children_tag(soup, 'div', child_tag_attrs={'class':'show_detail_table'})
     info_list = extract_children_tag(info_box, 'dt', is_child_multiple=True)

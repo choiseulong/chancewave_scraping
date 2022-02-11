@@ -19,7 +19,6 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url', 'extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    var['post_text_type'] = 'both'
     data_list = extract_children_tag(soup, 'ul', child_tag_attrs={'class':'data_list'})
     dt_list = extract_children_tag(data_list, 'dt', is_child_multiple=True)
     extra_info = {'info_title':'교육상세'}
@@ -33,7 +32,7 @@ def post_content_parsing_process(**params):
         elif '교유기간' in dt_text:
             var['start_date2'], var['end_date2'] = parse_date(dd_text) if parse_date(dd_text) else (None, None)
         extra_info.update({f'info_{len(extra_info)}' : (dt_text, dd_text)})
-    var['extra_info'] = extra_info
+    var['extra_info'].append(extra_info)
     tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'class':'con'})
     var['post_text'] = extract_text(tmp_contents)
     if not var['contact']:

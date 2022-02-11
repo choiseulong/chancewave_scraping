@@ -76,7 +76,7 @@ def post_content_parsing_process(**params):
         elif '문의전화' in meta_data_title:
             if meta_data_value:
                 var['contact'] = meta_data_value
-    var['extra_info'] = extra_info
+    var['extra_info'].append(extra_info)
     result = convert_merged_list_to_dict(key_list, var)
     return result
 

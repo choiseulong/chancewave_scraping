@@ -15,11 +15,10 @@ def post_list_parsing_process(**params):
 def post_content_parsing_process(**params):
     target_key_info = {
         'single_type' : ['post_text', 'contact', 'uploader', 'uploaded_time', 'view_count', \
-            'start_date', 'start_date2', 'end_date', 'end_date2', 'post_text_type'],
+            'start_date', 'start_date2', 'end_date', 'end_date2'],
         'multiple_type' : ['post_image_url', 'extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    var['post_text_type'] = 'both'
     tmp_info = extract_children_tag(soup, 'tr', child_tag_attrs={'class':False})
     td_list = extract_children_tag(tmp_info, 'td')
     for td_idx, td in enumerate(td_list):
@@ -55,7 +54,7 @@ def post_content_parsing_process(**params):
                 else :
                     var['start_date2'] = None
                     var['end_date2'] = None
-    var['extra_info'] = extra_info
+    var['extra_info'].append(extra_info)
     tmp_contents = extract_children_tag(soup, 'td', child_tag_attrs={'class':'cont'})
     var['post_text'] = extract_text(tmp_contents)
     var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents)) 

@@ -34,7 +34,7 @@ class Scraper(ABCScraper):
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
         self.session = set_headers(self.session)
-        self.session.cookies.clear()
+        # self.session.cookies.clear()
         self.page_count = 1
         while True :
             self.channel_url = self.channel_url_frame.format(self.page_count)

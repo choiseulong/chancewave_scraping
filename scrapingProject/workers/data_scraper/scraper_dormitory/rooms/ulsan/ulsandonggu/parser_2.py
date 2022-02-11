@@ -32,7 +32,6 @@ def post_content_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     extra_info = {'info_title':'공연/전시 상세'}
-    var['post_text_type'] = 'both'
     tmp_info = extract_children_tag(soup, 'th', child_tag_attrs={'scope':'row'}, is_child_multiple=True)
     for info in tmp_info:
         info_text = extract_text(info)
@@ -44,7 +43,7 @@ def post_content_parsing_process(**params):
         elif '내용' in info_text:
             var['post_text'] = info_con_text
         extra_info.update({f'info_{len(extra_info)}':(info_text, info_con_text)})
-    var['extra_info'] = extra_info
+    var['extra_info'].append(extra_info)
     image_gallery = extract_children_tag(soup, 'ul', child_tag_attrs={'id':'image-gallery'})
     var['post_image_url'] = search_img_list_in_contents(image_gallery, var['channel_main_url'])
     result = convert_merged_list_to_dict(key_list, var)

@@ -44,7 +44,6 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url', 'extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    var['post_text_type'] = 'both'
     tmp_info = extract_children_tag(soup, 'table')
     info_list = extract_children_tag(tmp_info, 'tr', is_child_multiple=True)
     extra_info = {'info_title':'공연/행사 정보'}
@@ -52,7 +51,7 @@ def post_content_parsing_process(**params):
         info_name = extract_text_from_single_tag(info, 'th')
         info_con = extract_text_from_single_tag(info, 'td')
         extra_info.update({f'info_{len(extra_info)}' : (info_name, info_con)})
-    var['extra_info'] = extra_info
+    var['extra_info'].append(extra_info)
     tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'id':'bbs_cn'})
     var['post_text'] = extract_text(tmp_contents)
     inquire_no = extract_children_tag(soup, 'p', child_tag_attrs={'class':'inquire_no'})

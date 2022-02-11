@@ -75,7 +75,7 @@ def post_content_parsing_process(**params):
 
 def postListParsingProcess_1(**params):
     target_key_info = {
-        'multiple_type' : ['post_url', 'post_title', 'post_image_url', 'post_text_type'],
+        'multiple_type' : ['post_url', 'post_title', 'post_image_url'],
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     photoList = extract_children_tag(soup, 'div', {'class' : 'photoList'}, is_child_multiple=False)
@@ -91,8 +91,6 @@ def postListParsingProcess_1(**params):
             extract_attrs(img, 'alt')
         )
         var['post_url'].append(href)
-        var['post_text_type'].append(None)
-    
     result = merge_var_to_dict(key_list, var)
     
     return result

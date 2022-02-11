@@ -3,7 +3,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
 def post_list_parsing_process(**params):
     target_key_info = {
         'multiple_type' : ['post_url', 'post_title', 'uploader', 'post_subject', 'post_content_target', \
-            'contact', 'extra_info', 'post_text_type']
+            'contact', 'extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     thead = extract_children_tag(soup, 'thead')
@@ -37,7 +37,6 @@ def post_list_parsing_process(**params):
                 var['post_url'].append(href)
             extra_info.update({f'info_{len(extra_info)}' : (header_list[td_idx], td_text)})
         var['extra_info'].append(extra_info)
-        var['post_text_type'].append('both')
     result = merge_var_to_dict(var=var, key_list=key_list)
     return result
 

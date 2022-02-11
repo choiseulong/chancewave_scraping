@@ -43,11 +43,10 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['contact', 'post_text', 'post_text_type'],
+        'single_type' : ['contact', 'post_text'],
         'multiple_type' : ['post_image_url', 'extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    var['post_text_type'] = 'both'
     spanList = extract_children_tag(soup, 'span', {'class' : 'info_tit'}, is_child_multiple=True)
     for span in spanList:
         spanText = extract_text(span)

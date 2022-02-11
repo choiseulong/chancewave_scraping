@@ -74,7 +74,7 @@ def parse_frstRegistDt(textDate):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['post_content_target', 'post_text_type'],
+        'single_type' : ['post_content_target'],
         'multiple_type' : ['extra_info']
     }
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
@@ -82,7 +82,6 @@ def post_content_parsing_process(**params):
     var['post_content_target'] = '-'.join(
         [extract_text(tag) for tag in extract_children_tag(soup, 'span', {'class' : 'ds'}, is_child_multiple=True)]
     )
-    var['post_text_type'] = 'only_extra_info'
     extraDict = {'info_title' : '공고 개요'}
     div_info = extract_children_tag(soup, 'div', {'class' : 'info'}, is_child_multiple=False)
     for title, value in zip(
