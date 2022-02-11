@@ -7,7 +7,7 @@ def post_list_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     lec_list = extract_children_tag(soup, 'tr', child_tag_attrs={'class':'tac'}, is_child_multiple=True)
-    if type(lec_list) == None:
+    if type(lec_list) == type(None):
         return
     for lec in lec_list :
         td_list = extract_children_tag(lec, 'td', is_child_multiple=True)

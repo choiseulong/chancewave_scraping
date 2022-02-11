@@ -8,8 +8,8 @@ import re
 from pytz import timezone
 from w3lib.html import remove_tags
 from urllib.parse import urljoin
-from http.client import HTTPResponse as urlopen_response
-from requests.models import Response as req_response
+from http.client import HTTPResponse as type_urlopen_response
+from requests.models import Response as type_req_response
 
 def change_to_soup(reponse_text):
     # response.text 를 soup로 변환
@@ -301,10 +301,10 @@ def html_type_default_setting(params, target_key_info):
     # BeautifulSoup 객체에서 데이터를 파싱할 수 없을 경우 사용함
     var = reflect_params(locals(), params)
     var, key_list = reflect_key(var, target_key_info)
-    if type(var['response']) == urlopen_response:
+    if type(var['response']) == type_urlopen_response:
         data = var['response'].read()
         text = data.decode('UTF-8')
-    elif type(var['response']) == req_response :
+    elif type(var['response']) == type_req_response :
         encoding = var['response'].encoding
         if encoding == 'ISO-8859-1':
             encoding = 'EUC-KR'
@@ -570,6 +570,8 @@ def parse_post_url(**params):
     var = params['var']
     post_url_frame = var['post_url_frame']
     a_tag = extract_children_tag(child_tag, 'a')
+    if type(a_tag) == type(None):
+        return 'POST_URL_IS_NOT_EXISTS'
     href = extract_attrs(a_tag, 'href') if a_tag.has_attr('href') else ''
     if href :
         href = parse_href(href)

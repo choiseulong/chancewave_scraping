@@ -2,7 +2,7 @@ from time import sleep
 import json
 from datetime import datetime
 from pytz import timezone
-from urllib.request import urlopen
+from urllib import request
 from ..parser_tools.tools import *
 import urllib3
 
@@ -59,7 +59,8 @@ def post_method_response(session, url, data={}, sleep_sec=2, jsonize=False):
 
 
 def urlopen_response(channel_url, sleep_sec=2):
-    response = urlopen(channel_url)
+    print(channel_url)
+    response = request.urlopen(channel_url)
     status_code = 'fail'
     if response.code == 200:
         status_code = 'ok'

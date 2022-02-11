@@ -18,6 +18,10 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    error_page = extract_children_tag(soup, 'div', child_tag_attrs={'class':'error_01'})
+    if error_page:
+        var['post_title'] = extract_text(error_page)
+        return {}
     board_view = extract_children_tag(soup, 'div', child_tag_attrs={'class':'board_view'})
     var['post_title'] = extract_text_from_single_tag(board_view, 'h4')
     var['contact'] = extract_contact_numbers_from_text(

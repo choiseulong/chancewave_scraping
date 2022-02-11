@@ -48,7 +48,7 @@ class Scraper(ABCScraper):
         self.search_bbs_data(channel_url)
         self.page_count = 1
         for channel_url in self.channel_url_list:
-            self.channel_url = channel_url.replace('%7C%7C', '||')
+            self.channel_url = channel_url
             super().scraping_process(channel_code, channel_url, dev)
             self.post_list_scraping()
             if self.scraping_target :
@@ -60,7 +60,10 @@ class Scraper(ABCScraper):
                 break
 
     def post_list_scraping(self):
-        super().post_list_scraping(post_list_parsing_process, 'urlopen', sleep_sec)
+        if self.page_count == 1:
+            super().post_list_scraping(post_list_parsing_process, 'get', sleep_sec)
+        else:
+            super().post_list_scraping(post_list_parsing_process, 'urlopen', sleep_sec)
 
     def target_contents_scraping(self):
         super().target_contents_scraping(post_content_parsing_process, sleep_sec)

@@ -6,7 +6,6 @@ def post_list_parsing_process(**params):
             'linked_post_url', 'start_date', 'end_date', 'uploaded_time',]
     }
     var, json_data, key_list = json_type_default_setting(params, target_key_info)
-
     var['is_going_on'] = [
         True if prgrStts == '모집중' else False \
         for prgrStts \
@@ -56,9 +55,8 @@ def post_list_parsing_process(**params):
         for uploaded_time \
         in search_value_in_json_data_using_path(json_data, '$..frstRegistDt')
     ]
-
-    value_list = [var[key][:-1] for key in key_list]
     result = merge_var_to_dict(key_list, var)
+    result = [data for data in result if data['post_title'] != None and data['post_url'] != None]
     return result
 
 def parse_frstRegistDt(textDate):
@@ -102,7 +100,6 @@ def post_content_parsing_process(**params):
     extraDict.update({'info_0' : ['주소', addressList]})
     extraDict.update({'info_1': ['최초 입주 년월', firstEntryDateList]})
     var['extra_info'].append(extraDict)
-    
     result = convert_merged_list_to_dict(key_list, var)
     return result
 

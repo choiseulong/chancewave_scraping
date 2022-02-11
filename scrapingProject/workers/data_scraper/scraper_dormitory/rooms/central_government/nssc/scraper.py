@@ -55,13 +55,11 @@ class Scraper(ABCScraper):
         self.channel_name = '원자력안전위원회'
         self.post_board_name = '공지사항'
         self.channel_main_url = 'https://www.nssc.go.kr'
-        self.post_url = 'https://www.nssc.go.kr/ajaxf/FR_BBS_SVC/BoardViewData.do'
+        self.post_url = 'https://www.nssc.go.kr/ajaxf/FR_BBS_SVC/BoardViewData.do?MENU_ID=180&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ={}&CONTENTS_NO=1'
         
     def scraping_process(self, channel_code, channel_url, dev):
         super().scraping_process(channel_code, channel_url, dev)
-        self.post_url_frame = 'https://www.nssc.go.kr/ko/cms/FR_BBS_CON/BoardView.do?MENU_ID=180&CONTENTS_NO=&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ={}'
-        self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"))
-        self.session = set_headers(self.session, self.additional_key_value, is_update)
+        self.session = set_headers(self.session)
         self.page_count = 1
         while True :
             self.channel_url = self.channel_url_frame.format(self.page_count)
@@ -75,14 +73,7 @@ class Scraper(ABCScraper):
                 break
             
     def post_list_scraping(self):
-        data = {
-            "pageNo" : self.page_count,
-            "pagePerCnt" : 15 ,
-            "MENU_ID" : 180,
-            "SITE_NO" : 2,
-            "BOARD_SEQ" :4
-        }
-        super().post_list_scraping(post_list_parsing_process, 'post', data, sleep_sec)
+        super().post_list_scraping(post_list_parsing_process, 'get', sleep_sec)
 
     def target_contents_scraping(self):
         super().target_contents_scraping(post_content_parsing_process, sleep_sec)
