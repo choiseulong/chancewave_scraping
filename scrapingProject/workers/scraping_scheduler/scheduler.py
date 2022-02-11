@@ -1,15 +1,10 @@
 from celery import Celery
 import importlib
-from requests import Session
 from requests.adapters import HTTPAdapter
 from requests.sessions import Session
 from urllib3.util import Retry
 from datetime import datetime
-from pytz import timezone
-from glob import glob
 import logging
-import traceback
-import os
 
 # 로깅 레벨 CRITICAL로 선언 
 urllib3_logger = logging.getLogger('urllib3')
@@ -72,7 +67,6 @@ def job(scraper_room_address, channel_code, channel_url):
         status = 'FAILURE'
         traceback = traceback.format_exc()
         error_type = e.__class__.__name__
-
 
     return {
         'channel_code':channel_code, 

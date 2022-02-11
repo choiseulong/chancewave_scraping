@@ -67,9 +67,9 @@ def post_list_parsing_process(**params):
 
     var, soup, key_list, text = html_type_default_setting(params, target_key_info)
 
-    # 2022-1-20 HYUN
+    # 2022-2-10 HYUN
     # html table header index
-    table_column_list = ['번호', '제목', '담당', '조회수', '등록일']
+    table_column_list = ['번호', '제목', '담당부서', '조회수', '등록일']
 
     # 게시물 리스트 테이블 영역
     post_list_table_bs = soup.find('div', class_='bbs__list')
@@ -113,6 +113,8 @@ def post_list_parsing_process(**params):
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td.text.strip()))
 
     result = merge_var_to_dict(key_list, var)
+    if var['dev']:
+        print(result)
     return result
 
 
@@ -141,4 +143,6 @@ def post_content_parsing_process(**params):
     var['post_image_url'] = search_img_list_in_contents(context_area, var['response'].url)
 
     result = convert_merged_list_to_dict(key_list, var)
+    if var['dev']:
+        print(result)
     return result
