@@ -47,8 +47,8 @@ class Scraper(ABCScraper):
         self.post_board_name = '서비스 목록'
         self.post_url = "https://www.bokjiro.go.kr/ssis-teu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId={}"
     
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.additional_key_value.append(("Content-Type", "application/json; charset=UTF-8"))
         self.session = set_headers(self.session, self.additional_key_value, is_update)
         self.page_count = 1

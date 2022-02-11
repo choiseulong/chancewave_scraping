@@ -38,10 +38,10 @@ class Scraper(ABCScraper):
         channel_url = real_channel_url.replace('{}', encrypted_value, 1)
         return channel_url
 
-    def scraping_process(self, channel_code, channel_url, dev):
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
         self.session = set_headers(self.session)
         channel_url = self.search_encrypted_value(channel_url)
-        super().scraping_process(channel_code, channel_url, dev)
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.page_count = 1
         while True :
             self.channel_url = self.channel_url_frame.format(self.page_count)

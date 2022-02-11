@@ -37,8 +37,8 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://www.mois.go.kr'
         self.post_url = 'https://www.mois.go.kr/frt/bbs/type013/commonSelectBoardArticle.do?bbsId={}&nttId={}'
         
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded"))
         self.session = set_headers(self.session, self.additional_key_value, is_update)
         self.page_count = 1

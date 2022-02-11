@@ -26,8 +26,8 @@ class Scraper(ABCScraper):
         self.post_board_name = '공지사항'
         self.cont_url_frame = 'https://tong.daegu.go.kr/dle/bbs/view.do?menu_idx=8&master_idx={}&bbs_idx={}'
 
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :

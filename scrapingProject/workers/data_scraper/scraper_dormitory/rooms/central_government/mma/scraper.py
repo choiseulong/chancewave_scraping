@@ -44,8 +44,8 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://www.mma.go.kr'
         self.post_url = 'https://www.mma.go.kr/board/boardView.do?gesipan_id=2&gsgeul_no={}'
         
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :

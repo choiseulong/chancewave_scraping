@@ -29,8 +29,8 @@ class Scraper(ABCScraper):
         self.channel_name = '한국사학진흥재단'
         self.post_board_name = '공지사항'
 
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.additional_key_value.append(("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"))
         self.session = set_headers(self.session, self.additional_key_value, is_update)
         self.page_count = 1

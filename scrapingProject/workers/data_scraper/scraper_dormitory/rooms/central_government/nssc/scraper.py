@@ -57,8 +57,8 @@ class Scraper(ABCScraper):
         self.channel_main_url = 'https://www.nssc.go.kr'
         self.post_url = 'https://www.nssc.go.kr/ajaxf/FR_BBS_SVC/BoardViewData.do?MENU_ID=180&SITE_NO=2&BOARD_SEQ=4&BBS_SEQ={}&CONTENTS_NO=1'
         
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :

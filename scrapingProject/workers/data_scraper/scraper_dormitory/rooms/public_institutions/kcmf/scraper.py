@@ -30,8 +30,8 @@ class Scraper(ABCScraper):
         self.post_board_name = '공지사항'
         self.post_url = 'https://kcmf.or.kr/cms/board'
 
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.additional_key_value.append(("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,la;q=0.6"))
         self.session = set_headers(self.session, self.additional_key_value, is_update)
         self.page_count = 1

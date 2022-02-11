@@ -38,8 +38,8 @@ class Scraper(ABCScraper):
         self.post_board_name = '공지사항'
         self.channel_main_url = 'https://www.sejong.go.kr'
     
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.additional_key_value.append(['Accept-Encoding', 'gzip, deflate, br'])
         self.session = set_headers(self.session, self.additional_key_value, is_update)
         self.page_count = 1

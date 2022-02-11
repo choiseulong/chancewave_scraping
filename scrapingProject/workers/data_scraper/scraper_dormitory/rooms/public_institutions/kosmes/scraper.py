@@ -38,8 +38,8 @@ class Scraper(ABCScraper):
         self.channel_name = '중소벤처기업진흥공단'
         self.post_board_name = '공지사항'
 
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.post_url = channel_url
         self.page_count = 1
         while True :

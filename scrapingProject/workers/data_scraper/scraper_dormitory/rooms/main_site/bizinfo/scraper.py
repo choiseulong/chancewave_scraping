@@ -39,8 +39,8 @@ class Scraper(ABCScraper):
         self.post_board_name = '지원사업조회'
         self.post_url = "https://www.bizinfo.go.kr/see/seea/selectSEEA140Detail.do?pblancId={}&menuId=80001001001"
     
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.additional_key_value.append(("Content-Type", "application/x-www-form-urlencoded"))
         self.session = set_headers(self.session, self.additional_key_value, is_update)
         while True :

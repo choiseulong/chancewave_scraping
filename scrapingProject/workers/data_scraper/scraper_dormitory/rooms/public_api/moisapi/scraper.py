@@ -29,8 +29,8 @@ class Scraper(ABCScraper):
         self.channel_name = '행정안전부 대한민국 공공서비스 정보'
         self.post_url ='https://api.odcloud.kr/api/gov24/v1/serviceDetail?page=1&perPage=10&serviceKey={}&cond%5BSVC_ID%3A%3AEQ%5D={}'
 
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.channel_url_frame = channel_url.replace('{}', self.api_key, 1)
         self.post_url = self.post_url.replace('{}', self.api_key, 1)
         self.session = set_headers(self.session)

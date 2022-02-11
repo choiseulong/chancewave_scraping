@@ -40,6 +40,8 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
+    tbody = extract_children_tag(soup, 'tbody')
+    var['post_title'] = extract_text_from_single_tag(tbody, 'strong')
     tmp_contents = extract_children_tag(soup, 'td', child_tag_attrs={'class' : 'conTd'})
     var['post_text'] = extract_text(tmp_contents)
     var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents)) 

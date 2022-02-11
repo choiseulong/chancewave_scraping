@@ -25,6 +25,7 @@ class Scraper(metaclass=ABCMeta):
         self.channel_name = ''
         self.post_board_name = ''
         self.empty_contents_dict = {}
+        self.full_channel_code = ''
 
         # additional urls
         self.post_url = ''
@@ -36,7 +37,7 @@ class Scraper(metaclass=ABCMeta):
         self.limit_page_count = 3 # 2page 까지 수집
 
     @abstractmethod
-    def scraping_process(self, channel_code, channel_url, dev=False):
+    def scraping_process(self, channel_code, channel_url, dev=False, full_channel_code=''):
         '''
             스크래핑 진행의 틀을 작성함
         '''
@@ -46,6 +47,8 @@ class Scraper(metaclass=ABCMeta):
         self.channel_url = channel_url
         self.channel_url_frame = channel_url #page_count 적용이 필요한 경우 사용
         self.post_url_frame = self.post_url
+        self.full_channel_code = full_channel_code
+
         if not self.channel_main_url:
             self.channel_main_url = extract_channel_main_url_from_channel_url(channel_url)
         # 추가 로직 작성 必
@@ -143,7 +146,10 @@ class Scraper(metaclass=ABCMeta):
                 post_url_can_use = True
             else:
                 post_url_can_use = None
-            data_frame = get_post_data_frame(self.channel_code, self.channel_url, post_url_can_use, self.channel_name, self.post_board_name)
+            data_frame = get_post_data_frame(
+                channel_code=self.channel_code, channel_url=self.channel_url, post_url_can_use=post_url_can_use, \
+                channel_name=self.channel_name, post_board_name=self.post_board_name, full_channel_code=self.full_channel_code
+            )
             data_frame_with_target_info = enter_data_into_data_frame(data_frame, target_info)
             data_frame_with_target_contents = enter_data_into_data_frame(data_frame_with_target_info, target_contents)
             self.collected_data_list.append(data_frame_with_target_contents)

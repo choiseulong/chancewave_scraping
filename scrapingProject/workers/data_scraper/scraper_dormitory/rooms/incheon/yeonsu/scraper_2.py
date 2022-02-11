@@ -24,8 +24,8 @@ class Scraper(ABCScraper):
         self.channel_name = '연수구청'
         self.post_board_name = '연수소식 모아보기'
 
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.session = set_headers(self.session)
         self.channel_url = self.channel_url_frame.format(self.page_count)
         self.post_list_scraping()
