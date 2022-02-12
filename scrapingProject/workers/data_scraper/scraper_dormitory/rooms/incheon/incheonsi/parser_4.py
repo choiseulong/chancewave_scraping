@@ -54,7 +54,7 @@ def post_content_parsing_process(**params):
                 info_value_text
             )
         extra_info.update({f'info_{len(extra_info)}' : (info_text, info_value_text)})
-    var['extra_info'] = extra_info
+    var['extra_info'].append(extra_info)
     tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'class':'culture-contents-data'})
     var['post_text'] = extract_text(tmp_contents)
     if not var['contact']:

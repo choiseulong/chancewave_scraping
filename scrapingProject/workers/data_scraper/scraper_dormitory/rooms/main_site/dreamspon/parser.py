@@ -49,13 +49,11 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['post_subject', 'linked_post_url', 'start_date', 'end_date', 'post_text_type'],
+        'single_type' : ['post_subject', 'linked_post_url', 'start_date', 'end_date'],
         'multiple_type' : ['extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     extraDict = {'info_title':'장학 개요'}
-    var['post_text_type'] = 'only_extra_info'
-    
     infoTable = extract_children_tag(soup, 'div', {'class' : 'infoTable'}, is_child_multiple=False)
     info_ul = extract_children_tag(infoTable, 'ul', child_tag_attrs={}, is_child_multiple=True)
     for ul in info_ul:

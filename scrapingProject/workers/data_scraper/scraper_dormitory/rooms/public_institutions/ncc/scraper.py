@@ -30,8 +30,8 @@ class Scraper(ABCScraper):
         self.post_board_name = '기타공지'
         self.post_url = 'https://www.ncc.re.kr/boardView.ncc?uri=notice07&ntcId={}&searchKey=total'
 
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :

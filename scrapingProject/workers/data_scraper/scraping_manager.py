@@ -26,6 +26,7 @@ class ScrapingManager:
     def __init__(self):
         self.channel_url_info_dict = {}
         self.date_range = []
+        self.full_channel_code_list = []
     
     def get_requests_session(
             self,
@@ -53,6 +54,14 @@ class ScrapingManager:
         for key in globals():
             if 'url_' in key :
                 self.channel_url_info_dict.update({key[4:] : globals()[key]})
+                self.full_channel_code_list.append(key[4:])
+
+    def search_full_channel_code(self, channel_code):
+        if not self.channel_url_info_dict :
+            self.get_channel_url()
+        for code in self.full_channel_code_list:
+            if '_' + channel_code in code:
+                return code
 
     def scraping_dev_test(self, channel_code):
         # ulsansi_0 등의 채널코드를 받아 테스트 스크래핑을 시작한다
@@ -73,8 +82,9 @@ class ScrapingManager:
                 break
         else:
             scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'
+        full_channel_code = self.search_full_channel_code(channel_code)
         scraper = importlib.import_module(scraper_room_address).Scraper(session)
-        scraper.scraping_process(channel_code, channel_url, dev=True)
+        scraper.scraping_process(channel_code, channel_url, full_channel_code=full_channel_code, dev=True)
     
     def scraping_init_with_celery(self):
         # celery 에게 스크래핑 진행을 위임한다
@@ -93,7 +103,8 @@ class ScrapingManager:
                     break
             else:
                 scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'
-            job.delay(scraper_room_address, channel_code, channel_url)
+            full_channel_code = self.search_full_channel_code(channel_code)
+            job.delay(scraper_room_address, channel_code, channel_url, full_channel_code)
 
     def parse_scraping_parameters(self, channel_code_with_location):
         # 지역정보가 함께 담긴 채널 코드를 가져와서 파싱하고 return 한다
@@ -166,8 +177,13 @@ if __name__ == '__main__':
     else:
         print('NOT MATCH IDX')
         scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{tmp_group_name}.{tmp_room_name}.scraper'
+    ## full_channel_code
+    manager = ScrapingManager()
+    full_channel_code = manager.search_full_channel_code(URL_CODE)
+    ##
+
     session = req.Session()
     scraper = importlib.import_module(scraper_room_address).Scraper(session)
-    scraper.scraping_process(URL_CODE, TARGET_URL)
+    scraper.scraping_process(URL_CODE, TARGET_URL, full_channel_code=full_channel_code)
 
 

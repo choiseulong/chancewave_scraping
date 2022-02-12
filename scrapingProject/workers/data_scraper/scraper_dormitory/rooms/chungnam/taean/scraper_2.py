@@ -31,8 +31,8 @@ class Scraper(ABCScraper):
         self.post_board_name = '군정소식/유관기관소식'
         self.post_url = 'https://www.taean.go.kr/cop/bbs/BBSMSTR_000000000043/selectBoardArticle.do?'
 
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :

@@ -34,15 +34,20 @@ class Scraper(ABCScraper):
         self.post_board_name = '타기관소식'
         self.post_url = 'https://www.donggu.ulsan.kr/tour/cop/bbs/selectBoardArticle.do?bbsId=tourMuseum&nttId={}&bbsTyCode=BBST01&bbsAttrbCode=BBSA02'
 
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.session = set_headers(self.session)
-        self.channel_url = self.channel_url_frame.format(self.page_count)
-        self.post_list_scraping()
-        if self.scraping_target :
-            self.target_contents_scraping()
-            self.collect_data()
-            self.mongo.reflect_scraped_data(self.collected_data_list)
+        self.page_count += 1
+        while True:
+            self.channel_url = self.channel_url_frame.format(self.page_count)
+            self.post_list_scraping()
+            if self.scraping_target :
+                self.target_contents_scraping()
+                self.collect_data()
+                self.mongo.reflect_scraped_data(self.collected_data_list)
+                self.page_count += 1
+            else:
+                break
 
     def post_list_scraping(self):
         super().post_list_scraping(post_list_parsing_process, 'get', sleep_sec)

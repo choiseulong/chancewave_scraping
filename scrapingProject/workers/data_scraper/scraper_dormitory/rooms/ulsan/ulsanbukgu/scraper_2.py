@@ -8,7 +8,7 @@ from .parser_2 import *
 '''
     @post list
     method : GET
-    url =  https://www.bukgu.ulsan.kr/edu/join/join1.jsp?pagenum={}
+    url =  https://www.bukgu.ulsan.kr/edu/pageCont.do?menuNo=5010000&pageIndex={}
     header :
         None
 
@@ -29,9 +29,10 @@ class Scraper(ABCScraper):
         super().__init__(session)
         self.channel_name = '울산북구평생학습관'
         self.post_board_name = '공지사항'
+        self.post_url = 'https://www.bukgu.ulsan.kr/edu/cop/bbs/selectBoardArticle.do?nttId={}&bbsId={}&menuNo=5010000'
 
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :

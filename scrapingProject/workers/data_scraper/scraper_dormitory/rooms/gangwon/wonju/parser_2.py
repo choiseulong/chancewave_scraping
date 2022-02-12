@@ -53,7 +53,7 @@ def parse_date_text(text):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['post_text', 'contact','post_text_type'],
+        'single_type' : ['post_text', 'contact'],
         'multiple_type' : ['post_image_url', 'extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
@@ -65,7 +65,6 @@ def post_content_parsing_process(**params):
         span_value = extract_text(find_next_tag(span))
         extra_info.update({f'info:{len(extra_info)}' : (span_name, span_value)})
     var['extra_info'].append(extra_info)
-    var['post_text_type'] = 'both'
     tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'class':'program'})
     tmp_contents = decompose_tag(tmp_contents, 'div', child_tag_attrs={'class':'detail_screen_box'})
     tmp_contents = decompose_tag(tmp_contents, 'div', child_tag_attrs={'class':'btn_group'})

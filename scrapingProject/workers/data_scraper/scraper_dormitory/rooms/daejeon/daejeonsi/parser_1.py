@@ -41,7 +41,7 @@ def post_content_parsing_process(**params):
         extra_info.update(
             {f'info_{len(extra_info)}' : (li_text_split[0], li_text_split[1])}
         )
-    var['extra_info'] = extra_info
+    var['extra_info'].append(extra_info)
     tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'class':'board_txt02'})
     var['post_text'] = extract_text(tmp_contents)
     if not var['contact'] :

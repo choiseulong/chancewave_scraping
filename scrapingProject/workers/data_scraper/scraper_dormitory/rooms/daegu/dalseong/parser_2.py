@@ -39,12 +39,11 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['contact', 'start_date', 'end_date', 'post_text_type', 'start_date2', 'end_date2'],
+        'single_type' : ['contact', 'start_date', 'end_date', 'start_date2', 'end_date2'],
         'multiple_type' : ['extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     extra_info = {'info_title' : '교육 및 강좌 상세'}
-    var['post_text_type'] = 'only_extra_info'
     table = extract_children_tag(soup, 'table')
     tmp_meta_data = extract_children_tag(table, 'th', is_child_multiple=True)
     for meta_data in tmp_meta_data:

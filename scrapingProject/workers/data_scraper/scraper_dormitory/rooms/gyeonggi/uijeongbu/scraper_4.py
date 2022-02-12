@@ -29,8 +29,8 @@ class Scraper(ABCScraper):
         self.post_board_name = '행사목록'
         self.channel_main_url = 'https://www.ui4u.go.kr/'
 
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         # self.channel_url = 'https://www.pyeongtaek.go.kr/pyeongtaek/bbs/list.do?ptIdx=41&mId=0401010000&bIdx='
         self.session = set_headers(self.session)
         self.page_count = 1

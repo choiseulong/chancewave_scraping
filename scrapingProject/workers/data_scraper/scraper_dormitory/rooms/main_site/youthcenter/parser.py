@@ -70,8 +70,7 @@ def post_list_parsing_process(**params):
 def post_content_parsing_process(**params):
     var = reflect_params(locals(), params)
     target_key_info = {
-        'multiple_type' : ['extra_info'],
-        'single_type' : ['post_text_type']
+        'multiple_type' : ['extra_info']
     }
     var, key_list = reflect_key(var, target_key_info)
     soup = change_to_soup(
@@ -98,8 +97,6 @@ def post_content_parsing_process(**params):
         for title, cont in zip(contentsTitle, contents):
             infoNum = len(var['extra_info'][tableIdx])
             var['extra_info'][tableIdx].update({f'info_{infoNum}' : [title, cont]})
-    var['post_text_type'] = 'only_extra_info'
-    
     result = convert_merged_list_to_dict(key_list, var)
     return result
         

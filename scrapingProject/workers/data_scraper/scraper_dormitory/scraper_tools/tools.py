@@ -86,10 +86,21 @@ def get_post_data_frame(
         channel_url='',
         post_url_can_use=True,
         channel_name='',
-        post_board_name=''
+        post_board_name='',
+        full_channel_code=''
     ):
     now = datetime.now(timezone('Asia/Seoul'))
+    location_info = {
+        'seoul__':'서울', 'main_site__':'주요 사이트', 'sejong__':'세종특별자치시', 'jejudo__':'제주도', 'central_government__':'중앙부처',
+        'gyeongnam__':'경상남도', 'gyeongbuk__' : '경상북도', 'jeonnam__':'전라남도', 'jeonbuk__':'전라북도', 'gyeonggi__':'경기도', 'ulsan__':'울산광역시',
+        'chungbuk__':'충청북도', 'chungnam__':'충청남도', 'busan__':'부산광역시', 'daegu__':'대구광역시', 'public_institutions__':'공공기관',
+        'gwangju__':'광주광역시', 'incheon__':'인천광역시', 'gangwon__':'강원도', 'daejeon__':'대전광역시', 'public_api__':'공공API'
+    }
+    location_code = full_channel_code.replace(channel_code, '')
+    channel_location_name = location_info[location_code]
     return {
+        'channel_location_name' : channel_location_name,
+        'full_channel_code' : full_channel_code,
         'channel_name' : channel_name,
         'post_board_name' : post_board_name,
         'channel_code' : channel_code,

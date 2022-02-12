@@ -44,8 +44,8 @@ class Scraper(ABCScraper):
                 board_list_box_url = self.channel_main_url + self.board_href_list[title_idx]
                 return board_list_box_url
 
-    def scraping_process(self, channel_code, channel_url, dev):
-        super().scraping_process(channel_code, channel_url, dev)
+    def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
+        super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.session = set_headers(self.session)
         board_list_box_url = channel_url
         while True:

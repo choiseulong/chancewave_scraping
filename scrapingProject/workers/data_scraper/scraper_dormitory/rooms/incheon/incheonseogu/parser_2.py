@@ -38,12 +38,11 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['post_text_type', 'post_text', 'contact', 'start_date', 'end_date', \
+        'single_type' : ['post_text', 'contact', 'start_date', 'end_date', \
             'post_content_target', 'linked_post_url'],
         'multiple_type' : ['post_image_url', 'extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    var['post_text_type']='both'
     tit_con = extract_children_tag(soup, 'div', child_tag_attrs={'class':'tit_con'})
     dt_list = extract_children_tag(tit_con, 'dt', is_child_multiple=True)
     extra_info={'info_title':'행사상세'}
@@ -66,7 +65,7 @@ def post_content_parsing_process(**params):
             var['linked_post_url'] = dd_text
         elif '대상' in dt_text:
             var['post_content_target'] = dd_text
-    var['extra_info'] = extra_info
+    var['extra_info'].append(extra_info)
     tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'class':'con'})
     var['post_text'] = extract_text(tmp_contents)
     var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents)) 
