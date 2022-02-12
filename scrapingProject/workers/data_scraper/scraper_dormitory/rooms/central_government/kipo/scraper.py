@@ -10,7 +10,7 @@ from .parser import *
     @post list
 
     method : GET
-    url =  https://www.kipo.go.kr/kpo/BoardApp/UnewNotiApp?board_id=notice&catmenu=m03_01_01&cp={page_count}
+    url =  https://www.kipo.go.kr/ko/kpoBultnMgmt.do?pageIndex=2&menuCd=SCD0200609&sysCd=SCD02&searchCondition=1
     header :
         None
 
@@ -32,7 +32,7 @@ class Scraper(ABCScraper):
         self.channel_name = '특허청'
         self.post_board_name = '알림사항'
         self.channel_main_url = 'https://www.kipo.go.kr'
-        self.post_url = 'https://www.kipo.go.kr/kpo/BoardApp/UnewNotiApp?board_id=notice&catmenu=m03_01_01&c=1003&seq={}'
+        self.post_url = 'https://www.kipo.go.kr/ko/kpoBultnDetail.do?ntatcSeq={}&aprchId={}&sysCd=SCD02&menuCd=SCD0200609'
 
     def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
         super().scraping_process(channel_code, channel_url, dev, full_channel_code)

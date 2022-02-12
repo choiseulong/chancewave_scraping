@@ -4,7 +4,7 @@ from .parser_3 import *
 '''
     @post list
     method : GET
-    url_0 =   https://www.yeongdo.go.kr/02418/02419/02420.web?gcode=1109&cpage={}
+    url_0 =   https://www.yeongdo.go.kr/00000/00007/00013.web?type=A&cpage={}
     header :
         None
 '''

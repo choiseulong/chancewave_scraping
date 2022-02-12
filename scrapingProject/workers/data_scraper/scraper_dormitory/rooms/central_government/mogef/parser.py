@@ -7,6 +7,8 @@ def post_list_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     tbody = extract_children_tag(soup, 'tbody')
+    if type(tbody) == type(None):
+        raise Exception(f'{var["channel_code"]}, DATA BOX IS NONETYPE')
     cont_list = extract_children_tag(tbody, 'tr', is_child_multiple=True)
     for cont in cont_list :
         td_list = extract_children_tag(cont, 'td', is_child_multiple=True)
