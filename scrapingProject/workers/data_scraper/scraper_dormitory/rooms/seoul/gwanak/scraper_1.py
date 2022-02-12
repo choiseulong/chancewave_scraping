@@ -114,7 +114,7 @@ def post_list_parsing_process(**params):
                 tmp_parameter_str = clean_text(tmp_parameter_str)
                 parameter_list = eval('[' + tmp_parameter_str + ']')
 
-                tmp_cb_idx = parameter_list[0]
+                tmp_cb_idx = '491'
                 tmp_bc_idx = parameter_list[1]
 
                 tmp_query_param = {
