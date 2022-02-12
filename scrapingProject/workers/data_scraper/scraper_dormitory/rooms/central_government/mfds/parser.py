@@ -6,14 +6,16 @@ def post_list_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     mainDiv = extract_children_tag(soup, 'div', {'class' : 'bbs_list01'}, is_child_multiple=False)
+    ulList = None
     if '0' in var['channel_code']:
         ulList = extract_children_tag(mainDiv, 'ul', child_tag_attrs={}, is_child_multiple=True, is_recursive=False)
         if len(ulList):
             ulList = ulList[1]
     else :
-        ulList = extract_children_tag(mainDiv, 'ul', child_tag_attrs={}, is_child_multiple=False)
-
-    if not ulList :
+        ulList = extract_children_tag(mainDiv, 'ul', is_child_multiple=False)
+        if not extract_text(ulList):
+            return
+    if type(ulList) == type(None) :
         return
     var['uploaded_time'] = [
         convert_datetime_string_to_isoformat_datetime(
@@ -45,7 +47,6 @@ def post_list_parsing_process(**params):
                 var['view_count'].append(
                     extract_numbers_in_text(pText)
                 )
-    
     result = merge_var_to_dict(key_list, var)
     return result
 
@@ -76,6 +77,5 @@ def post_content_parsing_process(**params):
             if 'html' not in src:
                 src = var['channel_main_url'] + src
             var['post_image_url'].append(src)
-    
     result = convert_merged_list_to_dict(key_list, var)
     return result

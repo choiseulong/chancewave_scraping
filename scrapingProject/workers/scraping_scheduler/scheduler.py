@@ -61,13 +61,13 @@ def job(scraper_room_address, channel_code, channel_url, full_channel_code):
         session = make_session()
         scraper = importlib.import_module(scraper_room_address).Scraper(session)
         scraper.scraping_process(channel_code, channel_url, dev=True, full_channel_code=full_channel_code) # 로컬 테스트 
-        # scraper.scraping_process(channel_code, channel_url, dev=False)
+        # scraper.scraping_process(channel_code, channel_url, dev=False, full_channel_code=full_channel_code)
         status = 'SUCCESS'
         traceback = None
         error_type = None
     except Exception as e:
         status = 'FAILURE'
-        traceback = tb.format_exc()
+        traceback = str(e) + tb.format_exc()
         error_type = e.__class__.__name__
 
     return {
