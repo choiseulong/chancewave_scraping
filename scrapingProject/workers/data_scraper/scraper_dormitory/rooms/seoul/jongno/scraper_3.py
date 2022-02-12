@@ -138,12 +138,15 @@ def post_content_parsing_process(**params):
     content_info_area = content_info_area.find('table')
 
     var['post_title'] = soup.find('h4', class_='bu_t1').text.strip()
-    var['extra_info'] = []
+    var['extra_info'] = [{'info_title':'신청 상세'}]
+
+    extra_info_column_list = ['선정방식', '교육비용', '장소']
 
     for tmp_row_area in content_info_area.find_all('tr'):
         for tmp_info_title, tmp_info_value in zip(tmp_row_area.find_all('th'), tmp_row_area.find_all('td')):
 
             tmp_info_title_text = tmp_info_title.text.strip()
+            tmp_info_title_text_removed_space = re.sub('\s+', '', tmp_info_title_text)
             tmp_info_value_text = tmp_info_value.text.strip()
 
             if tmp_info_title_text == '선정자발표':
@@ -163,10 +166,11 @@ def post_content_parsing_process(**params):
             elif tmp_info_title_text in ['모집내용', '공모내용/참여방법']:
                 var['post_text'] = clean_text(tmp_info_value_text)
                 var['post_image_url'] = search_img_list_in_contents(tmp_info_value, var['response'].url)
-            elif tmp_info_title_text in ['선정방식', '교육비용', '장 소']:
-                var['extra_info'].append({
-                    tmp_info_title_text: tmp_info_value_text
-                })
+
+            elif tmp_info_title_text_removed_space in extra_info_column_list:
+                tmp_extra_info_index = extra_info_column_list.index(tmp_info_title_text_removed_space)
+                var['extra_info'][0]['info_' + str(tmp_extra_info_index + 1)] = [tmp_info_title_text_removed_space,
+                                                                                 tmp_info_value_text]
 
     result = convert_merged_list_to_dict(key_list, var)
     if var['dev']:

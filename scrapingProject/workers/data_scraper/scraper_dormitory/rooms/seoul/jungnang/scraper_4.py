@@ -138,7 +138,11 @@ def post_content_parsing_process(**params):
     var['post_title'] = clean_text(contents_title_area.text)
 
     content_info_area = content_info_area.find('table', class_='viewTable')
-    var['extra_info'] = []
+    var['extra_info'] = [{
+        'info_title':'보건소 신청 상세'
+    }]
+
+    extra_info_column_list = ['비용', '장소', '대상', '기간', '신청방식']
     for tmp_row_area in content_info_area.find_all('tr'):
         for tmp_info_title, tmp_info_value in zip(tmp_row_area.find_all('th'), tmp_row_area.find_all('td')):
 
@@ -146,11 +150,10 @@ def post_content_parsing_process(**params):
             tmp_info_title_text_removed_space = re.sub('\s+', '', tmp_info_title_text)
             tmp_info_value_text = tmp_info_value.text.strip()
 
-            if tmp_info_title_text_removed_space in ['비용', '장소', '대상', '기간', '신청방식']:
-
-                var['extra_info'].append({
-                   tmp_info_title_text_removed_space: tmp_info_value_text
-                })
+            if tmp_info_title_text_removed_space in extra_info_column_list:
+                tmp_extra_info_index = extra_info_column_list.index(tmp_info_title_text_removed_space)
+                var['extra_info'][0]['info_' + str(tmp_extra_info_index + 1)] = [tmp_info_title_text_removed_space,
+                                                                                 tmp_info_value_text]
             elif tmp_info_title_text == '선정자발표일':
                 var['end_date'] = clean_text(tmp_info_value.text.strip())
             elif tmp_info_title_text == '문의전화':
