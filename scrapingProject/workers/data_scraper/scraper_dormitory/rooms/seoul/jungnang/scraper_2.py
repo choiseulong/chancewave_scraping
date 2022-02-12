@@ -131,12 +131,16 @@ def post_content_parsing_process(**params):
         'multiple_type': ['post_image_url', 'extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    var['extra_info'] = []
+    var['extra_info'] = [{
+        'info_title':'공연 상세'
+    }]
     content_info_area = soup.find('div', class_='txt_box')
     var['post_title'] = content_info_area.find('h2').text.strip()
 
     content_info_area = content_info_area.find('div', class_='half_txt')
     content_info_area = content_info_area.find('ul')
+
+    extra_info_column_list = ['관람료', '공연장소']
 
     for tmp_row_area in content_info_area.find_all('li'):
         column_title = tmp_row_area.em.text.strip()
@@ -145,14 +149,10 @@ def post_content_parsing_process(**params):
 
         if column_title == '공연시간':
             var['start_date2'] = convert_datetime_string_to_isoformat_datetime(column_value)
-        elif column_title == '관람료':
-            var['extra_info'].append({
-                '관람료': column_value
-            })
-        elif column_title == '공연장소':
-            var['extra_info'].append({
-                '공연장소': column_value
-            })
+        elif column_title in extra_info_column_list:
+            tmp_extra_info_index = extra_info_column_list.index(column_title)
+            var['extra_info'][0]['info_' + str(tmp_extra_info_index + 1)] = [column_title,
+                                                                             column_value]
 
     poster_area = soup.find('div', class_='half_box')
     poster_area = poster_area.find('div', class_='half_img')

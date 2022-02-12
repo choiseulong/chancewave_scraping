@@ -139,27 +139,22 @@ def post_list_parsing_process(**params):
 def post_content_parsing_process(**params):
     target_key_info = {
         'single_type': ['post_text', 'post_title'],
-        'multiple_type': ['post_image_url', 'extra_info']
+        'multiple_type': ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
 
     content_info_area = soup.find('div', class_='bbs__view')
     content_info_area = content_info_area.find('table', class_='p-table')
-    var['extra_info'] = []
 
-    var['post_title'] = clean_text(content_info_area.find('td', class_='p-table__subject_text'))
+    var['post_title'] = clean_text(content_info_area.find('span', class_='p-table__subject_text'))
     for tmp_row_area in content_info_area.find_all('tr'):
         for tmp_info_title, tmp_info_value in zip(tmp_row_area.find_all('th'), tmp_row_area.find_all('td')):
 
             tmp_info_title_text = tmp_info_title.text.strip()
             tmp_info_value_text = tmp_info_value.text.strip()
 
-            if tmp_info_title_text == '모집인원':
-                var['extra_info'].append({
-                    tmp_info_title_text: clean_text(tmp_info_value_text)
-                })
-            elif tmp_info_title_text == '프로그램내용':
-                var['post_text'] = clean_text(tmp_info_value.text.strip())
+            if tmp_info_title_text == '프로그램내용':
+                var['post_text'] = clean_text(tmp_info_value_text)
                 var['post_image_url'] = search_img_list_in_contents(tmp_info_value, var['response'].url)
 
     result = convert_merged_list_to_dict(key_list, var)
