@@ -27,6 +27,6 @@ def post_list_parsing_process(**params):
                 var['start_date'].append(convert_datetime_string_to_isoformat_datetime(meta_data_value))
             elif '행사명' in meta_data_name:
                 var['post_title'].append(meta_data_value)
-        var['extra_info'].append(extra_info)
+        var['extra_info'].append([extra_info])
     result = merge_var_to_dict(key_list, var)
     return result

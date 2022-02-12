@@ -22,7 +22,7 @@ def post_list_parsing_process(**params):
                 extract_text(post_subject)[1:-1]
             )
         else :
-            var['post_subject'].append(None)
+            var['post_subject'].append('')
         wrap1t3 = extract_children_tag(li, 'i', {'class' :'wrap1t3'}, is_child_multiple=False)
         spanList = extract_children_tag(wrap1t3, 'span', child_tag_attrs={}, is_child_multiple=True)
         for spanIdx, span in enumerate(spanList):

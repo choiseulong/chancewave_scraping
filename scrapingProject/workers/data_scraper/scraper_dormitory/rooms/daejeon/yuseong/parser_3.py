@@ -36,7 +36,7 @@ def post_list_parsing_process(**params):
                 href = extract_attrs(a_tag, 'href')
                 var['post_url'].append(href)
             extra_info.update({f'info_{len(extra_info)}' : (header_list[td_idx], td_text)})
-        var['extra_info'].append(extra_info)
+        var['extra_info'].append([extra_info])
     result = merge_var_to_dict(var=var, key_list=key_list)
     return result
 

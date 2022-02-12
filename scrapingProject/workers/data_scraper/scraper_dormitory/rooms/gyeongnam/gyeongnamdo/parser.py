@@ -85,14 +85,14 @@ def postListParsingProcess_1(**params):
         img = extract_children_tag(a_tag, 'img', {'src' : True}, is_child_multiple=False)
         src = extract_attrs(img, 'src')
         var['post_image_url'].append(
-            var['channel_main_url'] + src
+            [var['channel_main_url'] + src]
         )
         var['post_title'].append(
             extract_attrs(img, 'alt')
         )
         var['post_url'].append(href)
     result = merge_var_to_dict(key_list, var)
-    
+    print(result)
     return result
 
 

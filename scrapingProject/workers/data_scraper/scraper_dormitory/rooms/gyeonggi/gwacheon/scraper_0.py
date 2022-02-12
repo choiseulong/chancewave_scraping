@@ -145,7 +145,9 @@ def post_list_parsing_process(**params):
             elif idx == 5:
                 var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_td_text))
             elif idx == 6:
-                var['view_count'].append(tmp_td_text)
+                var['view_count'].append(
+                    extract_numbers_in_text(tmp_td_text)
+                )
 
     result = merge_var_to_dict(key_list, var)
     if var['dev']:

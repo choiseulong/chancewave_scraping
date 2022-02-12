@@ -20,7 +20,9 @@ def post_list_parsing_process(**params):
             extract_text_from_single_tag(cont, 'span', child_tag_attrs={'class':'cate'})
         )
         var['view_count'].append(
-            extract_text_from_single_tag(cont, 'span', child_tag_attrs={'class':'hit'})
+            extract_numbers_in_text(
+                extract_text_from_single_tag(cont, 'span', child_tag_attrs={'class':'hit'})
+            )
         )
         var['uploaded_time'].append(
             extract_text_from_single_tag(cont, 'span', child_tag_attrs={'class':'date'})

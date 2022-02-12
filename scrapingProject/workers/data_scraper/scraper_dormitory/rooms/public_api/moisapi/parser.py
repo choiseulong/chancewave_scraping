@@ -24,6 +24,7 @@ def post_content_parsing_process(**params):
     var, json_data, key_list = json_type_default_setting(params, target_key_info)
     extra_info = {'info_title' : '상세정보'}
     data = json_data['data'][0]
+    var['contact'] = ''
     for key in data:
         if '전화번호' in key:
             var['contact'] = data[key]

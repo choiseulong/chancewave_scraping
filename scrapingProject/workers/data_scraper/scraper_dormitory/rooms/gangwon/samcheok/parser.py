@@ -16,7 +16,7 @@ def post_list_parsing_process(**params):
             )
         else:
             var['post_thumbnail'].append(
-                None
+                ''
             )
         var['post_title'].append(
             extract_text_from_single_tag(post,'strong')

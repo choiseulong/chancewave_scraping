@@ -30,7 +30,7 @@ def post_list_parsing_process(**params):
                 elif '신청마감' in p_text:
                     var['is_going_on'].append(False)
                 else :
-                    var['is_going_on'].append('ERROR')
+                    var['is_going_on'].append('')
                 break
     result = merge_var_to_dict(key_list, var)
     return result

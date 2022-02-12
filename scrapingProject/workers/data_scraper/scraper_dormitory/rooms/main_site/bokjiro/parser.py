@@ -69,7 +69,7 @@ def post_content_parsing_process(**params):
     json_data = extract_text_list_from_json_data(textList)
     var['post_subject'] = search_value_in_json_data_using_path(json_data, '$..wlfareInfoReldBztpCdNm', is_data_multiple=False)
     linked_post_url = search_value_in_json_data_using_path(json_data, '$..etcCn', is_data_multiple=False)
-    var['linked_post_url'] = linked_post_url if linked_post_url else None
+    var['linked_post_url'] = linked_post_url if linked_post_url else ''
     
     postTextCandidateInfo = [
         "wlfareSprtTrgtCn", "aplyMtdDc", "wlfareSprtTrgtSlcrCn", "wlfareSprtBnftCn",\
