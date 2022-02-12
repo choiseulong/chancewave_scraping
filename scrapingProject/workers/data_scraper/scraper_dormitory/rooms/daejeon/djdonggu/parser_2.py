@@ -13,6 +13,7 @@ def post_list_parsing_process(**params):
     var['post_id_idx'] = [1,2]
     var['table_header'] = ["번호", "강좌명", "모집기간", "운영기간", "신청/모집", "수강료", "접수상태"]
     result = parse_board_type_html_page(soup, var, key_list)
+    print(result)
     return result
 
 def post_content_parsing_process(**params):

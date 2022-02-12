@@ -39,7 +39,7 @@ def post_content_parsing_process(**params):
         elif '연락처' in meta_data_name:
             var['contact'] = meta_data_value
         elif '조회수' in meta_data_name:
-            var['view_count'] = meta_data_value
+            var['view_count'] = extract_numbers_in_text(meta_data_value)
     var['uploader'] = uploader
     tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'class':'substance'})
     var['post_text'] = extract_text(tmp_contents)

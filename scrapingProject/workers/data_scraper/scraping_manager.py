@@ -78,7 +78,7 @@ class ScrapingManager:
             # module 이름으로 변형 위해 python 확장자 제거
             tmp_module_nm = tmp_scraper_file_name[:tmp_scraper_file_name.rfind('.py')]
             if tmp_module_nm == f'scraper_{tmp_room_num}':
-                scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.{tmp_module_nm}'
+                scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.{tmp_module_nm}'                
                 break
         else:
             scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'

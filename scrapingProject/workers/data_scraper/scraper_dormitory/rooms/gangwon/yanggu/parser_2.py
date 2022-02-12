@@ -22,6 +22,6 @@ def post_list_parsing_process(**params):
             extra_info.update({f'info_{len(extra_info)}' : (header[td_idx], td_text)})
             if header[td_idx] == '강좌명':
                 var['post_title'].append(td_text)
-        var['extra_info'].append(extra_info)
+        var['extra_info'].append([extra_info])
     result = merge_var_to_dict(key_list, var)
     return result

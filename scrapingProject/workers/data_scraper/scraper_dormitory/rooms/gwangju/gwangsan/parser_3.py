@@ -44,14 +44,14 @@ def post_list_parsing_process(**params):
 
 def post_content_parsing_process(**params):
     target_key_info = {
-        'single_type' : ['contact', 'post_image_url'],
+        'single_type' : ['contact', 'post_thumbnail'],
         'multiple_type' : ['extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     view_img = extract_children_tag(soup, 'div', child_tag_attrs={'class':'view_img'})
     img = extract_children_tag(view_img, 'img')
     src = extract_attrs(img, 'src')
-    var['post_image_url'] = var['channel_main_url'] + src
+    var['post_thumbnail'] = var['channel_main_url'] + src
     tmp_meta_data_box = extract_children_tag(soup, 'div', child_tag_attrs={'class':'mt80'}, is_child_multiple=True)
     for meta_data_box in tmp_meta_data_box:
         extra_info_con = {}

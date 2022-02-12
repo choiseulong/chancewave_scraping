@@ -341,7 +341,7 @@ def search_img_list_in_contents(contents, channel_main_url):
     # channel_main_url + src 로 반영함
     if not contents :
         print(f'{channel_main_url} contents is empty')
-        return
+        return []
     img_list = extract_children_tag(contents, 'img', {'src' : True}, is_child_multiple=True)
     imgs = []
     if img_list:
@@ -492,19 +492,20 @@ def _handle_tbody_exception(soup, tbody):
 
 def parse_is_going_on(**params):
     text = params['child_tag_text']
-    on_progress = ['진행', '모집중', '접수대기', '접수중', '교육중']
+    on_progress = ['진행', '모집중', '접수대기', '접수중', '교육중', '접수전']
     dead = ['마감', '교육완료', '접수마감']
     result = None
     for word in on_progress:
         if word in text :
             result = True
-    
-    for word in dead:
-        if word in text :
-            if type(result) == type(None):
+            break
+    if result == None:
+        for word in dead:
+            if word in text :
                 result = False
+                break
             else :
-                return 'ERROR'
+                result = ''
     # print(var['channel_code'], 'IS_GOING_ON PARSER VALUE DUPLICATE ERROR')
     return result
 

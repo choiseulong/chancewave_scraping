@@ -14,6 +14,8 @@ def post_list_parsing_process(**params):
     }
     data_list = search_value_in_json_data_using_path(json_data, path_info)
     for path_idx, path in enumerate(path_info.keys()) :
+        if path == '$..INQ_NCNT':
+            data_list[path_idx] = [int(i) for i in data_list[path_idx]]
         var[path_info[path]] = data_list[path_idx]
     var['contents_req_params'] = [
         {
@@ -25,7 +27,6 @@ def post_list_parsing_process(**params):
         in var['contents_req_params']
     ]
     var['uploaded_time'] = [convert_datetime_string_to_isoformat_datetime(date) for date in var['uploaded_time']]
-    
     result = merge_var_to_dict(key_list, var)
     return result
 

@@ -18,10 +18,10 @@ def post_list_parsing_process(**params):
                 var['channel_main_url'] + href
             )
             var['post_title'].append(alt)
-            var['post_text'].append(None)
+            var['post_text'].append('')
         else :
-            var['post_url'].append(None)
-            var['post_title'].append(None)
+            var['post_url'].append('')
+            var['post_title'].append('')
             var['post_text'].append(alt)
         var['post_thumbnail'].append(
             var['channel_main_url'] + src

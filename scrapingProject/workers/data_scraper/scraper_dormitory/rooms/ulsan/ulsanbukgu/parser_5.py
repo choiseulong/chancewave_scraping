@@ -39,12 +39,12 @@ def post_content_parsing_process(**params):
                         datetime_string = convert_datetime_string_to_isoformat_datetime(text)
                         var[date_info[text_idx]] = datetime_string
                     else :
-                        var[date_info[text_idx]] = None
+                        var[date_info[text_idx]] = ''
                 parse_text_split = parse_scripts_string(tag_string, prefix='var etc10 =')
                 if parse_text_split[0]:
                     var['post_content_target'] = parse_text_split[0]
                 else :
-                    var['post_content_target'] = None
+                    var['post_content_target'] = ''
     tmp_info = extract_children_tag(soup, 'th', child_tag_attrs={'scope':'row'}, is_child_multiple=True)
     for info in tmp_info:
         info_text = extract_text(info)
