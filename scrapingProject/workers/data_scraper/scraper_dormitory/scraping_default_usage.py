@@ -84,6 +84,9 @@ class Scraper(metaclass=ABCMeta):
                 channel_url = self.channel_url,
                 dev = self.dev,
             )
+        else:
+            if self.dev :
+                print(self.channel_code, 'REQUESTS ERROR')
 
     def target_contents_scraping(self, post_content_parsing_process, sleep_sec=2):
         '''

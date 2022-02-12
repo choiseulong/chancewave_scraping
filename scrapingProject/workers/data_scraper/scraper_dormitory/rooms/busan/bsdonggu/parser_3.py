@@ -11,6 +11,7 @@ def post_list_parsing_process(**params):
     # var['table_header'] = ["번호", "제목", "작성일", "조회"]
     var['table_header'] = ['번호', '제목', '파일', '크기', '작성일', '조회수']
     result = parse_board_type_html_page(soup, var, key_list)
+
     return result
 
 def post_content_parsing_process(**params):

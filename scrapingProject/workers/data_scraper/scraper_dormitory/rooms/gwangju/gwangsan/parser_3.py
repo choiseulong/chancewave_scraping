@@ -12,7 +12,6 @@ def post_list_parsing_process(**params):
         for td_idx, td in enumerate(td_list):
             if td_idx == 0:
                 is_going_on = extract_text_from_single_tag(td, 'span', child_tag_attrs={'class':True})
-                print(is_going_on)
                 if '마감' in is_going_on or '교육완료' in is_going_on:
                     var['is_going_on'].append(False)
                 elif '접수중' in is_going_on or '교육중' in is_going_on:
@@ -53,7 +52,6 @@ def post_content_parsing_process(**params):
     img = extract_children_tag(view_img, 'img')
     src = extract_attrs(img, 'src')
     var['post_image_url'] = var['channel_main_url'] + src
-    extra_info = []
     tmp_meta_data_box = extract_children_tag(soup, 'div', child_tag_attrs={'class':'mt80'}, is_child_multiple=True)
     for meta_data_box in tmp_meta_data_box:
         extra_info_con = {}
@@ -71,8 +69,7 @@ def post_content_parsing_process(**params):
                 var['end_date'] = meta_data_value_split[1] if len(meta_data_value_split) == 2 else None
             elif meta_data_title == '교육문의':
                 var['contact'] = meta_data_value
-        extra_info.append(extra_info_con)
-    var['extra_info'].append(extra_info)
+        var['extra_info'].append(extra_info_con)
     result = convert_merged_list_to_dict(key_list, var)
     return result
 

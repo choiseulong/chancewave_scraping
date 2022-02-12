@@ -1,4 +1,5 @@
 import zlib
+import json
 from datetime import datetime
 
 def make_crc(data):
@@ -11,6 +12,8 @@ def make_crc(data):
             text += str(data[key])
         elif isinstance(data[key], list):
             for info_element in data[key]:
+                if isinstance(info_element, dict):
+                    info_element = json.dumps(info_element)
                 text += ', '.join(info_element)
         else :
             continue
