@@ -21,7 +21,7 @@ def post_list_parsing_process(**params):
         var['post_url'].append(var['channel_main_url'][:-1] + tmp_post_url)
         var['post_title'].append(tmp_obj['SUBJECT'])
         var['post_subject'].append(tmp_obj['CATEGORY_NAME'])
-        var['view_count'].append(tmp_obj['VIEW_CNT'])
+        var['view_count'].append(extract_numbers_in_text(tmp_obj['VIEW_CNT']))
         var['uploaded_time'].append(convert_datetime_string_to_isoformat_datetime(tmp_obj['WRITE_DATE2']))
 
     
