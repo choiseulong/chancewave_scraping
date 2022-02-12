@@ -10,14 +10,15 @@ def post_list_parsing_process(**params):
 
     for contents in contentsList:
         ongoingCheck = extract_children_tag(contents, 'span', child_tag_attrs={"class": ['tag color01']})
-        if var['channel_code'] == 'gyeonggi_content_agency_0':
+        if var['channel_code'] == 'gcon_0':
             if not ongoingCheck :
                 var['is_going_on'].append(False)
                 # continue
             else :
                 var['is_going_on'].append(True)
         else :
-            var['is_going_on'].append(None)
+            if 'is_going_on' in key_list:
+                key_list.remove('is_going_on')
         view_count = extract_children_tag(contents, 'td', child_tag_attrs={"class": "hit"})
         var['view_count'].append(extract_numbers_in_text(extract_text(view_count)))
         uploaded_time = extract_children_tag(contents, 'td', child_tag_attrs={"class": "date"})
@@ -37,6 +38,7 @@ def post_list_parsing_process(**params):
         var['uploader'].append(extract_text(uploader))
     
     result = merge_var_to_dict(key_list, var)
+    print(result)
     return result
 
 def post_content_parsing_process(**params):
@@ -85,6 +87,5 @@ def postContentParsingProcess_other(**params):
                 href = extract_attrs(a_tag, 'href')
                 var['linked_post_url'] += href
     var['post_image_url'] = search_img_list_in_contents(view_content, var['channel_main_url'])
-    
     result = convert_merged_list_to_dict(key_list, var)
     return result

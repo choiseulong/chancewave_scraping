@@ -83,6 +83,9 @@ def post_content_parsing_process(**params):
         for key in info :
             if key in th_text:
                 th_idx = th_text.index(key)
+                if 'key' == 'view_count':
+                    var[info[key]] = extract_numbers_in_text(td_text[th_idx])
+                    continue
                 var[info[key]] = td_text[th_idx]
 
     detail_content = extract_children_tag(soup, 'div', {'class' : 'detail'}) # return default -> tag

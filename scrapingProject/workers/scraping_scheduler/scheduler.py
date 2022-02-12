@@ -78,6 +78,4 @@ def job(scraper_room_address, channel_code, channel_url, full_channel_code):
         'traceback':traceback,
         'error_type' : error_type
     }
-
     mongo.write_scraping_history(history)
-    return history

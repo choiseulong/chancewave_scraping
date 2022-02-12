@@ -26,9 +26,9 @@ def post_list_parsing_process(**params):
                     var['channel_main_url'] + src
                 )
             else :
-                var['post_thumbnail'].append(None)
+                var['post_thumbnail'].append('')
         else :
-            var['post_thumbnail'].append(None)
+            var['post_thumbnail'].append('')
 
         t3wrap = extract_children_tag(li, 'i', {'class' :'t3wrap'}, is_child_multiple=False)
         spanList = extract_children_tag(t3wrap, 'span', child_tag_attrs={}, is_child_multiple=True)
