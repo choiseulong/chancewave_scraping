@@ -27,7 +27,7 @@ def post_list_parsing_process(**params):
             )
         else :
             var['post_thumbnail'].append(
-                None
+                ''
             )
         wrap1t3 = extract_children_tag(li, 'i', {'class' :'wrap1t3'}, is_child_multiple=False)
         spanList = extract_children_tag(wrap1t3, 'span', child_tag_attrs={}, is_child_multiple=True)

@@ -15,9 +15,9 @@ def post_list_parsing_process(**params):
                     var['channel_main_url'] + src
                 )
             else :
-                var['post_thumbnail'].append(None)
+                var['post_thumbnail'].append('')
         else :
-            var['post_thumbnail'].append(None)
+            var['post_thumbnail'].append('')
         a_tag = extract_children_tag(li, 'a', {'class' : 'a1'}, is_child_multiple=False)
         href = extract_attrs(a_tag, 'href')
         postId = extract_text_between_prefix_and_suffix('idx=', '&amode', href)

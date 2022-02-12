@@ -36,10 +36,10 @@ def post_list_parsing_process(**params):
                         )
                     except ValueError as e :
                         var['uploaded_time'].append(
-                            None
+                            ''
                         )
                 else :
-                    var['uploaded_time'].append(None)
+                    var['uploaded_time'].append('')
             elif td_idx == 5 :
                 var['view_count'].append(
                     extract_numbers_in_text(td_text)

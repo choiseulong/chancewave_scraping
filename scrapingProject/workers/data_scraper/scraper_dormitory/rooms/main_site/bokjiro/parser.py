@@ -9,7 +9,7 @@ def post_list_parsing_process(**params):
     var, json_data, key_list = json_type_default_setting(params, target_key_info)
 
     var['contact'] = [
-        contact if contact else None \
+        contact if contact else '' \
         for contact \
         in search_value_in_json_data_using_path(json_data, '$..RPRS_CTADR')
     ]
@@ -44,17 +44,18 @@ def post_list_parsing_process(**params):
         in search_value_in_json_data_using_path(json_data, '$..ENFC_END_YMD')
     ]
     var['extra_info'] = [
-        {
+        [{
             "info_title" : "정책 개요",
             "info_1" : ['추진 지역', location]
-        } \
+        }] \
             if location.strip() 
-            else {} \
+            else [] \
         for location \
         in search_value_in_json_data_using_path(json_data, '$..ADDR')
     ]
     
     result = merge_var_to_dict(key_list, var)
+    print(result)
     return result
 
 

@@ -20,6 +20,6 @@ def post_list_parsing_process(**params):
                 var['post_title'].append(td_text)
             elif td_idx == 6 :
                 var['post_content_target'].append(td_text)
-        var['extra_info'].append(extra_info)
+        var['extra_info'].append([extra_info])
     result = merge_var_to_dict(key_list, var)
     return result
