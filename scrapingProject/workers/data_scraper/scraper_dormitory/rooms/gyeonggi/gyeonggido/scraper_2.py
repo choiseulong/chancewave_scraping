@@ -90,7 +90,7 @@ def post_list_parsing_process(**params):
 def post_content_parsing_process(**params):
     target_key_info = {
         'single_type': ['post_text', 'post_title', 'contact', 'post_content_target', 'uploader', 'start_date',
-                        'uploaded_time', 'end_date', 'start_date2', 'end_date2', 'vieww_count', 'is_going_on'],
+                        'uploaded_time', 'end_date', 'start_date2', 'end_date2', 'view_count', 'is_going_on'],
         'multiple_type': ['post_image_url', 'extra_info']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
@@ -114,7 +114,7 @@ def post_content_parsing_process(**params):
         elif tmp_header_title == '작성일':
             var['uploaded_time'] = convert_datetime_string_to_isoformat_datetime(tmp_header_value)
         elif tmp_header_title == '조회':
-            var['vieww_count'] = extract_numbers_in_text(tmp_header_value)
+            var['view_count'] = extract_numbers_in_text(tmp_header_value)
 
     header_info_area = content_info_area.find('div', class_='equitable_box')
     header_info_area = header_info_area.find('div')
