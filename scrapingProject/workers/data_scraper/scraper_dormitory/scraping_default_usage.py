@@ -1,6 +1,8 @@
 from workers.data_server.mongo_server import MongoServer
 from .scraper_tools.tools import *
 from .parser_tools.tools import *
+import copy
+import os
 import json
 from abc import *
 
@@ -150,6 +152,35 @@ class Scraper(metaclass=ABCMeta):
                 channel_code=self.channel_code, channel_url=self.channel_url, post_url_can_use=post_url_can_use, \
                 channel_name=self.channel_name, post_board_name=self.post_board_name, full_channel_code=self.full_channel_code
             )
+
+            if self.dev:
+                tmp_target_info = copy.deepcopy(target_info)
+                tmp_target_contents = copy.deepcopy(target_contents)
+                tmp_target_info.update(tmp_target_contents)
+                now_processing_file_path = os.path.dirname(__file__)
+                test_data_save_directory = os.path.join(now_processing_file_path, '..', '..', '..', '..', 'test_data')
+                if not os.path.exists(test_data_save_directory):
+                    os.makedirs(test_data_save_directory)
+
+                test_data_directory = f'{test_data_save_directory}\\{self.channel_name}'
+                if not os.path.exists(test_data_directory):
+                    os.makedirs(test_data_directory)
+                copyed_data_frame = copy.deepcopy(data_frame)
+
+                del_key_list = []
+                for f in copyed_data_frame.keys():
+                    if copyed_data_frame[f] == '' or copyed_data_frame[f] is None or copyed_data_frame[f] == []:
+                        del_key_list.append(f)
+
+                for f in del_key_list:
+                    del copyed_data_frame[f]
+
+                tmp_target_info.update(copyed_data_frame)
+                serialized_data = json.dumps(tmp_target_info)
+
+                with open(f'{test_data_directory}\\{self.full_channel_code}.json', 'w') as tmp_file:
+                    tmp_file.write(serialized_data)
+
             data_frame_with_target_info = enter_data_into_data_frame(data_frame, target_info)
             data_frame_with_target_contents = enter_data_into_data_frame(data_frame_with_target_info, target_contents)
             self.collected_data_list.append(data_frame_with_target_contents)
