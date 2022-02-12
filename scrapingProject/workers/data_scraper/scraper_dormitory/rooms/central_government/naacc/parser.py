@@ -6,30 +6,29 @@ def post_list_parsing_process(**params):
         'multiple_type' : ['post_url', 'post_title', 'uploaded_time', 'view_count', 'uploader']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    tbody = extract_children_tag(soup, 'tbody', child_tag_attrs={}, is_child_multiple=False)
-    tr_list = extract_children_tag(tbody, 'tr', child_tag_attrs={}, is_child_multiple=True)
+    cont_box = extract_children_tag(soup, 'div', child_tag_attrs={'class':'board'})
+    tr_list = extract_children_tag(cont_box, 'tr', is_child_multiple=True)
     for tr in tr_list:
-        td_list = extract_children_tag(tr, 'td', child_tag_attrs={}, is_child_multiple=True)
-        for td_idx, td in enumerate(td_list):
-            td_text = extract_text(td)
-            if td_idx == 1 : 
-                var['post_title'].append(td_text)
-                a_tag = extract_children_tag(td, 'a', child_tag_attrs={}, is_child_multiple=False)
-                href = extract_attrs(a_tag, 'href')
-                postId = extract_numbers_in_text(href)
-                var['post_url'].append(
-                    var['post_url_frame'].format(postId)
-                )
-            elif td_idx == 2 :
-                var['uploader'].append(td_text)
-            elif td_idx == 3 :
+        a_tag = extract_children_tag(tr, 'a')
+        onclick = extract_attrs(a_tag, 'onclick')
+        post_id = parse_post_id(onclick, 0)
+        var['post_url'].append(
+            var['post_url_frame'].format(post_id)
+        )
+        var['post_title'].append(
+            extract_text(a_tag)
+        )
+        info_list = extract_children_tag(tr, 'li', is_child_multiple=True)
+        for info_idx, info in enumerate(info_list):
+            info_text = extract_text(info)
+            if info_idx == 0:
                 var['uploaded_time'].append(
-                    convert_datetime_string_to_isoformat_datetime(td_text)
+                    convert_datetime_string_to_isoformat_datetime(info_text)
                 )
-            elif td_idx == 4 :
-                var['view_count'].append(
-                    extract_numbers_in_text(td_text)
-                )
+            elif info_idx == 1:
+                var['uploader'].append(info_text)
+            elif info_idx == 2:
+                var['view_count'].append(extract_numbers_in_text(info_text))
     result = merge_var_to_dict(key_list, var)
     return result
 
@@ -39,7 +38,7 @@ def post_content_parsing_process(**params):
         'multiple_type' : ['post_image_url']
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
-    con = extract_children_tag(soup, 'td', {'class' : 'con'}, is_child_multiple=False)
+    con = extract_children_tag(soup, 'div', {'class' : 'boardDetailContents'})
     post_text = extract_text(con)
     var['post_text'] = clean_text(post_text)
     var['contact'] = extract_contact_numbers_from_text(post_text)

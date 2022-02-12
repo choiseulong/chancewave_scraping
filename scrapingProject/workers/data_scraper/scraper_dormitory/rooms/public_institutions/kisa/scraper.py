@@ -8,8 +8,7 @@ from .parser import *
 '''
     @post list
     method : GET
-    url_0 = https://www.kisa.or.kr/notice/notice_List.jsp?viewUrl=/notice/notice_View.jsp\
-        &listUrl=/notice/notice_List.jsp&mode=list&b_no=4&cPage={page_count}
+    url_0 = https://www.kisa.or.kr/401?page={}&searchDiv=10
     header :
         None
 '''

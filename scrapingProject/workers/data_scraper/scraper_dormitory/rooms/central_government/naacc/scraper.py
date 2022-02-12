@@ -35,8 +35,7 @@ class Scraper(ABCScraper):
         super().__init__(session)
         self.channel_name = '행정중심복합도시건설청'
         self.post_board_name = '알립니다'
-        self.channel_main_url = 'https://www.naacc.go.kr'
-        self.post_url = 'https://www.naacc.go.kr/csi_board/csi_boardView.do?menu_id=notice&num={}'
+        self.post_url = 'https://www.naacc.go.kr/WEB/contents/N3010000000.do?schM=view&id={}'
         
     def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
         super().scraping_process(channel_code, channel_url, dev, full_channel_code)
@@ -54,12 +53,12 @@ class Scraper(ABCScraper):
                 break
 
     def post_list_scraping(self):
-        if self.page_count == 1 :
-            status, response = get_method_response(self.session, self.channel_main_url)
-            if status == 'ok' :
-                JSESSIONID = response.cookies.get_dict()['JSESSIONID']
-                self.additional_key_value.append(("Cookie", f"JSESSIONID={JSESSIONID}"))
-                self.session = set_headers(self.session, self.additional_key_value, is_update)
+        # if self.page_count == 1 :
+        #     status, response = get_method_response(self.session, self.channel_main_url)
+        #     if status == 'ok' :
+        #         JSESSIONID = response.cookies.get_dict()['JSESSIONID']
+        #         self.additional_key_value.append(("Cookie", f"JSESSIONID={JSESSIONID}"))
+        #         self.session = set_headers(self.session, self.additional_key_value, is_update)
         super().post_list_scraping(post_list_parsing_process, 'get', sleep_sec)
 
     def target_contents_scraping(self):
