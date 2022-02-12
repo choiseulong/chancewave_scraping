@@ -32,9 +32,9 @@ class Scraper(ABCScraper):
             self.channel_url = self.channel_url_frame.format(self.page_count)
             self.post_list_scraping()
             if self.scraping_target :
-                # self.target_contents_scraping()
-                # self.collect_data()
-                # self.mongo.reflect_scraped_data(self.collected_data_list)
+                self.target_contents_scraping()
+                self.collect_data()
+                self.mongo.reflect_scraped_data(self.collected_data_list)
                 self.page_count += 1
             else :
                 break
