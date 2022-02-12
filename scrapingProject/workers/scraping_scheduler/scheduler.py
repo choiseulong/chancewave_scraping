@@ -7,7 +7,7 @@ from datetime import datetime
 import traceback as tb
 import logging
 import json
-# from ..data_server.mongo_server import MongoServer
+from ..data_server.mongo_server import MongoServer
 
 # 로깅 레벨 CRITICAL로 선언 
 urllib3_logger = logging.getLogger('urllib3')
@@ -56,6 +56,7 @@ def make_session():
 # retry 간격 3분 디폴트
 @schedule.task(time_limit=3600, retries=3)
 def job(scraper_room_address, channel_code, channel_url, full_channel_code):
+    mongo = MongoServer(dev=True)
     traceback = ''
     try :
         session = make_session()
@@ -67,13 +68,16 @@ def job(scraper_room_address, channel_code, channel_url, full_channel_code):
         error_type = None
     except Exception as e:
         status = 'FAILURE'
-        traceback = str(e) + tb.format_exc()
+        traceback = tb.format_exc()
         error_type = e.__class__.__name__
 
-    return {
+    history = {
         'channel_code':channel_code, 
         'status':status, 
         'date_done':datetime.now().isoformat(), 
         'traceback':traceback,
         'error_type' : error_type
     }
+
+    mongo.write_scraping_history(history)
+    return history

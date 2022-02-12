@@ -17,7 +17,6 @@ from .parser_4 import *
         None
 
 '''
-sleep_sec = 1
 
 class Scraper(ABCScraper):
     def __init__(self, session):
@@ -42,11 +41,13 @@ class Scraper(ABCScraper):
                 break
 
     def post_list_scraping(self):
+        sleep_sec = 1
         if '9' in self.channel_code:
             sleep_sec = 4
         super().post_list_scraping(post_list_parsing_process, 'get', sleep_sec)
 
     def target_contents_scraping(self):
+        sleep_sec = 1
         if '9' in self.channel_code:
             sleep_sec = 4
         super().target_contents_scraping(post_content_parsing_process, sleep_sec)

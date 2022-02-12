@@ -38,6 +38,8 @@ class Scraper(ABCScraper):
         if self.scraping_target :
             self.target_contents_scraping()
             self.collect_data()
+            self.mongo.reflect_scraped_data(self.collected_data_list)
+
 
 
     def post_list_scraping(self):

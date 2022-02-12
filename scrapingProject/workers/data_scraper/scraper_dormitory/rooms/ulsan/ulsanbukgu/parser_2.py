@@ -6,7 +6,7 @@ def post_list_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     nothing = extract_children_tag(soup, 'li', child_tag_attrs={'class':'nothing'})
-    if nothing:
+    if nothing :
         return
     cont_box = extract_children_tag(soup, 'ul', child_tag_attrs={'class':'news_list_box'})
     cont_list = extract_children_tag(cont_box, 'li', is_child_multiple=True, is_recursive=False)
