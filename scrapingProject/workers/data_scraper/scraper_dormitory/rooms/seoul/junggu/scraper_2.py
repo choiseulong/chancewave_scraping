@@ -107,9 +107,9 @@ def post_list_parsing_process(**params):
             'info_1': ['장소', clean_text(tmp_location_area.text).strip()]
         }])
 
-
     result = merge_var_to_dict(key_list, var)
-    print(result)
+    if var['dev']:
+        print(result)
     return result
 
 

@@ -113,6 +113,12 @@ def post_list_parsing_process(**params):
                     date_info_str_list = [f.strip() for f in tmp_date_period_str.split('~')]
                     var['start_date'].append(convert_datetime_string_to_isoformat_datetime(date_info_str_list[0]))
                     var['end_date'].append(convert_datetime_string_to_isoformat_datetime(date_info_str_list[1]))
+                else:
+                    tmp_date_period_str = clean_text(tmp_td.text).strip()
+                    var['start_date'].append(convert_datetime_string_to_isoformat_datetime(tmp_date_period_str))
+                    var['end_date'].append(convert_datetime_string_to_isoformat_datetime(tmp_date_period_str))
+
+
 
     result = merge_var_to_dict(key_list, var)
     if var['dev']:
