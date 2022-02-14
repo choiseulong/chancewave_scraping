@@ -20,6 +20,8 @@ def post_content_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     info_list = extract_children_tag(soup, 'strong', is_child_multiple=True)
+    if type(info_list) == type(None):
+        return 'retry'
     for info in info_list:
         info_text = extract_text(info)
         if '연락처' in info_text:

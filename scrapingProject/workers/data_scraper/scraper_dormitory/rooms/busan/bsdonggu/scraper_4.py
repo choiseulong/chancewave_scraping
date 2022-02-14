@@ -21,7 +21,7 @@ from .parser_4 import *
 '''
     base64
 '''
-sleep_sec = 1
+sleep_sec = 5
 
 class Scraper(ABCScraper):
     def __init__(self, session):
