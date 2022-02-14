@@ -30,17 +30,16 @@ class Scraper(ABCScraper):
         self.post_board_name = '공지·공고'
         self.post_url = 'http://www.mogef.go.kr/nw/ntc/nw_ntc_s001d.do?mid=news400&bbtSn={}'
 
-    def visit_main_page(self):
-        stats, response = get_method_response(self.session, 'http://www.mogef.go.kr/index.do', sleep_sec=sleep_sec)
-
     def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
         super().scraping_process(channel_code, channel_url, dev, full_channel_code)
-        self.additional_key_value.append(("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"))
+        self.additional_key_value.append(
+            ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+        )
+        self.additional_key_value.append(
+            ("Referer", "http://www.mogef.go.kr/")
+        )
         self.session = set_headers(self.session, self.additional_key_value, is_update)
-
         # self.session = set_headers(self.session)
-        self.visit_main_page()
-
         self.page_count = 1
         while True :
             self.channel_url = self.channel_url_frame.format(self.page_count)
