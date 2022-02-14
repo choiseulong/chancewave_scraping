@@ -30,7 +30,7 @@ def post_list_parsing_process(**params):
                     else:
                         var['is_going_on'].append(True)
                 else :
-                    var['is_going_on'].append(None)
+                    var['is_going_on'].append('')
             elif td_idx == 5:
                 var['view_count'].append(
                     extract_numbers_in_text(td_text)

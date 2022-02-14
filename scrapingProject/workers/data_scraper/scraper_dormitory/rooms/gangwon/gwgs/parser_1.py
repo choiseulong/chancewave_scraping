@@ -73,7 +73,6 @@ def post_content_parsing_process(**params):
         meta_data_name = extract_text_from_single_tag(meta_data, 'strong')
         meta_data_value = extract_text_from_single_tag(meta_data, 'em')
         extra_info.update({f'info_{len(extra_info)}' : (meta_data_name, meta_data_value)})
-    var['extra_info'].append(extra_info)
 
     tmp_meta_data = extract_children_tag(soup, 'div', child_tag_attrs={'class':'content-info__charge'})
     if type(tmp_meta_data) != type(None):
@@ -100,5 +99,6 @@ def post_content_parsing_process(**params):
         extra_info.update({f'info_{len(extra_info)}' : (cont_header, cont_value)})
     var['extra_info'].append(extra_info)
     result = convert_merged_list_to_dict(key_list, var)
+    print(result)
     return result
 

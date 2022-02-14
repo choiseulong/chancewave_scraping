@@ -27,11 +27,8 @@ def post_list_parsing_process(**params):
             if '접수상태' in p_text:
                 if '신청중' in p_text:
                     var['is_going_on'].append(True)
-                elif '신청마감' in p_text:
-                    var['is_going_on'].append(False)
                 else :
-                    var['is_going_on'].append('')
-                break
+                    var['is_going_on'].append(False)
     result = merge_var_to_dict(key_list, var)
     return result
 

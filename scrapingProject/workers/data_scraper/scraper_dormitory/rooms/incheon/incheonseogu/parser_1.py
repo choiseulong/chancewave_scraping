@@ -17,7 +17,7 @@ def post_list_parsing_process(**params):
             )
         else :
             var['post_thumbnail'].append(
-                None
+                ''
             )
         a_tag = extract_children_tag(li, 'a')
         href = extract_attrs(a_tag, 'href')

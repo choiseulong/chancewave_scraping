@@ -38,7 +38,7 @@ def post_list_parsing_process(**params):
             )
         else :
             var['post_thumbnail'].append(
-                None
+                ''
             )
     result = merge_var_to_dict(key_list, var)
     return result

@@ -26,6 +26,8 @@ def post_content_parsing_process(**params):
     data = json_data['data'][0]
     var['contact'] = ''
     for key in data:
+        if type(data[key]) == type(None):
+            data[key] = ''
         if '전화번호' in key:
             var['contact'] = data[key]
         elif '서비스목적' in key :
@@ -34,8 +36,7 @@ def post_content_parsing_process(**params):
             var['uploader'] = data[key]
         elif '지원대상' in key :
             var['post_content_target'] = data[key]
-        else :
-            extra_info.update({f'info_{len(extra_info)}' : (key, data[key])})
+        extra_info.update({f'info_{len(extra_info)}' : (key, data[key])})
     var['extra_info'].append(extra_info)
     result = convert_merged_list_to_dict(key_list, var)
     return result

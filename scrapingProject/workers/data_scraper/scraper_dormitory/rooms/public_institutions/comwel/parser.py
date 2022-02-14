@@ -49,7 +49,7 @@ def post_content_parsing_process(**params):
     if tmp_contents:
         var['post_image_url'] = search_img_list_in_contents(tmp_contents, var['channel_main_url'])
     else :
-        var['post_image_url'] = None
+        var['post_image_url'] = []
     result = convert_merged_list_to_dict(key_list, var)
     return result
 

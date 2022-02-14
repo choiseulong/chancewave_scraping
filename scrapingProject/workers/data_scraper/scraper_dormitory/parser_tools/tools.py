@@ -615,8 +615,7 @@ def parse_post_title(**params):
             text = extract_attrs(a_tag, 'title')
             return text
         else :
-            print(var['channel_code'], 'post_title error')
-            return None
+            return params['child_tag_text']
     else :
         return text
 
