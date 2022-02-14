@@ -8,13 +8,13 @@ from pytz import timezone
 class MongoServer:
 
     def __init__(self, dev):
-        if dev :
+        if dev == True:
             print('dev mongodb')
             self.url = 'mongodb://admin:mysterico@k8s.mysterico.com:31489'
             self.connection = MongoClient(self.url)
             self.db = self.connection.get_database('scraping')
             self.collection = self.db.get_collection('data')
-        else :
+        elif dev == False :
             self.url = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/'
             self.connection = MongoClient(self.url)
             self.db = self.connection.get_database('scraping')
