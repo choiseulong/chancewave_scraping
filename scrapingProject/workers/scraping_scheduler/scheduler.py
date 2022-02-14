@@ -18,10 +18,10 @@ schedule = Celery('scheduler')
 
 # celery app env
 schedule.conf.update(
-    broker_url = 'amqp://username:password@localhost//',
-    result_backend = 'mongodb://admin:mysterico@k8s.mysterico.com:31489/?authSource=admin',
-    # broker_url = 'amqp://CHANCEWAVE:MYSTERICO@message_broker_container//',
-    # result_backend = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/?authSource=admin',
+    # broker_url = 'amqp://username:password@localhost//',
+    # result_backend = 'mongodb://admin:mysterico@k8s.mysterico.com:31489/?authSource=admin',
+    broker_url = 'amqp://CHANCEWAVE:MYSTERICO@message_broker_container//',
+    result_backend = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/?authSource=admin',
     timezone = 'Asia/Seoul',
     enable_utc = False,
     # 2021-12-31 추가
@@ -61,8 +61,8 @@ def job(scraper_room_address, channel_code, channel_url, full_channel_code):
     try :
         session = make_session()
         scraper = importlib.import_module(scraper_room_address).Scraper(session)
-        scraper.scraping_process(channel_code, channel_url, dev=True, full_channel_code=full_channel_code) # 로컬 테스트 
-        # scraper.scraping_process(channel_code, channel_url, dev=False, full_channel_code=full_channel_code)
+        # scraper.scraping_process(channel_code, channel_url, dev=True, full_channel_code=full_channel_code) # 로컬 테스트 
+        scraper.scraping_process(channel_code, channel_url, dev=False, full_channel_code=full_channel_code)
         status = 'SUCCESS'
         traceback = None
         error_type = None

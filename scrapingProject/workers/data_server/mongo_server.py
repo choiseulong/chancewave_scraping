@@ -13,7 +13,7 @@ class MongoServer:
             self.url = 'mongodb://admin:mysterico@k8s.mysterico.com:31489'
             self.connection = MongoClient(self.url)
             self.db = self.connection.get_database('scraping')
-            self.collection = self.db.get_collection('220212_6')
+            self.collection = self.db.get_collection('data')
         else :
             self.url = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/'
             self.connection = MongoClient(self.url)
@@ -95,7 +95,7 @@ class MongoServer:
         return data
 
     def write_scraping_history(self, data):
-        collection = self.db.get_collection('history_6')
+        collection = self.db.get_collection('history')
         collection.insert_one(data)
 
 
