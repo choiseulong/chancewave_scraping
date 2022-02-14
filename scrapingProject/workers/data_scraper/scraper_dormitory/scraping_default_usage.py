@@ -120,12 +120,12 @@ class Scraper(metaclass=ABCMeta):
                 dev = self.dev
             )
             if post_content == 'retry' : 
-                sleep(300)
+                sleep(30)
                 print(f'{self.channel_code} - retry : {self.retry_count}')
                 self.retry_count += 1
                 if self.retry_count == 3:
                     self.retry_count = 0
-                    post_content = []
+                    post_content = {}
                 else :
                     post_content = self.target_scraping(post_content_parsing_process, target, sleep_sec)
             return post_content
