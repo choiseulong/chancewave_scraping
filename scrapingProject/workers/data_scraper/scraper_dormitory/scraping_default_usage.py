@@ -134,7 +134,19 @@ class Scraper(metaclass=ABCMeta):
             이를 DB에 반영하기전 합치는 로직에 해당함
         '''
         if not self.scraping_target_contents:
-            self.scraping_target_contents = [{} for _ in range(len(self.scraping_target))] 
+            self.scraping_target_contents = [{} for _ in range(len(self.scraping_target))]
+
+        first_page_test_data_list = []
+        now_processing_file_path = os.path.dirname(__file__)
+        test_data_save_directory = os.path.join(now_processing_file_path, '..', '..', '..', '..', 'test_data')
+        if not os.path.exists(test_data_save_directory):
+            os.makedirs(test_data_save_directory)
+
+        test_data_directory = f'{test_data_save_directory}\\{self.channel_name}'
+
+        if not os.path.exists(test_data_directory):
+            os.makedirs(test_data_directory)
+
         for target_info, target_contents in zip(self.scraping_target, self.scraping_target_contents):
             if 'contents_req_params' in target_info.keys():
                 req_body = target_info['contents_req_params']
@@ -157,14 +169,7 @@ class Scraper(metaclass=ABCMeta):
                 tmp_target_info = copy.deepcopy(target_info)
                 tmp_target_contents = copy.deepcopy(target_contents)
                 tmp_target_info.update(tmp_target_contents)
-                now_processing_file_path = os.path.dirname(__file__)
-                test_data_save_directory = os.path.join(now_processing_file_path, '..', '..', '..', '..', 'test_data')
-                if not os.path.exists(test_data_save_directory):
-                    os.makedirs(test_data_save_directory)
 
-                test_data_directory = f'{test_data_save_directory}\\{self.channel_name}'
-                if not os.path.exists(test_data_directory):
-                    os.makedirs(test_data_directory)
                 copyed_data_frame = copy.deepcopy(data_frame)
 
                 del_key_list = []
@@ -177,12 +182,16 @@ class Scraper(metaclass=ABCMeta):
 
                 tmp_target_info.update(copyed_data_frame)
                 serialized_data = json.dumps(tmp_target_info)
-
-                with open(f'{test_data_directory}\\{self.full_channel_code}.json', 'w') as tmp_file:
-                    tmp_file.write(serialized_data)
+                first_page_test_data_list.append(serialized_data)
 
             data_frame_with_target_info = enter_data_into_data_frame(data_frame, target_info)
             data_frame_with_target_contents = enter_data_into_data_frame(data_frame_with_target_info, target_contents)
             self.collected_data_list.append(data_frame_with_target_contents)
+
+        if self.page_count == 1:
+            with open(f'{test_data_directory}\\{self.full_channel_code}.json', 'w') as tmp_file:
+                for tmp_test_data in first_page_test_data_list:
+                    tmp_file.write(tmp_test_data + '\n')
+
         self.scraping_target_contents = []
         self.scraping_target = []
