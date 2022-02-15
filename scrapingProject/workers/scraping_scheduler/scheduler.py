@@ -1,10 +1,10 @@
-from pickle import FALSE
 from celery import Celery
 import importlib
 from requests.adapters import HTTPAdapter
 from requests.sessions import Session
 from urllib3.util import Retry
 from datetime import datetime
+from pytz import timezone
 import traceback as tb
 import logging
 import json
@@ -76,7 +76,7 @@ def job(scraper_room_address, channel_code, channel_url, full_channel_code):
     history = {
         'channel_code':channel_code, 
         'status':status, 
-        'date_done':datetime.now().isoformat(), 
+        'date_done':datetime.now(timezone('Asia/Seoul')).isoformat(), 
         'traceback':traceback,
         'error_type' : error_type
     }
