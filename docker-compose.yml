@@ -3,7 +3,7 @@ version: '3.4'
 services:
   scraper_container:
     container_name: scraper_container
-    image: chancewave/scraper:0.0.1
+    image: chancewave/scraper:latest
     ports:
       - "9201:9201"
     depends_on:
