@@ -3,7 +3,7 @@ version: '3.4'
 services:
   scraper_container:
     container_name: scraper_container
-    image: chancewave/scraper:latest
+    image: chancewave/scraper:0.0.1
     ports:
       - "9201:9201"
     depends_on:
@@ -16,7 +16,7 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=CHANCEWAVE
       - MONGO_INITDB_ROOT_PASSWORD=MYSTERICO
     volumes:
-      - C:\scraping_system_mysterico\mongodb:/data/db
+      - C:\chancescraper\mongodb:/data/db
     ports:
       - "9202:27017"
     command: mongod --quiet --logpath /dev/null 
@@ -30,8 +30,8 @@ services:
       - RABBITMQ_DEFAULT_USER=CHANCEWAVE
       - RABBITMQ_DEFAULT_PASS=MYSTERICO
     volumes:
-        - C:\scraping_system_mysterico\rabbitmq\data\:/var/lib/rabbitmq/
-        - C:\scraping_system_mysterico\rabbitmq\log\:/var/log/rabbitmq
+        - C:\chancescraper\rabbitmq\data\:/var/lib/rabbitmq/
+        - C:\chancescraper\rabbitmq\log\:/var/log/rabbitmq
     ports:
       - "5672:5672"
       - "9203:15672"
@@ -42,7 +42,7 @@ services:
       context: .
     command: celery -A workers.scraping_scheduler.scheduler worker --loglevel=info -P gevent --autoscale=20,5
     volumes:
-      - C:\scraping_system_mysterico\celery\:/app/
+      - C:\chancescraper\celery\:/app/
     depends_on:
       - scraper_container
       - mongodb_container

@@ -1,4 +1,5 @@
-FROM python:3.7.9
+FROM python:3.8.16
+
 WORKDIR /scraper
 
 COPY requirements.txt ./
