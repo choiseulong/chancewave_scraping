@@ -23,8 +23,11 @@ class MongoServer:
     def fine_one(self, query):
         return self.collection.find_one(query)
     
-    def find(self, query={}, projection={}):
-        cursor = self.collection.find(query, projection)
+    def find(self, query={}, projection={}, count=0):
+        if count :
+            cursor = self.collection.find(query, projection).limit(count)
+        else:
+            cursor = self.collection.find(query, projection)
         return [i for i in cursor]
     
     def delete_and_insert(self, target_query, new_data):
@@ -82,10 +85,13 @@ class MongoServer:
         update_query= {'$set' : {'is_update_check_time' : is_update_check}}
         self.update_one(target_query, update_query)
 
-    def get_data(self, channel_code):
+    def get_data(self, channel_code, count=0):
         query = {"channel_code" : channel_code}
         projection = {'_id': 0}
-        data = self.find(query, projection)
+        if count :
+            data = self.find(query, projection)[:count]
+        else:
+            data = self.find(query, projection)
         return data
 
     def get_total_data(self):

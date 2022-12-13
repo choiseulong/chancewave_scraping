@@ -1,19 +1,10 @@
 from fastapi import FastAPI
 from workers.project_manager import ProjectManager
-import os
-# from pydantic import BaseModel
-# from datetime import datetime, timedelta
-# from pytz import timezone
+from pydantic import BaseModel
+from typing import Optional
 
 app = FastAPI()
 
-#now = datetime.now(timezone('Asia/Seoul'))
-#todayString = now.strftime('%Y-%m-%d %H:%M:%S')
-#before2WeekString = (now-timedelta(days=30)).strftime('%Y-%m-%d %H:%M:%S')
-
-#class TargetDate(BaseModel):
-#    start_date : str = todayString # 오늘 부터
-#    end_date : str = before2WeekString # 2주 전까지
 
 @app.get("/scraping-start")
 async def scraping_with_target_date():
@@ -21,41 +12,26 @@ async def scraping_with_target_date():
     message = manager.job_init()
     return message
 
-# def check_input_date_vaildation(inputDate):
-#     start_date = inputDate["start_date"]
-#     end_date = inputDate["end_date"]
-
-#     if ":" not in start_date:
-#         start_date += " 23:59:59"
-
-#     if ":" not in end_date:
-#         end_date += " 00:00:01"
-
-#     end_date = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S").isoformat()
-#     start_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S").isoformat()
-
-#     if start_date >= end_date :
-#         return 'vaild'
-#     else :
-#         return
-
 @app.get('/')
 def main():
     return 'chancewave scraper'
 
-@app.get('/dev-test/')
-def test(channel_code:str=''):
-    manager = ProjectManager()
-    manager.scraping_dev_test(channel_code)
+class INITIAL_PROCESS_SOURCE(BaseModel):
+    channel_code : Optional[str] = ''
+    count : int
 
-@app.get('/get-channel-data/')
-def get_channel_data(channel_code:str=''):
+@app.post('/get-channel-data')
+async def get_channel_data(SOURCE:INITIAL_PROCESS_SOURCE):
+    channel_code = SOURCE.channel_code
+    count = SOURCE.count
     manager = ProjectManager()
-    data = manager.get_data(channel_code)
+    data = manager.get_data(channel_code, count)
     return data
 
-@app.get('/get-total-channel-data')
-def get_total_data():
+@app.post('/get-total-channel-data')
+async def get_total_data(SOURCE :INITIAL_PROCESS_SOURCE):
+    channel_code = SOURCE.channel_code
+    count = SOURCE.count
     manager = ProjectManager()
-    data = manager.get_data()
+    data = manager.get_data(channel_code, count)
     return data

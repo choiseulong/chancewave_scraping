@@ -11,10 +11,10 @@ class ProjectManager:
         self.scraping_manager.scraping_init_with_celery()
         return 'scraping start'
     
-    def get_data(self, channel_code=''):
+    def get_data(self, channel_code, count):
         mongo = MongoServer(dev=False)
         if channel_code:
-            data = mongo.get_data(channel_code)
+            data = mongo.get_data(channel_code, count)
         else :
             data = mongo.get_total_data()
         return data

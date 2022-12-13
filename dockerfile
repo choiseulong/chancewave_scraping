@@ -3,6 +3,7 @@ FROM python:3.8.16
 WORKDIR /scraper
 
 COPY requirements.txt ./
+COPY dockerfile ./
 RUN pip install -r requirements.txt
 
 COPY ./scrapingProject/workers ./workers
