@@ -35,3 +35,12 @@ async def get_total_data(SOURCE :INITIAL_PROCESS_SOURCE):
     manager = ProjectManager()
     data = manager.get_data(channel_code, count)
     return data
+
+class DEV_SOURCE(BaseModel):
+    channel_code : str
+
+@app.post('/dev-test')
+async def test(DEV_SOURCE :DEV_SOURCE):
+    channel_code = DEV_SOURCE.channel_code
+    manager = ProjectManager()
+    manager.scraping_dev_test(channel_code)

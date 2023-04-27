@@ -69,6 +69,7 @@ class Scraper(metaclass=ABCMeta):
             return
 
         self.collected_data_list = []
+        print(method)
         if method == 'get':
             status, response = get_method_response(self.session, self.channel_url, sleep_sec)
         elif method == 'post':

@@ -20,6 +20,7 @@ class ProjectManager:
         return data
 
     def scraping_dev_test(self, channel_code):
+        # mongo = MongoServer(dev=True)
         self.scraping_manager.get_channel_url()
         self.scraping_manager.scraping_dev_test(channel_code)
 

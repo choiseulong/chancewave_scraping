@@ -31,9 +31,13 @@ class ScrapingManager:
     def get_requests_session(
             self,
             proxies = {
-                "http": "http://127.0.0.1:8889",
-                "https":"http:127.0.0.1:8889"
+                "http": "http://127.0.0.1:8010",
+                "https":"http:127.0.0.1:8010"
             }
+            # proxies = {
+            #     "http": "127.0.0.1:8010",
+            #     "https":"127.0.0.1:8010"
+            # }
         ):
         #test 시에 사용되는 session을 만든다.
         session = req.Session()
