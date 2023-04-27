@@ -6,7 +6,7 @@ def post_list_parsing_process(**params):
     # update 23.04.27
     target_key_info = {
         'multiple_type' : [
-            'post_subject', 'post_title', 'contents_req_params', 
+            'post_subject', 'post_title', 'post_url', 
             'view_count', 'uploader', 'end_date', 
             'uploaded_time'
         ]
@@ -23,7 +23,7 @@ def post_list_parsing_process(**params):
             "href"
         )
         contents_req_params = extract_numbers_in_text(contents_req_params)
-        var['contents_req_params'].append(contents_req_params)
+        var['post_url'].append(var['post_url_frame'].format(contents_req_params))
 
         post_title = extract_text(
             a_tag
@@ -138,6 +138,7 @@ def post_list_parsing_process(**params):
     # return result
 
 def post_content_parsing_process(**params):
+    # update 23.04.27
     target_key_info = {
         'single_type' : ['post_text', 'contact', 'post_content_target'],
         'multiple_type' : ['extra_info', 'post_image_url']
@@ -150,6 +151,7 @@ def post_content_parsing_process(**params):
     for data in meta_data:
         data_name = extract_text_from_single_tag(data, 'p', child_tag_attrs={'class':'tit'})
         data_value = extract_text_from_single_tag(data, 'p', child_tag_attrs={'class':'txt'})
+
         if '연락처' in data_name:
             var['contact'] = data_value
         elif '대상' in data_name:
@@ -157,9 +159,22 @@ def post_content_parsing_process(**params):
         elif '창업기간' in data_name:
             post_content_target += data_value
         extra_info.update({f'info_{len(extra_info)}' : (data_name, data_value)})
+
     var['extra_info'].append(extra_info)
+
+    parsed_post_content_target = []
+    target_value = post_content_target.split(' ')
+
+    for i in target_value:
+        if target_value.count(i) == 1:
+            parsed_post_content_target.append(i)
+        else:
+            if i not in parsed_post_content_target:
+                parsed_post_content_target.append(i)
+    post_content_target = ' '.join(parsed_post_content_target)
     var['post_content_target'] = post_content_target
-    tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'class':'k-notice_box'})
+    tmp_contents = extract_children_tag(soup, 'div', child_tag_attrs={'class':'box'})
+
     var['post_text'] = extract_text(tmp_contents)
     if not var['contact']:
         var['contact'] = extract_contact_numbers_from_text(extract_text(tmp_contents)) 

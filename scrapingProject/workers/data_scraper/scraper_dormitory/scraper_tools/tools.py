@@ -59,7 +59,6 @@ def post_method_response(session, url, data={}, sleep_sec=2, jsonize=False):
 
 
 def urlopen_response(channel_url, sleep_sec=2):
-    print(channel_url)
     response = request.urlopen(channel_url)
     status_code = 'fail'
     if response.code == 200:

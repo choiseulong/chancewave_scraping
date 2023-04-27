@@ -87,10 +87,10 @@ class Scraper(ABCScraper):
             self.channel_url = self.channel_url_frame.format(self.page_count)
             print(self.channel_url)
             self.post_list_scraping()
-            if self.scraping_target :
-                if not self.CSRF_TOKEN:
-                    self.CSRF_TOKEN = self.scraping_target[-1]
-                    del self.scraping_target[-1]
+            if self.scraping_target : # result
+            #     if not self.CSRF_TOKEN:
+            #         self.CSRF_TOKEN = self.scraping_target[-1]
+            #         del self.scraping_target[-1]
                 self.target_contents_scraping()
                 self.collect_data()
                 self.mongo.reflect_scraped_data(self.collected_data_list)
