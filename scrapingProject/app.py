@@ -1,16 +1,19 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, BackgroundTasks
 from workers.project_manager import ProjectManager
 from pydantic import BaseModel
 from typing import Optional
+from time import sleep
 
 app = FastAPI()
 
-
 @app.get("/scraping-start")
-async def scraping_with_target_date():
-    manager = ProjectManager()
-    message = manager.job_init()
-    return message
+async def scraping_with_target_date(Background_tasks : BackgroundTasks):
+    def run():
+        while True:
+            manager = ProjectManager()
+            message = manager.job_init()
+            sleep(43200) # 12 hours
+    Background_tasks.add_task(run)
 
 @app.get('/')
 def main():
