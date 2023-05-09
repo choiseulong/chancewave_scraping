@@ -3,7 +3,7 @@ version: '3.4'
 services:
   scraper_container:
     container_name: scraper_container
-    image: chancewave/scraper:dev
+    image: chancewave/scraper:latest
     ports:
       - "9201:9201"
     depends_on:
@@ -16,7 +16,7 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=CHANCEWAVE
       - MONGO_INITDB_ROOT_PASSWORD=MYSTERICO
     volumes:
-      - C:\chancescraper\mongodb:/data/db
+      - /home/ubuntu/tmp/mongodb:/data/db
     ports:
       - "9202:27017"
     command: mongod --quiet --logpath /dev/null 
@@ -25,25 +25,24 @@ services:
   
   message_broker_container:
     container_name: message_broker_container
-    image: rabbitmq:3.9.9-management
+    image: rabbitmq:3.9.9
     environment:
       - RABBITMQ_DEFAULT_USER=CHANCEWAVE
       - RABBITMQ_DEFAULT_PASS=MYSTERICO
     volumes:
-        - C:\chancescraper\rabbitmq\data\:/var/lib/rabbitmq/
-        - C:\chancescraper\rabbitmq\log\:/var/log/rabbitmq
+        - /home/ubuntu/tmp/rabbitmq/data/:/var/lib/rabbitmq/
+        - /home/ubuntu/tmp/rabbitmq/log/:/var/log/rabbitmq/
     ports:
       - "5672:5672"
       - "9203:15672"
+    command: ["bash", "-c", "chmod 400 /var/lib/rabbitmq/.erlang.cookie; rabbitmq-server"]
 
   celery_container: 
     container_name: celery_container
-    image: chancewave/scraper:dev
-    # build:
-    #   context: .
+    image: chancewave/scraper:latest
     command: celery -A workers.scraping_scheduler.scheduler worker --loglevel=info -P gevent --autoscale=20,5
     volumes:
-      - C:\chancescraper\celery\:/app/
+      - /home/ubuntu/tmp/celery/:/app/
     depends_on:
       - scraper_container
       - mongodb_container
