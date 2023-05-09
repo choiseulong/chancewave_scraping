@@ -21,7 +21,7 @@ def main():
 
 class INITIAL_PROCESS_SOURCE(BaseModel):
     channel_code : Optional[str] = ''
-    count : int
+    count : int = 10
 
 @app.post('/get-channel-data')
 async def get_channel_data(SOURCE:INITIAL_PROCESS_SOURCE):
