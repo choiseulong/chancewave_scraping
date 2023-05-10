@@ -11,7 +11,7 @@ class MongoServer:
         if dev == True:
             print('dev mongodb')
             # self.url = 'mongodb://admin:mysterico@k8s.mysterico.com:31489'
-            self.url = 'mongodb://admin:mysterico@127.0.0.1:9202' # local mongo containier
+            self.url = 'mongodb://CHANCEWAVE:MYSTERICO@127.0.0.1:9202' # local mongo containier
             self.connection = MongoClient(self.url)
             self.db = self.connection.get_database('scraping')
             self.collection = self.db.get_collection('data')

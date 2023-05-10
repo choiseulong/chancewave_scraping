@@ -72,9 +72,6 @@ class Scraper(ABCScraper):
                 self.mongo.reflect_scraped_data(self.collected_data_list)
             else:
                 break
-            
-            # if self.page_count == 5 :
-            #     break
 
     def post_list_scraping(self):
         # data = {
@@ -82,7 +79,6 @@ class Scraper(ABCScraper):
         # }
         # super().post_list_scraping(post_list_parsing_process, 'post', data, sleep_sec)
         self.channel_url = self.channel_url_frame.format(self.page_count)
-        print(self.channel_url)
         super().post_list_scraping(post_list_parsing_process, 'get')
 
     def target_contents_scraping(self):

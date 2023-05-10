@@ -63,7 +63,6 @@ class Scraper(ABCScraper):
                     self.collect_data()
                     self.mongo.reflect_scraped_data(self.collected_data_list)
                     self.page_count += 1 
-
                 else:
                     break
 
