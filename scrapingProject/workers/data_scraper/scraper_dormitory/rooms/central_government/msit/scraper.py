@@ -13,6 +13,7 @@ from .parser import *
 
     method : GET
     url = https://www.msit.go.kr/bbs/list.do?sCode=user&mId=129&mPid=128&pageIndex={page_count}
+    url = https://www.msit.go.kr/bbs/list.do?sCode=user&mId=129&mPid=224&pageIndex={page_count}&bbsSeqNo=100
     header :
         None
 '''
@@ -33,7 +34,9 @@ class Scraper(ABCScraper):
         self.channel_name = '과학기술정보통신부'
         self.post_board_name = '사업공고'
         self.channel_main_url = 'https://www.msit.go.kr'
-        self.post_url = 'https://www.msit.go.kr/bbs/view.do?sCode=user&mId=129&mPid=128&bbsSeqNo=100&nttSeqNo={}'
+        # self.post_url = 'https://www.msit.go.kr/bbs/view.do?sCode=user&mId=129&mPid=128&bbsSeqNo=100&nttSeqNo={}'
+        self.post_url = 'https://www.msit.go.kr/bbs/view.do?sCode=user&mId=129&mPid=224&bbsSeqNo=100&nttSeqNo={}'
+
         
     def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
         super().scraping_process(channel_code, channel_url, dev, full_channel_code)

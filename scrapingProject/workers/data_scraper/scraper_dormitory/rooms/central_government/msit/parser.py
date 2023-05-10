@@ -25,20 +25,32 @@ def post_content_parsing_process(**params):
     }
     var, soup, key_list, _ = html_type_default_setting(params, target_key_info)
     view_head = extract_children_tag(soup, 'div', {'class' : 'view_head'}, is_child_multiple=False)
-    spanList = extract_children_tag(view_head, 'span', {'class' : True}, is_child_multiple=True)
+    # spanList = extract_children_tag(view_head, 'span', {'class' : True}, is_child_multiple=True)
+    dl_list = extract_children_tag(view_head, 'dl', {'class' : True}, is_child_multiple=True)
+
     var['post_title'] = extract_text(
         extract_children_tag(view_head, 'h2', child_tag_attrs={}, is_child_multiple=False)
     )
-    for span in spanList:
-        spanText = extract_text(span)
-        if '부서' in spanText or '담당자' in spanText:
-            var['uploader'] += extract_text(find_next_tag(span)) + ' '
-        elif '연락처' in spanText:
-            var['contact'] = extract_contact_numbers_from_text(extract_text(find_next_tag(span)))
-        elif '작성일' in spanText:
-            var['uploaded_time'] = convert_datetime_string_to_isoformat_datetime(
-                    extract_text(find_next_tag(span))
-                )
+    for dl in dl_list:
+        dl_text = extract_text(dl)
+        dd = extract_children_tag(dl, 'dd')
+        dd_text = extract_text(dd)
+        if '부서' in dl_text or '담당자' in dl_text:
+            var['uploader'] += dd_text + ' '
+        elif '연락처' in dl_text:
+            var['contact'] = dd_text
+        elif '작성일' in dl_text:
+            var['uploaded_time'] = convert_datetime_string_to_isoformat_datetime(dd_text)
+    # for span in spanList:
+    #     spanText = extract_text(span)
+    #     if '부서' in spanText or '담당자' in spanText:
+    #         var['uploader'] += extract_text(find_next_tag(span)) + ' '
+    #     elif '연락처' in spanText:
+    #         var['contact'] = extract_contact_numbers_from_text(extract_text(find_next_tag(span)))
+    #     elif '작성일' in spanText:
+    #         var['uploaded_time'] = convert_datetime_string_to_isoformat_datetime(
+    #                 extract_text(find_next_tag(span))
+    #             )
             
     contBox = extract_children_tag(soup, 'div', {'id' : 'cont-wrap'}, is_child_multiple=False)
     var['post_text'] = clean_text(extract_text(contBox))
