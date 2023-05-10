@@ -10,6 +10,7 @@ from .parser import *
     method : GET
     url_0 = https://www.khnp.co.kr/board/BRD_000183/boardMain.do?pageIndex={page_count}\
         &mnCd=FN070101&schPageUnit=10
+    url_수정 = https://www.khnp.co.kr/main/selectBbsNttList.do?key=2288&bbsNo=67&pageIndex={}
     header :
         None
 '''
@@ -17,7 +18,7 @@ from .parser import *
     @post info
     method : GET
     url : 
-        self.post_url.format(post_id)
+        self.post_url.format(post_id) # 수정후 동일
     header :
         None
 '''
@@ -27,8 +28,9 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '한국수력원자력(주)'
-        self.post_board_name = '공지사항'
-        self.post_url = 'https://www.khnp.co.kr/board/BRD_000183/boardView.do?boardSeq={}&mnCd=FN070101'
+        self.post_board_name = '한수원소식 - 공지사항'
+        # self.post_url = 'https://www.khnp.co.kr/board/BRD_000183/boardView.do?boardSeq={}&mnCd=FN070101'
+        self.post_url = 'https://www.khnp.co.kr/main/selectBbsNttView.do?key=2288&bbsNo=67&nttNo={}'
 
     def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
         super().scraping_process(channel_code, channel_url, dev, full_channel_code)
