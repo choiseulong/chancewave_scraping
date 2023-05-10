@@ -9,6 +9,7 @@ from .parser import *
     @post list
     method : GET
     url_0 = https://www.lh.or.kr/bbs/list.do?sCode=user&mId=121&mPid=120&pageIndex={page_count}
+    url = https://www.lh.or.kr/bbs/list.do?sCode=user&mId=633&mPid=26&pageIndex={page_count}
     header :
         None
 '''
@@ -30,7 +31,9 @@ class Scraper(ABCScraper):
         super().__init__(session)
         self.channel_name = '한국토지주택공사'
         self.post_board_name = '공지사항'
-        self.post_url = 'https://www.lh.or.kr/bbs/view.do?sCode=user&mId=121&mPid=120&bbsSeq=32&nttSeq={}'
+        # self.post_url = 'https://www.lh.or.kr/bbs/view.do?sCode=user&mId=121&mPid=120&bbsSeq=32&nttSeq={}'
+        self.post_url = 'https://www.lh.or.kr/bbs/view.do?sCode=user&mId=633&mPid=26&bbsSeq=32&nttSeq={}'
+
 
     def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
         super().scraping_process(channel_code, channel_url, dev, full_channel_code)
