@@ -9,6 +9,7 @@ from .parser import *
     @post list
     method : GET
     url_0 = https://kto.visitkorea.or.kr/kor/notice/news/nma/board/list.kto?instanceId=126&cPage={page_count}
+    url = https://knto.or.kr/fnct/kto/CommBbs/ajax/getcommBbs?page={page_count}&listCount=50&deleteYn=N&bbsCd=korNoticeKtoNews&searchType=B
     header :
         None
 '''
@@ -27,6 +28,7 @@ class Scraper(ABCScraper):
         super().__init__(session)
         self.channel_name = '한국관광공사'
         self.post_board_name = '알림마당'
+        self.post_url = 'https://knto.or.kr/korNoticeKtoNews?boardMode=V&bbsNm={}&bbsId={}'
 
     def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
         super().scraping_process(channel_code, channel_url, dev, full_channel_code)
@@ -36,7 +38,7 @@ class Scraper(ABCScraper):
             self.channel_url = self.channel_url_frame.format(self.page_count)
             self.post_list_scraping()
             if self.scraping_target :
-                self.target_contents_scraping()
+                # self.target_contents_scraping()
                 self.collect_data()
                 self.mongo.reflect_scraped_data(self.collected_data_list)
                 self.page_count += 1
@@ -46,5 +48,5 @@ class Scraper(ABCScraper):
     def post_list_scraping(self):
         super().post_list_scraping(post_list_parsing_process, 'get', sleep_sec)
 
-    def target_contents_scraping(self):
-        super().target_contents_scraping(post_content_parsing_process, sleep_sec)
+    # def target_contents_scraping(self):
+    #     super().target_contents_scraping(post_content_parsing_process, sleep_sec)
