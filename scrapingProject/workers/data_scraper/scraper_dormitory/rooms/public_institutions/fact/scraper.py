@@ -3,12 +3,14 @@ from workers.data_scraper.scraper_dormitory.scraper_tools.tools import *
 from .parser import *
 
 # 채널 이름 : 농업기술실용화재단
+# 채널이름 수정 : 한국농업기술진흥원
 
 #HTTP Request
 '''
     @post list
     method : GET
     url_0 = https://www.fact.or.kr/action.do?action=notice%%24list%%24noti&mgt_no=101&page={}
+    url = https://www.koat.or.kr/board/notice/list.do?currentPageNo={} # 수정
     header :
         None
 '''
@@ -21,14 +23,15 @@ from .parser import *
         None
 '''
 
-sleep_sec = 1
+sleep_sec = 2
 
 class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
-        self.channel_name = '농업기술실용화재단'
+        self.channel_name = '한국농업기술진흥원'
         self.post_board_name = '공지사항'
-        self.post_url = 'https://www.fact.or.kr/action.do'
+        # self.post_url = 'https://www.fact.or.kr/action.do'
+        self.post_url = 'https://www.koat.or.kr/board/notice/{}/view.do'
 
     def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
         super().scraping_process(channel_code, channel_url, dev, full_channel_code)
