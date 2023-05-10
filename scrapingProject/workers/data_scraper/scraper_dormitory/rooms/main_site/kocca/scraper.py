@@ -15,6 +15,7 @@ from .parser import *
 
     method : GET
     url = https://www.kocca.kr/cop/pims/list.do?menuNo=200828&recptSt=
+    url = https://www.kocca.kr/kocca/pims/list.do?menuNo=204104
     header :
         None
 '''
@@ -32,7 +33,7 @@ class Scraper(ABCScraper):
     def __init__(self, session):
         super().__init__(session)
         self.channel_name = '한국콘텐츠진흥원'
-        self.post_board_name = '지원사업'
+        self.post_board_name = '지원공고'#수정됨 지원사업 -> 지원공고
         self.channel_main_url = 'https://www.kocca.kr'
     
     def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
