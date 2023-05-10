@@ -57,6 +57,7 @@ def post_list_parsing_process(**params):
     ]
     result = merge_var_to_dict(key_list, var)
     result = [data for data in result if data['post_title'] != None and data['post_url'] != None]
+    print(result)
     return result
 
 def parse_frstRegistDt(textDate):
@@ -100,6 +101,7 @@ def post_content_parsing_process(**params):
     extraDict.update({'info_1': ['최초 입주 년월', firstEntryDateList]})
     var['extra_info'].append(extraDict)
     result = convert_merged_list_to_dict(key_list, var)
+    print(result)
     return result
 
 def extract_info(text):
@@ -112,7 +114,11 @@ def extract_info(text):
         contentsInfo = [infoText[preIdx+1: sufIdx].strip() for preIdx, sufIdx in idxList]
         address = contentsInfo[2].replace('\\', '').replace('"', '')
         addressList.append(address)
-        firstEntryDate = contentsInfo[4] + '년 '+ contentsInfo[5] + '월'
+        firstEntryDate = ''
+        try :
+            firstEntryDate = contentsInfo[4] + '년 '+ contentsInfo[5] + '월'
+        except:
+            pass
         firstEntryDateList.append(firstEntryDate.replace('\\', '').replace('"', ''))
     return addressList, firstEntryDateList
 

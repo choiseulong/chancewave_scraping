@@ -12,13 +12,21 @@ from .parser import *
 '''
     @post list
 
-    method : POST
+    method : POST -> GET
     url = https://www.myhome.go.kr/hws/portal/sch/selectRsdtRcritNtcList.do
+    url = https://www.myhome.go.kr/hws/portal/sch/selectRsdtRcritNtcList.do?pageIndex={page_count}&srchSuplyTy= 수정
     header :
         1. Content-Type : application/x-www-form-urlencoded; charset=UTF-8
+
+        수정
+        1. None
     body :
         1. pageIndex={page_count}
         2. srchSuplyTy=
+
+        수정 
+        미사용
+
     required data searching point :
         header_1 : fixed
         body_1 : page_count
@@ -49,16 +57,17 @@ class Scraper(ABCScraper):
         self.page_count = 1
         while True :
             self.channel_url = self.channel_url_frame.format(self.page_count)
-            self.response = self.session.get(self.channel_url)
-            self.scraping_target = post_list_parsing_process(
-                    response = self.response, 
-                    channel_code = self.channel_code, 
-                    post_url_frame = self.post_url,
-                    page_count = self.page_count,
-                    channel_main_url = self.channel_main_url,
-                    channel_url = self.channel_url,
-                    dev = self.dev,
-            )
+            self.post_list_scraping()
+            # self.response = self.session.get(self.channel_url)
+            # self.scraping_target = post_list_parsing_process(
+            #         response = self.response, 
+            #         channel_code = self.channel_code, 
+            #         post_url_frame = self.post_url,
+            #         page_count = self.page_count,
+            #         channel_main_url = self.channel_main_url,
+            #         channel_url = self.channel_url,
+            #         dev = self.dev,
+            # )
             if self.scraping_target :
                 self.target_contents_scraping()
                 self.collect_data()
@@ -66,6 +75,9 @@ class Scraper(ABCScraper):
                 self.page_count += 1
             else:
                 break
+
+    def post_list_scraping(self):
+        super().post_list_scraping(post_list_parsing_process, 'get', sleep_sec)
 
     def target_contents_scraping(self):
         for target in self.scraping_target:
