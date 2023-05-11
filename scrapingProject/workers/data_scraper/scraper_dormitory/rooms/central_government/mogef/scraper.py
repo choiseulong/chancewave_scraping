@@ -39,6 +39,7 @@ class Scraper(ABCScraper):
             ("Referer", "http://www.mogef.go.kr/")
         )
         self.session = set_headers(self.session, self.additional_key_value, is_update)
+        init_response = self.session.get('http://www.mogef.go.kr/')
         # self.session = set_headers(self.session)
         self.page_count = 1
         while True :
