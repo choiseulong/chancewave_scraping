@@ -5,6 +5,7 @@ from .parser_2 import *
     @post list
     method : GET
     url_0 =   https://tong.daegu.go.kr/dle/bbs/index.do?menu_idx=8&master_idx={}
+    url = https://dle.study.daegu.kr/index.do?menu_link=/icms/bbs/selectBoardList.do&menu_id=00004232&bbsId=BBS_00029&bbsTyCode=BBST03&bbsAttrbCode=BBSA03&nttId=0&pageIndex={}&searchBgnDe=2023-01-01&searchEndDe=2030-01-01&postPerPage=10
     header :
         None
 '''
@@ -24,14 +25,16 @@ class Scraper(ABCScraper):
         super().__init__(session)
         self.channel_name = '대구평생학습진흥원'
         self.post_board_name = '공지사항'
-        self.cont_url_frame = 'https://tong.daegu.go.kr/dle/bbs/view.do?menu_idx=8&master_idx={}&bbs_idx={}'
+        # self.cont_url_frame = 'https://tong.daegu.go.kr/dle/bbs/view.do?menu_idx=8&master_idx={}&bbs_idx={}'
+        self.post_url = 'https://dle.study.daegu.kr/index.do?menu_link=/icms/bbs/selectBoardArticle.do&menu_id=00004232&bbsId=BBS_00029&bbsTyCode=BBST03&bbsAttrbCode=BBSA03&nttId={}'
+        # self.channel_url = 'https://dle.study.daegu.kr'
 
     def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
         super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True :
-            self.post_url = self.cont_url_frame.replace('{}', str(self.page_count), 1)
+            # self.post_url = self.cont_url_frame.replace('{}', str(self.page_count), 1)
             self.channel_url = self.channel_url_frame.format(self.page_count)
             self.post_list_scraping()
             if self.scraping_target :
