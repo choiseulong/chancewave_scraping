@@ -21,23 +21,25 @@ def main():
 
 class INITIAL_PROCESS_SOURCE(BaseModel):
     channel_code : Optional[str] = ''
-    count : int = 10
+    pagesize : int = 10
+    page : int = 0
 
 @app.post('/get-channel-data')
 async def get_channel_data(SOURCE:INITIAL_PROCESS_SOURCE):
     channel_code = SOURCE.channel_code
-    count = SOURCE.count
+    count = SOURCE.pagesize
+    page = SOURCE.page
     manager = ProjectManager()
-    data = manager.get_data(channel_code, count)
+    data = manager.get_data(channel_code, count, page)
     return data
 
-@app.post('/get-total-channel-data')
-async def get_total_data(SOURCE :INITIAL_PROCESS_SOURCE):
-    channel_code = SOURCE.channel_code
-    count = SOURCE.count
-    manager = ProjectManager()
-    data = manager.get_data(channel_code, count)
-    return data
+# @app.post('/get-total-channel-data')
+# async def get_total_data(SOURCE :INITIAL_PROCESS_SOURCE):
+#     channel_code = SOURCE.channel_code
+#     count = SOURCE.count
+#     manager = ProjectManager()
+#     data = manager.get_data(channel_code, count)
+#     return data
 
 class DEV_SOURCE(BaseModel):
     channel_code : str

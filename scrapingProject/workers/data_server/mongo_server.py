@@ -30,6 +30,10 @@ class MongoServer:
         else:
             cursor = self.collection.find(query, projection)
         return [i for i in cursor]
+
+    def find_paging(self, query={}, projection={}, count=0, page=1):
+        cursor = self.collection.find(query, projection).limit(count).skip(count * (page-1))
+        return [i for i in cursor]
     
     def delete_and_insert(self, target_query, new_data):
         self.collection.remove(target_query)
@@ -86,13 +90,13 @@ class MongoServer:
         update_query= {'$set' : {'is_update_check_time' : is_update_check}}
         self.update_one(target_query, update_query)
 
-    def get_data(self, channel_code, count=0):
+    def get_data(self, channel_code, count=0, page=0):
         query = {"channel_code" : channel_code}
-        projection = {'_id': 0}
-        if count :
-            data = self.find(query, projection)[:count]
+        projection = {'_id' : 0}
+        if page :
+            data = self.find_paging(query, projection, count, page)
         else:
-            data = self.find(query, projection)
+            data = self.find(query, projection, count)
         return data
 
     def get_total_data(self):

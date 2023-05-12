@@ -26,7 +26,8 @@ schedule.conf.update(
     timezone = 'Asia/Seoul',
     enable_utc = False,
     # 2021-12-31 추가
-    broker_heartbeat=None
+    broker_heartbeat=None,
+    CELERY_ACKS_LATE = True # update
 )
 
 # session
@@ -46,17 +47,19 @@ def make_session():
     session = Session()
     session.headers = {
         "Connection": "keep-alive",
-        "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36"
-    }
+        # "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
+        "User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1"
+    }   
     session.mount("http://", HTTPAdapter(max_retries=retry))
     session.mount("https://", HTTPAdapter(max_retries=retry))
     return session
 
 # job
-# 1시간 time limit 
+# 3시간 time limit 
 # retry 간격 3분 디폴트
-@schedule.task(time_limit=3600, retries=3)
+@schedule.task(time_limit=10800, retries=3)
 def job(scraper_room_address, channel_code, channel_url, full_channel_code):
+    print(full_channel_code)
     dev = False
     mongo = MongoServer(dev=dev)
     traceback = ''
@@ -81,3 +84,4 @@ def job(scraper_room_address, channel_code, channel_url, full_channel_code):
         'error_type' : error_type
     }
     mongo.write_scraping_history(history)
+    return full_channel_code

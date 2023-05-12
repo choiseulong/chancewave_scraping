@@ -8,10 +8,8 @@ from datetime import datetime, timedelta
 from pytz import timezone
 from glob import glob
 import random
-
+from time import sleep
 import os
-
-print(os.path.dirname(__file__))
 
 SCRAPING_MANAGER_FILE_PATH = os.path.dirname(__file__)
 SCRAPING_ROOMS_DIR_PATH = os.path.join(SCRAPING_MANAGER_FILE_PATH, 'scraper_dormitory', 'rooms')
@@ -108,6 +106,7 @@ class ScrapingManager:
             else:
                 scraper_room_address = f'workers.data_scraper.scraper_dormitory.rooms.{group_name}.{room_name}.scraper'
             full_channel_code = self.search_full_channel_code(channel_code)
+            sleep(1)
             job.delay(scraper_room_address, channel_code, channel_url, full_channel_code)
 
     def parse_scraping_parameters(self, channel_code_with_location):

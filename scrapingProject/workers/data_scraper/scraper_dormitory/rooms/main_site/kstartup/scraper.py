@@ -66,7 +66,7 @@ from .parser import *
 
 '''
 
-sleep_sec = 2
+sleep_sec = 1
 
 class Scraper(ABCScraper):
     def __init__(self, session):
@@ -79,13 +79,11 @@ class Scraper(ABCScraper):
         self.post_url = 'https://www.k-startup.go.kr/web/contents/bizpbanc-ongoing.do?schM=view&pbancSn={}'
     
     def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
-        print(channel_code, channel_url, dev, full_channel_code)
         super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.session = set_headers(self.session)
         self.page_count = 1
         while True:
             self.channel_url = self.channel_url_frame.format(self.page_count)
-            print(self.channel_url)
             self.post_list_scraping()
             if self.scraping_target : # result
             #     if not self.CSRF_TOKEN:

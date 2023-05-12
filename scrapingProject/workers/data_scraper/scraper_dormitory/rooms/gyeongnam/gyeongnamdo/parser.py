@@ -92,7 +92,6 @@ def postListParsingProcess_1(**params):
         )
         var['post_url'].append(href)
     result = merge_var_to_dict(key_list, var)
-    print(result)
     return result
 
 

@@ -16,7 +16,8 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=CHANCEWAVE
       - MONGO_INITDB_ROOT_PASSWORD=MYSTERICO
     volumes:
-      - /home/ubuntu/scraping_data/mongodb:/data/db
+      # - /home/ubuntu/scraping_data/mongodb:/data/db
+      - C:/scraping_data/mongodb:/data/db
     ports:
       - "9202:27017"
     command: mongod --quiet --logpath /dev/null 
@@ -30,8 +31,11 @@ services:
       - RABBITMQ_DEFAULT_USER=CHANCEWAVE
       - RABBITMQ_DEFAULT_PASS=MYSTERICO
     volumes:
-        - /home/ubuntu/scraping_data/rabbitmq/data/:/var/lib/rabbitmq/
-        - /home/ubuntu/scraping_data/rabbitmq/log/:/var/log/rabbitmq/
+        # - /home/ubuntu/scraping_data/rabbitmq/data/:/var/lib/rabbitmq/
+        # - /home/ubuntu/scraping_data/rabbitmq/data/:/var/lib/rabbitmq/
+        - C:/scraping_data/rabbitmq/data/:/var/lib/rabbitmq/
+        - C:/scraping_data/rabbitmq/log/:/var/log/rabbitmq/
+
     ports:
       - "5672:5672"
       - "9203:15672"
@@ -40,9 +44,11 @@ services:
   celery_container: 
     container_name: celery_container
     image: chancewave/scraper:latest
-    command: celery -A workers.scraping_scheduler.scheduler worker --loglevel=info -P gevent --autoscale=20,5
+    command: celery -A workers.scraping_scheduler.scheduler worker --loglevel=info -P gevent --autoscale=4,1
     volumes:
-      - /home/ubuntu/scraping_data/celery/:/app/
+      # - /home/ubuntu/scraping_data/celery/:/app/
+      - C:/scraping_data/celery/:/app/
+
     depends_on:
       - scraper_container
       - mongodb_container

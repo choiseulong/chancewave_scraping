@@ -32,7 +32,6 @@ class Scraper(ABCScraper):
         self.post_url = 'https://crs.ubimc.or.kr/lecture/step1?lecId={}'
 
     def scraping_process(self, channel_code, channel_url, dev, full_channel_code):
-        print(channel_code, full_channel_code)
         super().scraping_process(channel_code, channel_url, dev, full_channel_code)
         self.additional_key_value.append(("Referer", f"https://www.bukgu.ulsan.kr/edu/pageCont.do?pageIndex=1&menuNo=2010000"))
         self.session = set_headers(self.session, self.additional_key_value, is_update)

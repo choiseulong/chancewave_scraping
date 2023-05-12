@@ -36,7 +36,7 @@ class Scraper(metaclass=ABCMeta):
 
         #env
         self.dev = False
-        self.limit_page_count = 101 # 101 page 까지 수집
+        self.limit_page_count = 4
 
     @abstractmethod
     def scraping_process(self, channel_code, channel_url, dev=False, full_channel_code=''):
@@ -60,7 +60,7 @@ class Scraper(metaclass=ABCMeta):
             self.scraping_target = []
             return True
 
-    def post_list_scraping(self, post_list_parsing_process, method, data={}, sleep_sec=2, jsonize=False):
+    def post_list_scraping(self, post_list_parsing_process, method, data={}, sleep_sec=4, jsonize=False):
         '''
             채널 메인에서 게시글의 기본정보를 가져오기 위한 요청을 처리함
         '''
@@ -90,7 +90,7 @@ class Scraper(metaclass=ABCMeta):
             if self.dev :
                 print(self.channel_code, 'REQUESTS ERROR')
 
-    def target_contents_scraping(self, post_content_parsing_process, sleep_sec=2):
+    def target_contents_scraping(self, post_content_parsing_process, sleep_sec=4):
         '''
             채널 상세정보 수집을 위해 추가 요청이 필요한 경우 작성함
         '''
@@ -99,7 +99,7 @@ class Scraper(metaclass=ABCMeta):
             if post_content:
                 self.scraping_target_contents.append(post_content)
 
-    def target_scraping(self, post_content_parsing_process, target, sleep_sec):
+    def target_scraping(self, post_content_parsing_process, target, sleep_sec=4):
         status = ''
         if 'contents_req_params' in target.keys():
             data = target['contents_req_params']

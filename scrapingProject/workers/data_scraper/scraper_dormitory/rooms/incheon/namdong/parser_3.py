@@ -10,7 +10,6 @@ def post_list_parsing_process(**params):
     # 2021-01-25 
     var['table_header'] = ["강좌명", "수강료", "접수기간", "교육기간", "교육기관", "상태"]
     result = parse_board_type_html_page(soup, var, key_list)
-    print(result)
     return result
 
 def post_content_parsing_process(**params):

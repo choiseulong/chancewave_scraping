@@ -18,7 +18,6 @@ def post_list_parsing_process(**params):
         extra_info = {'info_title':'강좌정보'}
         for td_idx, td in enumerate(td_list):
             td_text = extract_text(td)
-            print(td_text)
             extra_info.update({f'info_{len(extra_info)}' : (header[td_idx], td_text)})
             if header[td_idx] == '강좌명':
                 var['post_title'].append(td_text)
