@@ -22,7 +22,7 @@ from urllib.parse import urlencode
     @post info
     X
 '''
-sleepSec = 0
+sleepSec = 1
 isUpdate = True
 
 

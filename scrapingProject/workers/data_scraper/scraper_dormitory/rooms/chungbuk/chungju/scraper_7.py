@@ -25,7 +25,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
         None
 
 '''
-sleepSec = 0
+sleepSec = 1
 isUpdate = True
 
 

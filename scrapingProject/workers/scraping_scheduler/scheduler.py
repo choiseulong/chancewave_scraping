@@ -27,7 +27,8 @@ schedule.conf.update(
     enable_utc = False,
     # 2021-12-31 추가
     broker_heartbeat=None,
-    task_acks_late = True # add CELERY_ACKS_LATE-> rename newly
+    task_acks_late = True, # add CELERY_ACKS_LATE-> rename newly
+    worker_prefetch_multiplier = 1
 )
 
 # session

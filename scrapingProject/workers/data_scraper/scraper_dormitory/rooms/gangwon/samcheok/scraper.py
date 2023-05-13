@@ -24,7 +24,7 @@ from .parser import *
     이미지 요청시 Referer 로 post_url 전송 필요
     sleep_sec을 늘려야함
 '''
-sleep_sec = 10
+sleep_sec = 4
 
 class Scraper(ABCScraper):
     def __init__(self, session):

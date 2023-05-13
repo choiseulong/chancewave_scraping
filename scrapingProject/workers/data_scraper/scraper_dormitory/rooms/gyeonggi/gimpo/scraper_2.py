@@ -26,7 +26,7 @@ import js2py
         None
 
 '''
-sleepSec = 0.5
+sleepSec = 1.5
 isUpdate = True
 
 

@@ -26,7 +26,7 @@ import requests
         None
 
 '''
-sleepSec = 0
+sleepSec = 1
 isUpdate = True
 
 

@@ -44,8 +44,12 @@ async def get_channel_data(SOURCE:INITIAL_PROCESS_SOURCE):
 class DEV_SOURCE(BaseModel):
     channel_code : str
 
+from datetime import datetime
+
 @app.post('/dev-test')
 async def test(DEV_SOURCE :DEV_SOURCE):
+    now = datetime.now()
     channel_code = DEV_SOURCE.channel_code
     manager = ProjectManager()
     manager.scraping_dev_test(channel_code)
+    print(datetime.now() - now)

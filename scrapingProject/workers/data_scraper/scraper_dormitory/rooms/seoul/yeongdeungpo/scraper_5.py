@@ -28,7 +28,7 @@ from urllib.parse import urlencode
         None
 
 '''
-sleepSec = 0
+sleepSec = 1
 isUpdate = True
 
 

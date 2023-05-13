@@ -33,7 +33,7 @@ from urllib.parse import urlencode
     header :
         None
 '''
-sleepSec = 0
+sleepSec = 1
 isUpdate = True
 
 

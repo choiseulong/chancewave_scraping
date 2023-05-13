@@ -26,7 +26,7 @@ import js2py
         None
 
 '''
-sleepSec = 0
+sleepSec = 1
 isUpdate = True
 
 js_fn_make_post_url_code = """

@@ -28,7 +28,7 @@ from workers.data_scraper.scraper_dormitory.parser_tools.tools import *
         2. q_beCode = C001
 
 '''
-sleepSec = 0
+sleepSec = 1
 isUpdate = True
 
 
