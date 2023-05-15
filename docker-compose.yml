@@ -35,16 +35,17 @@ services:
         # - /home/ubuntu/scraping_data/rabbitmq/data/:/var/lib/rabbitmq/
         - C:/scraping_data/rabbitmq/data/:/var/lib/rabbitmq/
         - C:/scraping_data/rabbitmq/log/:/var/log/rabbitmq/
+        - C:/workspace/chancewave-scraper/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
 
     ports:
       - "5672:5672"
       - "9203:15672"
-    command: ["bash", "-c", "chmod 400 /var/lib/rabbitmq/.erlang.cookie; rabbitmq-server"]
+    # command: ["bash", "-c", "chmod 400 /var/lib/rabbitmq/.erlang.cookie; rabbitmq-server"]
 
   celery_container: 
     container_name: celery_container
     image: chancewave/scraper:latest
-    command: celery -A workers.scraping_scheduler.scheduler worker --loglevel=info -P gevent --autoscale=4,1
+    command: celery -A workers.scraping_scheduler.scheduler worker --loglevel=info -P gevent --autoscale=24,6
     volumes:
       # - /home/ubuntu/scraping_data/celery/:/app/
       - C:/scraping_data/celery/:/app/

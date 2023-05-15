@@ -36,7 +36,7 @@ class Scraper(metaclass=ABCMeta):
 
         #env
         self.dev = False
-        self.limit_page_count = 4
+        self.limit_page_count = 2
 
     @abstractmethod
     def scraping_process(self, channel_code, channel_url, dev=False, full_channel_code=''):

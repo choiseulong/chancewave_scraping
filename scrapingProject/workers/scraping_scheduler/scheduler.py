@@ -28,7 +28,10 @@ schedule.conf.update(
     # 2021-12-31 추가
     broker_heartbeat=None,
     task_acks_late = True, # add CELERY_ACKS_LATE-> rename newly
-    worker_prefetch_multiplier = 1
+    # worker_prefetch_multiplier = 1
+    broker_connection_retry = True,
+    # broker_connection_max_retries = 0
+    broker_transport_options = {"visibility_timeout" : 7200}
 )
 
 # session
@@ -48,8 +51,8 @@ def make_session():
     session = Session()
     session.headers = {
         "Connection": "keep-alive",
-        # "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
-        "User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1"
+        "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
+        # "User-Agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1"
     }   
     session.mount("http://", HTTPAdapter(max_retries=retry))
     session.mount("https://", HTTPAdapter(max_retries=retry))
