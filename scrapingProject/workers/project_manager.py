@@ -6,9 +6,13 @@ class ProjectManager:
         self.TargetDateRange = None
         self.scraping_manager = ScrapingManager()
     
-    def job_init(self):
+    def job_init(self, target=False):
         self.scraping_manager.get_channel_url()
-        self.scraping_manager.scraping_init_with_celery()
+        if not target :
+            self.scraping_manager.scraping_init_with_celery()
+        elif target :
+            self.scraping_manager.scraping_target_channel_list_synchronously()
+
         return 'scraping start'
     
     def get_data(self, channel_code, count, page):

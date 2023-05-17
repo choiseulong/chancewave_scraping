@@ -16,7 +16,8 @@ class MongoServer:
             self.db = self.connection.get_database('scraping')
             self.collection = self.db.get_collection('data')
         elif dev == False :
-            self.url = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/'
+            # self.url = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/'
+            self.url = 'mongodb://CHANCEWAVE:MYSTERICO@211.42.153.221:9202' # ubuntu url
             self.connection = MongoClient(self.url)
             self.db = self.connection.get_database('scraping')
             self.collection = self.db.get_collection('data')

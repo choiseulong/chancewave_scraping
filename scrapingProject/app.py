@@ -6,14 +6,25 @@ from time import sleep
 
 app = FastAPI()
 
+# update target channel scraping
 @app.get("/scraping-start")
 async def scraping_with_target_date(Background_tasks : BackgroundTasks):
     def run():
         while True:
             manager = ProjectManager()
-            message = manager.job_init()
-            sleep(43200) # 12 hours
+            message = manager.job_init(target=True)
+            sleep(7200) # 2 hours
     Background_tasks.add_task(run)
+
+# lagacy total channel scraping
+# @app.get("/scraping-start")
+# async def scraping_with_target_date(Background_tasks : BackgroundTasks):
+#     def run():
+#         while True:
+#             manager = ProjectManager()
+#             message = manager.job_init()
+#             sleep(43200) # 12 hours
+#     Background_tasks.add_task(run)
 
 @app.get('/')
 def main():
