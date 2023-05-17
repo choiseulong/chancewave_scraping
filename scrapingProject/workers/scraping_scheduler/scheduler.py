@@ -21,7 +21,7 @@ schedule = Celery('scheduler')
 schedule.conf.update(
     # broker_url = 'amqp://CHANCEWAVE:MYSTERICO@message_broker_container//',
     # result_backend = 'mongodb://CHANCEWAVE:MYSTERICO@mongodb_container:27017/?authSource=admin',
-    broker_url = 'amqp://CHANCEWAVE:MYSTERICO@211.42.153.221:5672//', # network 모드 변경에 따른 ip 변경 대응
+    broker_url = 'amqp://CHANCEWAVE:MYSTERICO@127.0.0.1:5672//', # network 모드 변경에 따른 ip 변경 대응
     result_backend = 'mongodb://CHANCEWAVE:MYSTERICO@211.42.153.221:9202/?authSource=admin', # network 모드 변경에 따른 ip 변경 대응
 
     timezone = 'Asia/Seoul',

@@ -3,7 +3,7 @@ version: '3.4'
 services:
   scraper_container:
     container_name: scraper_container
-    image: chancewave/scraper:dev
+    image: chancewave/scraper:latest
     ports:
       - "9201:9201"
     depends_on:
@@ -44,7 +44,7 @@ services:
 
   celery_container: 
     container_name: celery_container
-    image: chancewave/scraper:dev
+    image: chancewave/scraper:latest
     command: celery -A workers.scraping_scheduler.scheduler worker --loglevel=info -P gevent --autoscale=24,6
     volumes:
       # - /home/ubuntu/scraping_data/celery/:/app/
